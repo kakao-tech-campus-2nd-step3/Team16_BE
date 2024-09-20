@@ -13,7 +13,7 @@ import jakarta.persistence.Table;
 public class Food {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private long FoodId;
 
     @ManyToOne
     @JoinColumn(name = "food_category_id", nullable = false)
