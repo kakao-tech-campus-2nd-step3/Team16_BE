@@ -6,7 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "time")
@@ -17,10 +17,10 @@ public class Time {
     private Long timeId;
 
     @Column(nullable = false)
-    private ZonedDateTime startAt;
+    private LocalDateTime startAt;
 
     @Column(nullable = false)
-    private ZonedDateTime endAt;
+    private LocalDateTime endAt;
 
     @Column(nullable = false)
     private String timeZone;
