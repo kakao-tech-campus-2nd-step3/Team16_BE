@@ -14,7 +14,7 @@ import org.cookieandkakao.babting.domain.meeting.entity.*;
 public class MeetingPreferenceFood {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long MeetingPreferenceFoodId;
+    private Long MeetingPreferenceFoodId;
 
     @ManyToOne
     @JoinColumn(name = "food_id", nullable = false)
