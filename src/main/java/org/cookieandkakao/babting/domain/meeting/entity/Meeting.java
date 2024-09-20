@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import java.sql.Time;
 import java.time.LocalDate;
@@ -17,8 +18,10 @@ public class Meeting {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long meetingId;
     @OneToOne
+    @JoinColumn(name = "base_location_id")
     private Location baseLocation;
     @OneToOne
+    @JoinColumn(name = "meeting_location_id")
     private Location meetingLocation;
     @Column(nullable = false)
     private String title;
