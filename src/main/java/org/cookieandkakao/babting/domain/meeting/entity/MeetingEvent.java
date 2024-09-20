@@ -19,5 +19,6 @@ public class MeetingEvent {
     private MemberMeeting memberMeeting;
 
     @OneToOne
+    @JoinColumn(name = "time_id")
     private Time time;
 }
