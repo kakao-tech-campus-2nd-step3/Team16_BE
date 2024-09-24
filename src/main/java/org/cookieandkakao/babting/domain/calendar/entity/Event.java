@@ -28,13 +28,13 @@ public class Event {
     @JoinColumn(name = "time_id", nullable = false)
     private Time time;
 
-    @Column
+    @Column(nullable = false)
     private String title;
 
     @Column
     private String type;
 
-    @Column
+    @Column(nullable = false)
     private boolean repeatedSchedule;
 
     @Column
