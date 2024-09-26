@@ -24,5 +24,6 @@ public class MemberMeeting {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "meeting_id")
     private Meeting meeting;
-
+    
+    private boolean isHost;
 }
