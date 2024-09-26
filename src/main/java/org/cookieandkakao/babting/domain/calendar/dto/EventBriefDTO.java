@@ -1,31 +1,25 @@
 package org.cookieandkakao.babting.domain.calendar.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public record EventBriefDTO(
 
-    @JsonProperty("id")
     String id,
 
-    @JsonProperty("title")
     String title,
 
-    @JsonProperty("type")
     String type,
 
-    @JsonProperty("calendar_id")
     String calendarId,
 
-    @JsonProperty("time")
     TimeDTO time,
 
-    @JsonProperty("is_host")
     boolean isHost,
 
-    @JsonProperty("is_recur_event")
     boolean isRecurEvent,
 
-    @JsonProperty("color")
     String color
 ) {
 
