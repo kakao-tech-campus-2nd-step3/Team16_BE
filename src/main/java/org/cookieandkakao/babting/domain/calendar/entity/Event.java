@@ -28,7 +28,7 @@ public class Event {
     @JoinColumn(name = "time_id", nullable = false)
     private Time time;
 
-    @Column(nullable = false)
+    @Column
     private String title;
 
     @Column
