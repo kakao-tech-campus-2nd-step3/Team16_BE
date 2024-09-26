@@ -8,7 +8,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import org.cookieandkakao.babting.domain.calendar.entity.Time;
+import org.cookieandkakao.babting.domain.calendar.entity.Event;
 
 @Entity
 @Table(name = "meeting_event")
@@ -22,6 +22,6 @@ public class MeetingEvent {
     private MemberMeeting memberMeeting;
 
     @OneToOne
-    @JoinColumn(name = "time_id")
-    private Time time;
+    @JoinColumn(name = "event_id")
+    private Event event;
 }
