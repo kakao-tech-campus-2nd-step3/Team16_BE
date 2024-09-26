@@ -23,4 +23,8 @@ public class PreferenceFood {
     @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
+
+    public void setFood(Food food) {
+        this.food = food;
+    }
 }
