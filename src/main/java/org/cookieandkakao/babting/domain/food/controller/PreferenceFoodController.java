@@ -32,9 +32,9 @@ public class PreferenceFoodController {
     }
 
     // 선호 음식 삭제
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePreference(@PathVariable Long id) {
-        preferenceFoodService.deletePreference(id);
+    @DeleteMapping
+    public ResponseEntity<?> deletePreference(@RequestBody PreferenceFoodDto preferenceFoodDto) {
+        preferenceFoodService.deletePreference(preferenceFoodDto);
         return ResponseEntity.ok().body(new ApiResponse(200, "선호 음식 삭제 성공", null));
     }
 }

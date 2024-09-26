@@ -11,6 +11,22 @@ public class PreferenceFoodResponseDto {
         this.name = name;
     }
 
+    public Long getFoodId() {
+        return foodId;
+    }
+
+    public void setFoodId(Long foodId) {
+        this.foodId = foodId;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
     public String getName() {
         return name;
     }

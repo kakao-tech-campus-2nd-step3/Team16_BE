@@ -47,7 +47,7 @@ public class PreferenceFoodService {
     }
 
     // 선호 음식 삭제
-    public void deletePreference(Long id) {
-        preferenceFoodRepository.deleteById(id);
+    public void deletePreference(PreferenceFoodDto preferenceFoodDto) {
+        preferenceFoodRepository.deleteById(preferenceFoodDto.getFoodId());
     }
 }
