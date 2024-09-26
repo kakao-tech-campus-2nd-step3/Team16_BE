@@ -1,5 +1,6 @@
 package org.cookieandkakao.babting.domain.food.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,4 +19,7 @@ public class Food {
     @ManyToOne
     @JoinColumn(name = "food_category_id", nullable = false)
     private FoodCategory foodCategory;
+
+    @Column
+    private String name;
 }
