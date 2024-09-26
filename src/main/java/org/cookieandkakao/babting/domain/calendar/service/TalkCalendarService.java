@@ -12,8 +12,6 @@ public class TalkCalendarService {
 
     private final RestClient restClient = RestClient.builder().build();
 
-    public TalkCalendarService() {}
-
     public EventListDTO getEventList(String accessToken, String from, String to) {
         String url = "https://kapi.kakao.com/v2/api/calendar/events";
         URI uri = buildUri(url, from, to);
