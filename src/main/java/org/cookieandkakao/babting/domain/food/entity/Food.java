@@ -22,4 +22,16 @@ public class Food {
 
     @Column
     private String name;
+
+    public Long getFoodId() {
+        return foodId;
+    }
+
+    public FoodCategory getFoodCategory() {
+        return foodCategory;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

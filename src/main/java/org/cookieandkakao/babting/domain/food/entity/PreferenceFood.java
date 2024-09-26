@@ -27,4 +27,8 @@ public class PreferenceFood {
     public void setFood(Food food) {
         this.food = food;
     }
+
+    public Food getFood() {
+        return food;
+    }
 }
