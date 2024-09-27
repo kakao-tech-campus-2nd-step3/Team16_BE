@@ -23,6 +23,12 @@ public class Food {
     @Column
     private String name;
 
+    public Food(Long foodId, FoodCategory foodCategory, String name) {
+        this.foodId = foodId;
+        this.foodCategory = foodCategory;
+        this.name = name;
+    }
+
     public Long getFoodId() {
         return foodId;
     }

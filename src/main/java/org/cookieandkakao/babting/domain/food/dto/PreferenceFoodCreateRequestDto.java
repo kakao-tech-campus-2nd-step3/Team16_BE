@@ -1,20 +1,15 @@
 package org.cookieandkakao.babting.domain.food.dto;
 
-public class PreferenceFoodCreateRequestDto {
-    private Long foodId;
+import org.cookieandkakao.babting.domain.food.entity.PreferenceFood;
+import org.cookieandkakao.babting.domain.food.entity.Food;
+import org.cookieandkakao.babting.domain.member.entity.Member;
 
-    public PreferenceFoodCreateRequestDto() {
-    }
+public record PreferenceFoodCreateRequestDto(Long foodId) {
 
-    public PreferenceFoodCreateRequestDto(Long foodId) {
-        this.foodId = foodId;
-    }
-
-    public Long getFoodId() {
-        return foodId;
-    }
-
-    public void setFoodId(Long foodId) {
-        this.foodId = foodId;
+    public PreferenceFood toEntity(Food food, Member member) {
+        PreferenceFood preferenceFood = new PreferenceFood();
+        preferenceFood.setFood(food);
+        preferenceFood.setMember(member);
+        return preferenceFood;
     }
 }

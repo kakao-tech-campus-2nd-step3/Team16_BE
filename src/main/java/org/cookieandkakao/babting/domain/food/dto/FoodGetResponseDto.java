@@ -1,26 +1,11 @@
 package org.cookieandkakao.babting.domain.food.dto;
 
-public class FoodGetResponseDto {
-    private Long foodId;
-    private String category;
-    private String name;
+import org.cookieandkakao.babting.domain.food.entity.Food;
+import org.cookieandkakao.babting.domain.food.entity.FoodCategory;
 
-    public FoodGetResponseDto(Long foodId, String category, String name) {
-        this.foodId = foodId;
-        this.category = category;
-        this.name = name;
-    }
+public record FoodGetResponseDto(Long foodId, String category, String name) {
 
-    public Long getFoodId() {
-        return foodId;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public String getName() {
-        return name;
+    public Food toEntity(FoodCategory foodCategory) {
+        return new Food(this.foodId, foodCategory, this.name);
     }
 }
-

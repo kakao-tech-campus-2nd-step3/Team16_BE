@@ -38,7 +38,7 @@ public class PreferenceFoodService {
 
     // 선호 음식 추가
     public PreferenceFoodGetResponseDto addPreference(PreferenceFoodCreateRequestDto preferenceFoodCreateRequestDto) {
-        Food food = foodRepository.findById(preferenceFoodCreateRequestDto.getFoodId())
+        Food food = foodRepository.findById(preferenceFoodCreateRequestDto.foodId())
                 .orElseThrow(() -> new RuntimeException("해당 음식을 찾을 수 없습니다."));
 
         // 이미 비선호 음식으로 등록되어 있는지 확인
@@ -65,14 +65,14 @@ public class PreferenceFoodService {
 
     // 선호 음식 삭제
     public void deletePreference(PreferenceFoodCreateRequestDto preferenceFoodCreateRequestDto) {
-        foodRepository.findById(preferenceFoodCreateRequestDto.getFoodId())
+        foodRepository.findById(preferenceFoodCreateRequestDto.foodId())
                 .orElseThrow(() -> new RuntimeException("해당 음식을 찾을 수 없습니다."));
 
-        boolean exists = preferenceFoodRepository.existsById(preferenceFoodCreateRequestDto.getFoodId());
+        boolean exists = preferenceFoodRepository.existsById(preferenceFoodCreateRequestDto.foodId());
         if (!exists) {
             throw new RuntimeException("해당 선호 음식을 찾을 수 없습니다.");
         }
 
-        preferenceFoodRepository.deleteById(preferenceFoodCreateRequestDto.getFoodId());
+        preferenceFoodRepository.deleteById(preferenceFoodCreateRequestDto.foodId());
     }
 }

@@ -21,6 +21,8 @@ public class NonPreferenceFood {
     private Food food;
 
     @ManyToOne
+//    @JoinColumn(name = "member_id", nullable = false)
+//   로그인기능 구현 후 변경할 것
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
@@ -30,5 +32,9 @@ public class NonPreferenceFood {
 
     public void setFood(Food food) {
         this.food = food;
+    }
+
+    public void setMember(Member member) {
+        this.member = member;
     }
 }

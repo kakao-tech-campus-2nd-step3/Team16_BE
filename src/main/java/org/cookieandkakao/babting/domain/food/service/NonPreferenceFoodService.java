@@ -38,7 +38,7 @@ public class NonPreferenceFoodService {
 
     // 비선호 음식 추가
     public NonPreferenceFoodGetResponseDto addNonPreference(NonPreferenceFoodCreateRequestDto nonPreferenceFoodCreateRequestDto) {
-        Food food = foodRepository.findById(nonPreferenceFoodCreateRequestDto.getFoodId())
+        Food food = foodRepository.findById(nonPreferenceFoodCreateRequestDto.foodId())
                 .orElseThrow(() -> new RuntimeException("해당 음식을 찾을 수 없습니다."));
 
         // 이미 선호 음식으로 등록되어 있는지 확인
@@ -65,13 +65,13 @@ public class NonPreferenceFoodService {
 
     // 비선호 음식 삭제
     public void deleteNonPreference(NonPreferenceFoodCreateRequestDto nonPreferenceFoodCreateRequestDto) {
-        foodRepository.findById(nonPreferenceFoodCreateRequestDto.getFoodId())
+        foodRepository.findById(nonPreferenceFoodCreateRequestDto.foodId())
                 .orElseThrow(() -> new RuntimeException("해당 음식을 찾을 수 없습니다."));
 
-        boolean exists = nonPreferenceFoodRepository.existsById(nonPreferenceFoodCreateRequestDto.getFoodId());
+        boolean exists = nonPreferenceFoodRepository.existsById(nonPreferenceFoodCreateRequestDto.foodId());
         if (!exists) {
             throw new RuntimeException("해당 비선호 음식을 찾을 수 없습니다.");
         }
-        nonPreferenceFoodRepository.deleteById(nonPreferenceFoodCreateRequestDto.getFoodId());
+        nonPreferenceFoodRepository.deleteById(nonPreferenceFoodCreateRequestDto.foodId());
     }
 }

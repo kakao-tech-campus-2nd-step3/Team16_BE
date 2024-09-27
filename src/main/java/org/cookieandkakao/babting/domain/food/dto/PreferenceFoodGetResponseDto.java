@@ -1,37 +1,15 @@
 package org.cookieandkakao.babting.domain.food.dto;
 
-public class PreferenceFoodGetResponseDto {
-    private Long foodId;
-    private String category;
-    private String name;
+import org.cookieandkakao.babting.domain.food.entity.PreferenceFood;
+import org.cookieandkakao.babting.domain.food.entity.Food;
+import org.cookieandkakao.babting.domain.member.entity.Member;
 
-    public PreferenceFoodGetResponseDto(Long foodId, String category, String name) {
-        this.foodId = foodId;
-        this.category = category;
-        this.name = name;
-    }
+public record PreferenceFoodGetResponseDto(Long foodId, String category, String name) {
 
-    public Long getFoodId() {
-        return foodId;
-    }
-
-    public void setFoodId(Long foodId) {
-        this.foodId = foodId;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public PreferenceFood toEntity(Food food, Member member) {
+        PreferenceFood preferenceFood = new PreferenceFood();
+        preferenceFood.setFood(food);
+        preferenceFood.setMember(member);
+        return preferenceFood;
     }
 }

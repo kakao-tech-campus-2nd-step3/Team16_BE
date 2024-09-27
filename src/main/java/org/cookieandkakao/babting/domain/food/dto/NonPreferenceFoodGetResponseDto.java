@@ -1,37 +1,15 @@
 package org.cookieandkakao.babting.domain.food.dto;
 
-public class NonPreferenceFoodGetResponseDto {
-    private Long foodId;
-    private String category;
-    private String name;
+import org.cookieandkakao.babting.domain.food.entity.NonPreferenceFood;
+import org.cookieandkakao.babting.domain.food.entity.Food;
+import org.cookieandkakao.babting.domain.member.entity.Member;
 
-    public NonPreferenceFoodGetResponseDto(Long foodId, String category, String name) {
-        this.foodId = foodId;
-        this.category = category;
-        this.name = name;
-    }
+public record NonPreferenceFoodGetResponseDto(Long foodId, String category, String name) {
 
-    public Long getFoodId() {
-        return foodId;
-    }
-
-    public void setFoodId(Long foodId) {
-        this.foodId = foodId;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public NonPreferenceFood toEntity(Food food, Member member) {
+        NonPreferenceFood nonPreferenceFood = new NonPreferenceFood();
+        nonPreferenceFood.setFood(food);
+        nonPreferenceFood.setMember(member);
+        return nonPreferenceFood;
     }
 }
