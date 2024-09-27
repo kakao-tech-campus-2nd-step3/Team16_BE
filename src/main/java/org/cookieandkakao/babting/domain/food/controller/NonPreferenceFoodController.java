@@ -14,8 +14,11 @@ import java.util.List;
 @RequestMapping("/api/non-preferences")
 public class NonPreferenceFoodController {
 
-    @Autowired
-    private NonPreferenceFoodService nonPreferenceFoodService;
+    private final NonPreferenceFoodService nonPreferenceFoodService;
+
+    public NonPreferenceFoodController(NonPreferenceFoodService nonPreferenceFoodService) {
+        this.nonPreferenceFoodService = nonPreferenceFoodService;
+    }
 
     // 선호 음식 전체 조회
     @GetMapping

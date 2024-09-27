@@ -14,8 +14,11 @@ import java.util.List;
 @RequestMapping("/api/preferences")
 public class PreferenceFoodController {
 
-    @Autowired
-    private PreferenceFoodService preferenceFoodService;
+    private final PreferenceFoodService preferenceFoodService;
+
+    public PreferenceFoodController(final PreferenceFoodService preferenceFoodService) {
+        this.preferenceFoodService = preferenceFoodService;
+    }
 
     // 선호 음식 전체 조회
     @GetMapping
