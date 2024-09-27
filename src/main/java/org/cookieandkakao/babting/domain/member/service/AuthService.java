@@ -2,6 +2,7 @@ package org.cookieandkakao.babting.domain.member.service;
 
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED;
 
+import org.cookieandkakao.babting.domain.member.dto.KakaoMemberInfoDto;
 import org.cookieandkakao.babting.domain.member.dto.KakaoOAuthTokenDto;
 import org.cookieandkakao.babting.domain.member.properties.KakaoClientProperties;
 import org.cookieandkakao.babting.domain.member.properties.KakaoProviderProperties;
@@ -52,5 +53,19 @@ public class AuthService {
 
         return entity.getBody();
 
+    }
+
+    public KakaoMemberInfoDto requestKakaoMemberInfo(KakaoOAuthTokenDto kakaoToken) {
+
+        String userInfoUri = kakaoProviderProperties.userInfoUri();
+
+        ResponseEntity<KakaoMemberInfoDto> entity = restClient.get()
+            .uri(userInfoUri)
+            .header("Authorization", "Bearer " + kakaoToken.getAccessToken())
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .retrieve()
+            .toEntity(KakaoMemberInfoDto.class);
+
+        return entity.getBody();
     }
 }
