@@ -1,4 +1,4 @@
-package org.cookieandkakao.babting.domain.calendar.dto;
+package org.cookieandkakao.babting.domain.calendar.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;

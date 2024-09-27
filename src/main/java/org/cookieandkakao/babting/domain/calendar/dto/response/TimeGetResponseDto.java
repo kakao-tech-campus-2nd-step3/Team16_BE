@@ -1,4 +1,4 @@
-package org.cookieandkakao.babting.domain.calendar.dto;
+package org.cookieandkakao.babting.domain.calendar.dto.response;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

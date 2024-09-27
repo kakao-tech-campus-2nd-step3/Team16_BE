@@ -1,7 +1,7 @@
 package org.cookieandkakao.babting.domain.calendar.service;
 
 import java.net.URI;
-import org.cookieandkakao.babting.domain.calendar.dto.EventListGetResponseDto;
+import org.cookieandkakao.babting.domain.calendar.dto.response.EventListGetResponseDto;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

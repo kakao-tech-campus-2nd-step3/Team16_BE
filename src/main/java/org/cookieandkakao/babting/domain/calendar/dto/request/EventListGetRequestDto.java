@@ -1,4 +1,4 @@
-package org.cookieandkakao.babting.domain.calendar.dto;
+package org.cookieandkakao.babting.domain.calendar.dto.request;
 
 public record EventListGetRequestDto(
 

@@ -1,8 +1,8 @@
 package org.cookieandkakao.babting.domain.calendar.controller;
 
 import java.util.Collections;
-import org.cookieandkakao.babting.domain.calendar.dto.EventListGetResponseDto;
-import org.cookieandkakao.babting.domain.calendar.dto.EventListGetRequestDto;
+import org.cookieandkakao.babting.domain.calendar.dto.response.EventListGetResponseDto;
+import org.cookieandkakao.babting.domain.calendar.dto.request.EventListGetRequestDto;
 import org.cookieandkakao.babting.domain.calendar.service.TalkCalendarService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
