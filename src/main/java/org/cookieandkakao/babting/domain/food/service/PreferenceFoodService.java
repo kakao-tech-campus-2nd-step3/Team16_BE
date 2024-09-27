@@ -21,6 +21,7 @@ public class PreferenceFoodService {
     @Autowired
     private FoodRepository foodRepository;
 
+    //선호 음식 조회
     public List<PreferenceFoodResponseDto> getAllPreferences() {
         List<PreferenceFood> preferences = preferenceFoodRepository.findAll();
         return preferences.stream()
