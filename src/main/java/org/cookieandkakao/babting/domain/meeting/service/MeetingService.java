@@ -1,7 +1,11 @@
 package org.cookieandkakao.babting.domain.meeting.service;
 
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
+import org.cookieandkakao.babting.domain.meeting.dto.request.LocationCreateRequestDTO;
 import org.cookieandkakao.babting.domain.meeting.dto.request.MeetingCreateRequestDTO;
+import org.cookieandkakao.babting.domain.meeting.entity.Location;
 import org.cookieandkakao.babting.domain.meeting.entity.Meeting;
 import org.cookieandkakao.babting.domain.meeting.entity.MemberMeeting;
 import org.cookieandkakao.babting.domain.meeting.repository.LocationRepository;
@@ -33,10 +37,63 @@ public class MeetingService {
         meetingRepository.save(meeting);
         memberMeetingRepository.save(new MemberMeeting(member, meeting, true));
     }
-    // 모임 시간, 장소 확정(주최자)
-    public void decideMeetingTimeAndLocation(){}
+    // 모임 시간 확정(주최자)
+    // Todo 예외처리
+    public void decideMeetingTime(Member member, LocalDateTime confirmDateTime, Long meetingId){
+        Meeting meeting = findMeeting(meetingId);
+
+        MemberMeeting memberMeeting = findMemberMeeting(member, meeting);
+
+        if (memberMeeting.isHost()){
+            meeting.confirmDateTime(confirmDateTime);
+        } else {
+            //Todo 예외처리
+            throw new IllegalStateException("권한이 없습니다.");
+        }
+    }
+
+    // 모임 장소 확정(주최자)
+    public void decideMeetingLocation(Member member, LocationCreateRequestDTO locationCreateRequestDTO, Long meetingId){
+        Meeting meeting = findMeeting(meetingId);
+
+        MemberMeeting memberMeeting = findMemberMeeting(member, meeting);
+
+        if (memberMeeting.isHost()){
+            Location meetingLocation = locationCreateRequestDTO.toEntity();
+            locationRepository.save(meetingLocation);
+
+            meeting.decideMeetingLocation(meetingLocation);
+        } else {
+            //Todo 예외처리
+            throw new IllegalStateException("권한이 없습니다.");
+        }
+    }
+
     // 모임 참가(초대받은사람)
-    public void joinMeeting(){}
+    public void joinMeeting(Member member, Long meetingId){
+        Meeting meeting = findMeeting(meetingId);
+        //Todo 초대받았는지 확인하는 로직 추가
+        memberMeetingRepository.save(new MemberMeeting(member, meeting, false));
+    }
     // 모임 탈퇴(주최자, 초대받은 사람)
-    public void exitMeeting(){}
+    public void exitMeeting(Member member, Long meetingId){
+        Meeting meeting = findMeeting(meetingId);
+        MemberMeeting memberMeeting = findMemberMeeting(member, meeting);
+        if (memberMeeting.isHost()){
+            // 단일 쿼리로 삭제되는지 쿼리 여러개로 삭제되는지 확인해야됨.
+            memberMeetingRepository.deleteAllByMeeting(meeting);
+        } else {
+            memberMeetingRepository.delete(memberMeeting);
+        }
+    }
+
+    private Meeting findMeeting(Long meetingId){
+        return meetingRepository.findById(meetingId)
+            .orElseThrow(() -> new NoSuchElementException("해당 모임이 존재하지 않습니다."));
+    }
+
+    private MemberMeeting findMemberMeeting(Member member, Meeting meeting){
+        return memberMeetingRepository.findMemberMeetingByMemberAndMeeting(member, meeting)
+            .orElseThrow(() -> new NoSuchElementException("해당 모임에 회원이 존재하지 않습니다."));
+    }
 }
