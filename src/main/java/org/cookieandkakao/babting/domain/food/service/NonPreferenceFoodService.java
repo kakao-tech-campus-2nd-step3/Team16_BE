@@ -7,7 +7,6 @@ import org.cookieandkakao.babting.domain.food.repository.NonPreferenceFoodReposi
 import org.cookieandkakao.babting.domain.food.repository.PreferenceFoodRepository;
 import org.cookieandkakao.babting.domain.food.entity.Food;
 import org.cookieandkakao.babting.domain.food.repository.FoodRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
