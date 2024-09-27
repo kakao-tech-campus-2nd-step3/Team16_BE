@@ -4,6 +4,7 @@ import org.cookieandkakao.babting.domain.food.dto.NonPreferenceFoodDto;
 import org.cookieandkakao.babting.domain.food.dto.NonPreferenceFoodResponseDto;
 import org.cookieandkakao.babting.domain.food.entity.NonPreferenceFood;
 import org.cookieandkakao.babting.domain.food.repository.NonPreferenceFoodRepository;
+import org.cookieandkakao.babting.domain.food.repository.PreferenceFoodRepository;
 import org.cookieandkakao.babting.domain.food.entity.Food;
 import org.cookieandkakao.babting.domain.food.repository.FoodRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,9 @@ public class NonPreferenceFoodService {
 
     @Autowired
     private NonPreferenceFoodRepository nonPreferenceFoodRepository;
+
+    @Autowired
+    private PreferenceFoodRepository preferenceFoodRepository;
 
     @Autowired
     private FoodRepository foodRepository;
@@ -37,6 +41,18 @@ public class NonPreferenceFoodService {
         Food food = foodRepository.findById(nonPreferenceFoodDto.getFoodId())
                 .orElseThrow(() -> new RuntimeException("해당 음식을 찾을 수 없습니다."));
 
+        // 이미 선호 음식으로 등록되어 있는지 확인
+        boolean isAlreadyPreferred = preferenceFoodRepository.existsByFood(food);
+        if (isAlreadyPreferred) {
+            throw new RuntimeException("해당 음식은 이미 선호 음식으로 등록되어 있습니다.");
+        }
+
+        // 이미 비선호 음식으로 등록되어 있는지 확인
+        boolean isAlreadyNonPreferred = nonPreferenceFoodRepository.existsByFood(food);
+        if (isAlreadyNonPreferred) {
+            throw new RuntimeException("해당 음식은 이미 비선호 음식으로 등록되어 있습니다.");
+        }
+
         NonPreferenceFood nonPreferenceFood = new NonPreferenceFood();
         nonPreferenceFood.setFood(food);
         NonPreferenceFood savedNonPreference = nonPreferenceFoodRepository.save(nonPreferenceFood);
@@ -45,12 +61,17 @@ public class NonPreferenceFoodService {
                 savedNonPreference.getFood().getFoodId(),
                 savedNonPreference.getFood().getFoodCategory().getName(),
                 savedNonPreference.getFood().getName());
-    }//에러메세시 생성
-    //선호에 있는 음식은 추가 불가능
+    }
 
     // 비선호 음식 삭제
     public void deleteNonPreference(NonPreferenceFoodDto nonPreferenceFoodDto) {
+        foodRepository.findById(nonPreferenceFoodDto.getFoodId())
+                .orElseThrow(() -> new RuntimeException("해당 음식을 찾을 수 없습니다."));
+
+        boolean exists = nonPreferenceFoodRepository.existsById(nonPreferenceFoodDto.getFoodId());
+        if (!exists) {
+            throw new RuntimeException("해당 비선호 음식을 찾을 수 없습니다.");
+        }
         nonPreferenceFoodRepository.deleteById(nonPreferenceFoodDto.getFoodId());
     }
-    //선호음식 목록에 없는걸 삭제했을때, 해당 음식을 찾을 수 없을때 생기는 오류 처리
 }
