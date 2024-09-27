@@ -60,4 +60,12 @@ public class Meeting {
         this.startTime = startTime;
         this.endTime = endTime;
     }
+
+    public void confirmDateTime(LocalDateTime confirmDateTime){
+        this.confirmDateTime = confirmDateTime;
+    }
+
+    public void decideMeetingLocation(Location meetingLocation){
+        this.meetingLocation = meetingLocation;
+    }
 }
