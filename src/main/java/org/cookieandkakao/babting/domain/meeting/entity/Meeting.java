@@ -51,8 +51,7 @@ public class Meeting {
     protected Meeting(){}
 
     public Meeting(Location baseLocation, String title, LocalDate startDate, LocalDate endDate,
-        Integer durationTime, LocalTime startTime, LocalTime endTime,
-        LocalDateTime confirmDateTime) {
+        Integer durationTime, LocalTime startTime, LocalTime endTime) {
         this.baseLocation = baseLocation;
         this.title = title;
         this.startDate = startDate;
@@ -60,6 +59,5 @@ public class Meeting {
         this.durationTime = durationTime;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.confirmDateTime = confirmDateTime;
     }
 }

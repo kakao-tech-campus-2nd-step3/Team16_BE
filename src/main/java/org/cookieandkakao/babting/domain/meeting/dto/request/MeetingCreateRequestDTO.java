@@ -2,7 +2,6 @@ package org.cookieandkakao.babting.domain.meeting.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import org.cookieandkakao.babting.domain.meeting.entity.Meeting;
 
@@ -26,13 +25,10 @@ public record MeetingCreateRequestDTO (
     LocalTime startTime,
 
     @NotNull
-    LocalTime endTime,
-
-    LocalDateTime confirmDateTime
-
+    LocalTime endTime
 ) {
     public Meeting toEntity(){
         return new Meeting(baseLocation.toEntity(), title, startDate, endDate, durationTime,
-            startTime, endTime, confirmDateTime);
+            startTime, endTime);
     }
 }
