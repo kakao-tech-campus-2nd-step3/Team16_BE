@@ -1,12 +1,12 @@
 package org.cookieandkakao.babting.domain.food.dto;
 
-public class PreferenceFoodDto {
+public class NonPreferenceFoodCreateRequestDto {
     private Long foodId;
 
-    public PreferenceFoodDto() {
+    public NonPreferenceFoodCreateRequestDto() {
     }
 
-    public PreferenceFoodDto(Long foodId) {
+    public NonPreferenceFoodCreateRequestDto(Long foodId) {
         this.foodId = foodId;
     }
 

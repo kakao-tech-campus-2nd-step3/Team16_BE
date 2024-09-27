@@ -1,7 +1,7 @@
 package org.cookieandkakao.babting.domain.food.service;
 
-import org.cookieandkakao.babting.domain.food.dto.PreferenceFoodDto;
-import org.cookieandkakao.babting.domain.food.dto.PreferenceFoodResponseDto;
+import org.cookieandkakao.babting.domain.food.dto.PreferenceFoodCreateRequestDto;
+import org.cookieandkakao.babting.domain.food.dto.PreferenceFoodGetResponseDto;
 import org.cookieandkakao.babting.domain.food.entity.PreferenceFood;
 import org.cookieandkakao.babting.domain.food.repository.NonPreferenceFoodRepository;
 import org.cookieandkakao.babting.domain.food.repository.PreferenceFoodRepository;
@@ -26,10 +26,10 @@ public class PreferenceFoodService {
     }
 
     //선호 음식 조회
-    public List<PreferenceFoodResponseDto> getAllPreferences() {
+    public List<PreferenceFoodGetResponseDto> getAllPreferences() {
         List<PreferenceFood> preferences = preferenceFoodRepository.findAll();
         return preferences.stream()
-                .map(preferenceFood -> new PreferenceFoodResponseDto(
+                .map(preferenceFood -> new PreferenceFoodGetResponseDto(
                         preferenceFood.getFood().getFoodId(),
                         preferenceFood.getFood().getFoodCategory().getName(),
                         preferenceFood.getFood().getName()))
@@ -37,8 +37,8 @@ public class PreferenceFoodService {
     }
 
     // 선호 음식 추가
-    public PreferenceFoodResponseDto addPreference(PreferenceFoodDto preferenceFoodDto) {
-        Food food = foodRepository.findById(preferenceFoodDto.getFoodId())
+    public PreferenceFoodGetResponseDto addPreference(PreferenceFoodCreateRequestDto preferenceFoodCreateRequestDto) {
+        Food food = foodRepository.findById(preferenceFoodCreateRequestDto.getFoodId())
                 .orElseThrow(() -> new RuntimeException("해당 음식을 찾을 수 없습니다."));
 
         // 이미 비선호 음식으로 등록되어 있는지 확인
@@ -57,22 +57,22 @@ public class PreferenceFoodService {
         preferenceFood.setFood(food);
         PreferenceFood savedPreference = preferenceFoodRepository.save(preferenceFood);
 
-        return new PreferenceFoodResponseDto(
+        return new PreferenceFoodGetResponseDto(
                 savedPreference.getFood().getFoodId(),
                 savedPreference.getFood().getFoodCategory().getName(),
                 savedPreference.getFood().getName());
     }
 
     // 선호 음식 삭제
-    public void deletePreference(PreferenceFoodDto preferenceFoodDto) {
-        foodRepository.findById(preferenceFoodDto.getFoodId())
+    public void deletePreference(PreferenceFoodCreateRequestDto preferenceFoodCreateRequestDto) {
+        foodRepository.findById(preferenceFoodCreateRequestDto.getFoodId())
                 .orElseThrow(() -> new RuntimeException("해당 음식을 찾을 수 없습니다."));
 
-        boolean exists = preferenceFoodRepository.existsById(preferenceFoodDto.getFoodId());
+        boolean exists = preferenceFoodRepository.existsById(preferenceFoodCreateRequestDto.getFoodId());
         if (!exists) {
             throw new RuntimeException("해당 선호 음식을 찾을 수 없습니다.");
         }
 
-        preferenceFoodRepository.deleteById(preferenceFoodDto.getFoodId());
+        preferenceFoodRepository.deleteById(preferenceFoodCreateRequestDto.getFoodId());
     }
 }
