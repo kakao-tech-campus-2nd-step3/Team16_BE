@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import org.cookieandkakao.babting.domain.member.dto.KakaoMemberProfileDto;
 
@@ -28,8 +30,9 @@ public class Member {
     @Column
     private String profileImageUrl;
 
-    @Column
-    private String accessToken;
+    @OneToOne
+    @JoinColumn(name = "kako_token_id")
+    private KakaoToken kakaoToken;
 
     protected Member() {}
 
@@ -41,5 +44,9 @@ public class Member {
         this.nickname = profileDto.getNickname();
         this.thumbnailImageUrl = profileDto.getThumbnailImage();
         this.profileImageUrl = profileDto.getProfileImage();
+    }
+
+    public void updateKakaoToken(KakaoToken kakaoToken) {
+        this.kakaoToken = kakaoToken;
     }
 }

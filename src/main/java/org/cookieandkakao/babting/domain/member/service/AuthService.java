@@ -3,10 +3,12 @@ package org.cookieandkakao.babting.domain.member.service;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED;
 
 import org.cookieandkakao.babting.domain.member.dto.KakaoMemberInfoDto;
-import org.cookieandkakao.babting.domain.member.dto.KakaoOAuthTokenDto;
+import org.cookieandkakao.babting.domain.member.dto.KakaoTokenDto;
+import org.cookieandkakao.babting.domain.member.entity.KakaoToken;
 import org.cookieandkakao.babting.domain.member.entity.Member;
 import org.cookieandkakao.babting.domain.member.properties.KakaoClientProperties;
 import org.cookieandkakao.babting.domain.member.properties.KakaoProviderProperties;
+import org.cookieandkakao.babting.domain.member.repository.KakaoTokenRepository;
 import org.cookieandkakao.babting.domain.member.repository.MemberRepository;
 import org.cookieandkakao.babting.domain.member.util.AuthorizationUriBuilder;
 import org.springframework.http.ResponseEntity;
@@ -23,12 +25,15 @@ public class AuthService {
     private final KakaoProviderProperties kakaoProviderProperties;
     private final RestClient restClient = RestClient.builder().build();
     private final MemberRepository memberRepository;
+    private final KakaoTokenRepository kakaoTokenRepository;
 
     public AuthService(KakaoClientProperties kakaoClientProperties,
-        KakaoProviderProperties kakaoProviderProperties, MemberRepository memberRepository) {
+        KakaoProviderProperties kakaoProviderProperties, MemberRepository memberRepository,
+        KakaoTokenRepository kakaoTokenRepository) {
         this.kakaoClientProperties = kakaoClientProperties;
         this.kakaoProviderProperties = kakaoProviderProperties;
         this.memberRepository = memberRepository;
+        this.kakaoTokenRepository = kakaoTokenRepository;
     }
 
     public String getAuthUrl() {
@@ -38,7 +43,7 @@ public class AuthService {
             .build();
     }
 
-    public KakaoOAuthTokenDto requestKakaoToken(String authorizeCode) {
+    public KakaoTokenDto requestKakaoToken(String authorizeCode) {
 
         String tokenUri = kakaoProviderProperties.tokenUri();
 
@@ -49,18 +54,18 @@ public class AuthService {
         body.add("client_id", kakaoClientProperties.clientId());
         body.add("client_secret", kakaoClientProperties.clientSecret());
 
-        ResponseEntity<KakaoOAuthTokenDto> entity = restClient.post()
+        ResponseEntity<KakaoTokenDto> entity = restClient.post()
             .uri(tokenUri)
             .contentType(APPLICATION_FORM_URLENCODED)
             .body(body)
             .retrieve()
-            .toEntity(KakaoOAuthTokenDto.class);
+            .toEntity(KakaoTokenDto.class);
 
         return entity.getBody();
 
     }
 
-    public KakaoMemberInfoDto requestKakaoMemberInfo(KakaoOAuthTokenDto kakaoToken) {
+    public KakaoMemberInfoDto requestKakaoMemberInfo(KakaoTokenDto kakaoToken) {
 
         String userInfoUri = kakaoProviderProperties.userInfoUri();
 
@@ -84,5 +89,17 @@ public class AuthService {
         member.updateProfile(kakaoMemberInfoDto.getProperties());
 
         memberRepository.save(member);
+    }
+
+    @Transactional
+    public void saveKakaoToken(Long kakaoMemberId, KakaoTokenDto kakaoTokenDto) {
+
+        Member member = memberRepository.findByKakaoMemberId(kakaoMemberId)
+            .orElseThrow(IllegalArgumentException::new);
+        KakaoToken kakaoToken = kakaoTokenDto.toEntity();
+
+        kakaoTokenRepository.save(kakaoToken);
+
+        member.updateKakaoToken(kakaoToken);
     }
 }
