@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public record EventBriefDTO(
+public record EventGetResponseDto(
 
     String id,
 
@@ -14,7 +14,7 @@ public record EventBriefDTO(
 
     String calendarId,
 
-    TimeDTO time,
+    TimeGetResponseDto time,
 
     boolean isHost,
 

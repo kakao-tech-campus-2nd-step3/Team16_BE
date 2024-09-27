@@ -1,6 +1,6 @@
 package org.cookieandkakao.babting.domain.calendar.dto;
 
-public record EventListRequestDTO(
+public record EventListGetRequestDto(
 
     String from,
 
