@@ -2,6 +2,8 @@ package org.cookieandkakao.babting.domain.calendar.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import org.cookieandkakao.babting.domain.calendar.entity.Reminder;
+import org.cookieandkakao.babting.domain.meeting.entity.Location;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public record EventGetResponseDto(
@@ -20,7 +22,19 @@ public record EventGetResponseDto(
 
     boolean isRecurEvent,
 
-    String color
+    String rrule,
+
+    String dtStart,
+
+    String description,
+
+    Location location,
+
+    Reminder reminders,
+
+    String color,
+
+    String memo
 ) {
 
 }
