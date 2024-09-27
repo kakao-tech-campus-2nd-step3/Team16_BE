@@ -34,7 +34,7 @@ public class Event {
     @Column
     private String type;
 
-    @Column(nullable = false)
+    @Column
     private boolean repeatedSchedule;
 
     @Column
