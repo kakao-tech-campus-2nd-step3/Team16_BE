@@ -1,8 +1,8 @@
 package org.cookieandkakao.babting.domain.calendar.controller;
 
 import java.util.Collections;
-import org.cookieandkakao.babting.domain.calendar.dto.EventListDTO;
-import org.cookieandkakao.babting.domain.calendar.dto.EventListRequestDTO;
+import org.cookieandkakao.babting.domain.calendar.dto.EventListGetResponseDto;
+import org.cookieandkakao.babting.domain.calendar.dto.EventListGetRequestDto;
 import org.cookieandkakao.babting.domain.calendar.service.TalkCalendarService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,16 +23,16 @@ public class TalkCalendarController {
     }
 
     @GetMapping("/events")
-    public ResponseEntity<EventListDTO> getEventList(
+    public ResponseEntity<EventListGetResponseDto> getEventList(
         @RequestHeader(value = "Authorization") String authorizationHeader,
-        @RequestBody EventListRequestDTO eventListRequestDTO
+        @RequestBody EventListGetRequestDto eventListRequestDTO
     ) {
         String accessToken = authorizationHeader.replace("Bearer ", "");
         try {
             String from = eventListRequestDTO.from();
             String to = eventListRequestDTO.to();
 
-            EventListDTO eventList = talkCalendarService.getEventList(accessToken, from, to);
+            EventListGetResponseDto eventList = talkCalendarService.getEventList(accessToken, from, to);
 
             HttpStatus status = HttpStatus.OK;
             String message = "일정 목록을 조회했습니다.";
@@ -42,7 +42,7 @@ public class TalkCalendarController {
                 message = "조회된 일정이 없습니다.";
             }
 
-            EventListDTO responseBody = new EventListDTO(
+            EventListGetResponseDto responseBody = new EventListGetResponseDto(
                 status.value(),
                 message,
                 eventList.events(),
@@ -52,7 +52,7 @@ public class TalkCalendarController {
             return ResponseEntity.status(status).body(responseBody);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new EventListDTO(
+                .body(new EventListGetResponseDto(
                     500,
                     "일정 조회 중 오류가 발생했습니다.",
                     Collections.emptyList(),
