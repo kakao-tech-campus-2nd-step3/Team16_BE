@@ -45,10 +45,12 @@ public class NonPreferenceFoodService {
                 savedNonPreference.getFood().getFoodId(),
                 savedNonPreference.getFood().getFoodCategory().getName(),
                 savedNonPreference.getFood().getName());
-    }
+    }//에러메세시 생성
+    //선호에 있는 음식은 추가 불가능
 
     // 비선호 음식 삭제
     public void deleteNonPreference(NonPreferenceFoodDto nonPreferenceFoodDto) {
         nonPreferenceFoodRepository.deleteById(nonPreferenceFoodDto.getFoodId());
     }
+    //선호음식 목록에 없는걸 삭제했을때, 해당 음식을 찾을 수 없을때 생기는 오류 처리
 }
