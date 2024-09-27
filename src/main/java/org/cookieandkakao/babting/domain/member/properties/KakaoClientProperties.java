@@ -7,23 +7,4 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record KakaoClientProperties(String clientId, String clientSecret, String redirectUri,
                                     Set<String> scope) {
 
-    @Override
-    public String clientId() {
-        return clientId;
-    }
-
-    @Override
-    public String clientSecret() {
-        return clientSecret;
-    }
-
-    @Override
-    public String redirectUri() {
-        return redirectUri;
-    }
-
-    @Override
-    public Set<String> scope() {
-        return scope;
-    }
 }
