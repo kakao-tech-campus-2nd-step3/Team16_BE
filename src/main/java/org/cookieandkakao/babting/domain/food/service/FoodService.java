@@ -1,6 +1,6 @@
 package org.cookieandkakao.babting.domain.food.service;
 
-import org.cookieandkakao.babting.domain.food.dto.FoodResponse;
+import org.cookieandkakao.babting.domain.food.dto.FoodResponseDto;
 import org.cookieandkakao.babting.domain.food.entity.FoodCategory;
 import org.cookieandkakao.babting.domain.food.repository.FoodCategoryRepository;
 import org.cookieandkakao.babting.domain.food.repository.FoodRepository;
@@ -20,13 +20,13 @@ public class FoodService {
         this.foodCategoryRepository = foodCategoryRepository;
     }
 
-    public List<FoodResponse> getFoodsByCategory(String categoryName) {
+    public List<FoodResponseDto> getFoodsByCategory(String categoryName) {
         FoodCategory category = foodCategoryRepository.findByName(categoryName)
                 .orElseThrow(() -> new IllegalArgumentException("해당 카테고리가 존재하지 않습니다."));
 
         return foodRepository.findByFoodCategory(category)
                 .stream()
-                .map(food -> new FoodResponse(food.getFoodId(), category.getName(), food.getName()))
+                .map(food -> new FoodResponseDto(food.getFoodId(), category.getName(), food.getName()))
                 .collect(Collectors.toList());
     }
 }

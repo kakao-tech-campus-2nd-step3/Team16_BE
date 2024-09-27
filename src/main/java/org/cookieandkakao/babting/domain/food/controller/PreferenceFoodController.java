@@ -1,6 +1,6 @@
 package org.cookieandkakao.babting.domain.food.controller;
 
-import org.cookieandkakao.babting.domain.food.dto.ApiResponse;
+import org.cookieandkakao.babting.domain.food.dto.ApiResponseDto;
 import org.cookieandkakao.babting.domain.food.dto.PreferenceFoodDto;
 import org.cookieandkakao.babting.domain.food.dto.PreferenceFoodResponseDto;
 import org.cookieandkakao.babting.domain.food.service.PreferenceFoodService;
@@ -21,20 +21,20 @@ public class PreferenceFoodController {
     @GetMapping
     public ResponseEntity<?> getPreferences() {
         List<PreferenceFoodResponseDto> preferences = preferenceFoodService.getAllPreferences();
-        return ResponseEntity.ok().body(new ApiResponse(200, "선호 음식 조회 성공", preferences));
+        return ResponseEntity.ok().body(new ApiResponseDto(200, "선호 음식 조회 성공", preferences));
     }
 
     // 선호 음식 추가
     @PostMapping
     public ResponseEntity<?> addPreference(@RequestBody PreferenceFoodDto preferenceFoodDto) {
         PreferenceFoodResponseDto addedPreference = preferenceFoodService.addPreference(preferenceFoodDto);
-        return ResponseEntity.ok().body(new ApiResponse(200, "선호 음식 추가 성공", addedPreference));
+        return ResponseEntity.ok().body(new ApiResponseDto(200, "선호 음식 추가 성공", addedPreference));
     }
 
     // 선호 음식 삭제
     @DeleteMapping
     public ResponseEntity<?> deletePreference(@RequestBody PreferenceFoodDto preferenceFoodDto) {
         preferenceFoodService.deletePreference(preferenceFoodDto);
-        return ResponseEntity.ok().body(new ApiResponse(200, "선호 음식 삭제 성공", null));
+        return ResponseEntity.ok().body(new ApiResponseDto(200, "선호 음식 삭제 성공", null));
     }
 }

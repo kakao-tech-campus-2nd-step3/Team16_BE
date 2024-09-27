@@ -1,14 +1,14 @@
 package org.cookieandkakao.babting.domain.food.dto;
 
-public class ApiResponse {
+public class ApiResponseDto {
     private int status;
     private String message;
     private Object data;
 
-    public ApiResponse() {
+    public ApiResponseDto() {
     }
 
-    public ApiResponse(int status, String message, Object data) {
+    public ApiResponseDto(int status, String message, Object data) {
         this.status = status;
         this.message = message;
         this.data = data;

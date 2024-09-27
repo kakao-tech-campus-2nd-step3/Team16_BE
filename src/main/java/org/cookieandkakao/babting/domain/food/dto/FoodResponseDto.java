@@ -1,11 +1,11 @@
 package org.cookieandkakao.babting.domain.food.dto;
 
-public class FoodResponse {
+public class FoodResponseDto {
     private Long foodId;
     private String category;
     private String name;
 
-    public FoodResponse(Long foodId, String category, String name) {
+    public FoodResponseDto(Long foodId, String category, String name) {
         this.foodId = foodId;
         this.category = category;
         this.name = name;

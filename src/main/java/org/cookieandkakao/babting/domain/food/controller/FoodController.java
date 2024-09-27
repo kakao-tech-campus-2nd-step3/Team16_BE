@@ -1,6 +1,6 @@
 package org.cookieandkakao.babting.domain.food.controller;
 
-import org.cookieandkakao.babting.domain.food.dto.FoodResponse;
+import org.cookieandkakao.babting.domain.food.dto.FoodResponseDto;
 import org.cookieandkakao.babting.domain.food.service.FoodService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +24,7 @@ public class FoodController {
 
     @GetMapping("/foods")
     public ResponseEntity<Map<String, Object>> getFoodsByCategory(@RequestParam String category) {
-        List<FoodResponse> foods = foodService.getFoodsByCategory(category);
+        List<FoodResponseDto> foods = foodService.getFoodsByCategory(category);
 
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);
