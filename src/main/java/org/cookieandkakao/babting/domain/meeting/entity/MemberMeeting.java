@@ -7,16 +7,20 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import org.cookieandkakao.babting.domain.member.entity.Member;
 
 @Entity
+@Table(name = "member_meeting")
 public class MemberMeeting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memberMeetingId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "meeting_id")
     private Meeting meeting;
