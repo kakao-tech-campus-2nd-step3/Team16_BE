@@ -26,4 +26,12 @@ public class MemberMeeting {
     private Meeting meeting;
     
     private boolean isHost;
+
+    protected MemberMeeting(){}
+
+    public MemberMeeting(Member member, Meeting meeting, boolean isHost) {
+        this.member = member;
+        this.meeting = meeting;
+        this.isHost = isHost;
+    }
 }

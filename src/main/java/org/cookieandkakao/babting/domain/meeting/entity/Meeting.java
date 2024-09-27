@@ -47,4 +47,19 @@ public class Meeting {
     private LocalTime endTime;
 
     private LocalDateTime confirmDateTime;
+
+    protected Meeting(){}
+
+    public Meeting(Location baseLocation, String title, LocalDate startDate, LocalDate endDate,
+        Integer durationTime, LocalTime startTime, LocalTime endTime,
+        LocalDateTime confirmDateTime) {
+        this.baseLocation = baseLocation;
+        this.title = title;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.durationTime = durationTime;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.confirmDateTime = confirmDateTime;
+    }
 }
