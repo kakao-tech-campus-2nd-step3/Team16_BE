@@ -34,4 +34,3 @@ public class FoodController {
         return ResponseEntity.ok(response);
     }
 }
-

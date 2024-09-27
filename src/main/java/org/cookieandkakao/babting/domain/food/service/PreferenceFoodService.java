@@ -16,14 +16,15 @@ import java.util.stream.Collectors;
 @Service
 public class PreferenceFoodService {
 
-    @Autowired
-    private PreferenceFoodRepository preferenceFoodRepository;
+    private final PreferenceFoodRepository preferenceFoodRepository;
+    private final NonPreferenceFoodRepository nonPreferenceFoodRepository;
+    private final FoodRepository foodRepository;
 
-    @Autowired
-    private NonPreferenceFoodRepository nonPreferenceFoodRepository;
-
-    @Autowired
-    private FoodRepository foodRepository;
+    public PreferenceFoodService(NonPreferenceFoodRepository nonPreferenceFoodRepository, PreferenceFoodRepository preferenceFoodRepository, FoodRepository foodRepository){
+        this.nonPreferenceFoodRepository = nonPreferenceFoodRepository;
+        this.preferenceFoodRepository = preferenceFoodRepository;
+        this.foodRepository = foodRepository;
+    }
 
     //선호 음식 조회
     public List<PreferenceFoodResponseDto> getAllPreferences() {
