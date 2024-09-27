@@ -1,10 +1,14 @@
 package org.cookieandkakao.babting.domain.meeting.service;
 
 import jakarta.transaction.Transactional;
+import org.cookieandkakao.babting.domain.meeting.dto.request.MeetingCreateRequestDTO;
+import org.cookieandkakao.babting.domain.meeting.entity.Meeting;
+import org.cookieandkakao.babting.domain.meeting.entity.MemberMeeting;
 import org.cookieandkakao.babting.domain.meeting.repository.LocationRepository;
 import org.cookieandkakao.babting.domain.meeting.repository.MeetingEventRepository;
 import org.cookieandkakao.babting.domain.meeting.repository.MeetingRepository;
 import org.cookieandkakao.babting.domain.meeting.repository.MemberMeetingRepository;
+import org.cookieandkakao.babting.domain.member.entity.Member;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,7 +28,11 @@ public class MeetingService {
     }
 
     // 모임 생성(주최자)
-    public void createMeeting(){}
+    public void createMeeting(Member member, MeetingCreateRequestDTO meetingCreateRequestDTO){
+        Meeting meeting = meetingCreateRequestDTO.toEntity();
+        meetingRepository.save(meeting);
+        memberMeetingRepository.save(new MemberMeeting(member, meeting, true));
+    }
     // 모임 시간, 장소 확정(주최자)
     public void decideMeetingTimeAndLocation(){}
     // 모임 참가(초대받은사람)
