@@ -2,7 +2,10 @@ package org.cookieandkakao.babting.domain.calendar.dto.response;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import org.cookieandkakao.babting.domain.calendar.entity.Event;
+import org.cookieandkakao.babting.domain.calendar.entity.PersonalCalendar;
 import org.cookieandkakao.babting.domain.calendar.entity.Reminder;
+import org.cookieandkakao.babting.domain.calendar.entity.Time;
 import org.cookieandkakao.babting.domain.meeting.entity.Location;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
@@ -36,5 +39,21 @@ public record EventGetResponseDto(
 
     String memo
 ) {
+
+    public Event toEntity(PersonalCalendar personalCalendar) {
+        Time timeEntity = this.time.toEntity();
+        return new Event(
+            personalCalendar,
+            timeEntity,
+            this.title,
+            this.type,
+            this.isRecurEvent,
+            this.rrule,
+            this.dtStart,
+            this.description,
+            this.color,
+            this.memo
+        );
+    }
 
 }
