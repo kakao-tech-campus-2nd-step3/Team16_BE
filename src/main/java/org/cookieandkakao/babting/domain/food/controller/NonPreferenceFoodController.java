@@ -1,7 +1,6 @@
 package org.cookieandkakao.babting.domain.food.controller;
 
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseGenerator;
-import org.cookieandkakao.babting.domain.food.dto.ApiResponseDto;
 import org.cookieandkakao.babting.domain.food.dto.NonPreferenceFoodCreateRequestDto;
 import org.cookieandkakao.babting.domain.food.dto.NonPreferenceFoodGetResponseDto;
 import org.cookieandkakao.babting.domain.food.service.NonPreferenceFoodService;
