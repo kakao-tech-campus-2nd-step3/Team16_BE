@@ -46,5 +46,27 @@ public class Meeting {
     @Column(nullable = false)
     private LocalTime endTime;
 
+    @Column
     private LocalDateTime confirmDateTime;
+
+    protected Meeting(){}
+
+    public Meeting(Location baseLocation, String title, LocalDate startDate, LocalDate endDate,
+        Integer durationTime, LocalTime startTime, LocalTime endTime) {
+        this.baseLocation = baseLocation;
+        this.title = title;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.durationTime = durationTime;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
+    public void confirmDateTime(LocalDateTime confirmDateTime){
+        this.confirmDateTime = confirmDateTime;
+    }
+
+    public void decideMeetingLocation(Location meetingLocation){
+        this.meetingLocation = meetingLocation;
+    }
 }
