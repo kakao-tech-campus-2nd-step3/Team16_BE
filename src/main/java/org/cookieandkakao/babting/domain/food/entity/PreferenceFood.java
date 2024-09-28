@@ -26,6 +26,8 @@ public class PreferenceFood {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    protected PreferenceFood() {}
+
     public PreferenceFood(Food food) {
         this.food = food;
     }
