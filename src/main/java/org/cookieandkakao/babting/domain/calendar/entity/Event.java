@@ -52,4 +52,21 @@ public class Event {
     @Column
     private String memo;
 
+    protected Event() {}
+
+    public Event(PersonalCalendar personalCalendar, Time time, String title,
+        String type, boolean repeatedSchedule, String scheduleRepeatCycle,
+        String dtStart, String description, String eventColor, String memo) {
+        this.personalCalendar = personalCalendar;
+        this.time = time;
+        this.title = title;
+        this.type = type;
+        this.repeatedSchedule = repeatedSchedule;
+        this.scheduleRepeatCycle = scheduleRepeatCycle;
+        this.dtStart = dtStart;
+        this.description = description;
+        this.eventColor = eventColor;
+        this.memo = memo;
+    }
+
 }
