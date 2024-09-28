@@ -46,6 +46,7 @@ public class Meeting {
     @Column(nullable = false)
     private LocalTime endTime;
 
+    @Column
     private LocalDateTime confirmDateTime;
 
     protected Meeting(){}
