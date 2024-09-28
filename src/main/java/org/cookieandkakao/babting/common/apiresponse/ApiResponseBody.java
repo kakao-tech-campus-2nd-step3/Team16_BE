@@ -1,4 +1,4 @@
-package org.cookieandkakao.babting.domain.common.apiresponse;
+package org.cookieandkakao.babting.common.apiresponse;
 
 public class ApiResponseBody {
     // 응답 성공 body

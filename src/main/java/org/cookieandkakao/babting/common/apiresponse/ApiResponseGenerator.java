@@ -1,4 +1,4 @@
-package org.cookieandkakao.babting.domain.common.apiresponse;
+package org.cookieandkakao.babting.common.apiresponse;
 
 
 import org.springframework.http.HttpStatus;
