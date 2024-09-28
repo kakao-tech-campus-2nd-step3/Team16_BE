@@ -8,7 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import org.cookieandkakao.babting.domain.member.dto.KakaoMemberProfileDto;
+import org.cookieandkakao.babting.domain.member.dto.KakaoMemberProfileGetResponseDto;
 
 @Entity
 @Table(name = "member")
@@ -34,16 +34,17 @@ public class Member {
     @JoinColumn(name = "kako_token_id")
     private KakaoToken kakaoToken;
 
-    protected Member() {}
+    protected Member() {
+    }
 
     public Member(Long kakaoMemberId) {
         this.kakaoMemberId = kakaoMemberId;
     }
 
-    public void updateProfile(KakaoMemberProfileDto profileDto) {
-        this.nickname = profileDto.getNickname();
-        this.thumbnailImageUrl = profileDto.getThumbnailImage();
-        this.profileImageUrl = profileDto.getProfileImage();
+    public void updateProfile(KakaoMemberProfileGetResponseDto profileDto) {
+        this.nickname = profileDto.nickname();
+        this.thumbnailImageUrl = profileDto.thumbnailImage();
+        this.profileImageUrl = profileDto.profileImage();
     }
 
     public void updateKakaoToken(KakaoToken kakaoToken) {

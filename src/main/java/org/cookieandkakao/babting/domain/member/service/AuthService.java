@@ -2,8 +2,8 @@ package org.cookieandkakao.babting.domain.member.service;
 
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED;
 
-import org.cookieandkakao.babting.domain.member.dto.KakaoMemberInfoDto;
-import org.cookieandkakao.babting.domain.member.dto.KakaoTokenDto;
+import org.cookieandkakao.babting.domain.member.dto.KakaoMemberInfoGetResponseDto;
+import org.cookieandkakao.babting.domain.member.dto.KakaoTokenGetResponseDto;
 import org.cookieandkakao.babting.domain.member.entity.KakaoToken;
 import org.cookieandkakao.babting.domain.member.entity.Member;
 import org.cookieandkakao.babting.domain.member.properties.KakaoClientProperties;
@@ -43,7 +43,7 @@ public class AuthService {
             .build();
     }
 
-    public KakaoTokenDto requestKakaoToken(String authorizeCode) {
+    public KakaoTokenGetResponseDto requestKakaoToken(String authorizeCode) {
 
         String tokenUri = kakaoProviderProperties.tokenUri();
 
@@ -54,49 +54,51 @@ public class AuthService {
         body.add("client_id", kakaoClientProperties.clientId());
         body.add("client_secret", kakaoClientProperties.clientSecret());
 
-        ResponseEntity<KakaoTokenDto> entity = restClient.post()
+        ResponseEntity<KakaoTokenGetResponseDto> entity = restClient.post()
             .uri(tokenUri)
             .contentType(APPLICATION_FORM_URLENCODED)
             .body(body)
             .retrieve()
-            .toEntity(KakaoTokenDto.class);
+            .toEntity(KakaoTokenGetResponseDto.class);
 
         return entity.getBody();
 
     }
 
-    public KakaoMemberInfoDto requestKakaoMemberInfo(KakaoTokenDto kakaoToken) {
+    public KakaoMemberInfoGetResponseDto requestKakaoMemberInfo(
+        KakaoTokenGetResponseDto kakaoToken) {
 
         String userInfoUri = kakaoProviderProperties.userInfoUri();
 
-        ResponseEntity<KakaoMemberInfoDto> entity = restClient.get()
+        ResponseEntity<KakaoMemberInfoGetResponseDto> entity = restClient.get()
             .uri(userInfoUri)
-            .header("Authorization", "Bearer " + kakaoToken.getAccessToken())
+            .header("Authorization", "Bearer " + kakaoToken.accessToken())
             .header("Content-Type", "application/x-www-form-urlencoded")
             .retrieve()
-            .toEntity(KakaoMemberInfoDto.class);
+            .toEntity(KakaoMemberInfoGetResponseDto.class);
 
         return entity.getBody();
     }
 
     @Transactional
-    public void saveMemberInfo(KakaoMemberInfoDto kakaoMemberInfoDto) {
+    public void saveMemberInfo(KakaoMemberInfoGetResponseDto kakaoMemberInfoGetResponseDto) {
 
-        Long kakaoMemberId = kakaoMemberInfoDto.getId();
+        Long kakaoMemberId = kakaoMemberInfoGetResponseDto.id();
 
         Member member = memberRepository.findByKakaoMemberId(kakaoMemberId)
             .orElse(new Member(kakaoMemberId));
-        member.updateProfile(kakaoMemberInfoDto.getProperties());
+        member.updateProfile(kakaoMemberInfoGetResponseDto.properties());
 
         memberRepository.save(member);
     }
 
     @Transactional
-    public void saveKakaoToken(Long kakaoMemberId, KakaoTokenDto kakaoTokenDto) {
+    public void saveKakaoToken(Long kakaoMemberId,
+        KakaoTokenGetResponseDto kakaoTokenGetResponseDto) {
 
         Member member = memberRepository.findByKakaoMemberId(kakaoMemberId)
             .orElseThrow(IllegalArgumentException::new);
-        KakaoToken kakaoToken = kakaoTokenDto.toEntity();
+        KakaoToken kakaoToken = kakaoTokenGetResponseDto.toEntity();
 
         kakaoTokenRepository.save(kakaoToken);
 
