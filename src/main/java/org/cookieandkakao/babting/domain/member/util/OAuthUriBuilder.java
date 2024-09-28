@@ -1,8 +1,8 @@
 package org.cookieandkakao.babting.domain.member.util;
 
 
-import org.cookieandkakao.babting.domain.member.properties.KakaoClientProperties;
-import org.cookieandkakao.babting.domain.member.properties.KakaoProviderProperties;
+import org.cookieandkakao.babting.common.properties.KakaoClientProperties;
+import org.cookieandkakao.babting.common.properties.KakaoProviderProperties;
 
 public abstract class OAuthUriBuilder {
 

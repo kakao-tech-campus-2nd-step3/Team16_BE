@@ -6,8 +6,8 @@ import org.cookieandkakao.babting.domain.member.dto.KakaoMemberInfoGetResponseDt
 import org.cookieandkakao.babting.domain.member.dto.KakaoTokenGetResponseDto;
 import org.cookieandkakao.babting.domain.member.entity.KakaoToken;
 import org.cookieandkakao.babting.domain.member.entity.Member;
-import org.cookieandkakao.babting.domain.member.properties.KakaoClientProperties;
-import org.cookieandkakao.babting.domain.member.properties.KakaoProviderProperties;
+import org.cookieandkakao.babting.common.properties.KakaoClientProperties;
+import org.cookieandkakao.babting.common.properties.KakaoProviderProperties;
 import org.cookieandkakao.babting.domain.member.repository.KakaoTokenRepository;
 import org.cookieandkakao.babting.domain.member.repository.MemberRepository;
 import org.cookieandkakao.babting.domain.member.util.AuthorizationUriBuilder;
