@@ -26,15 +26,11 @@ public class NonPreferenceFood {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    public Food getFood() {
-        return food;
-    }
-
-    public void setFood(Food food) {
+    public NonPreferenceFood(Food food) {
         this.food = food;
     }
 
-    public void setMember(Member member) {
-        this.member = member;
+    public Food getFood() {
+        return food;
     }
 }

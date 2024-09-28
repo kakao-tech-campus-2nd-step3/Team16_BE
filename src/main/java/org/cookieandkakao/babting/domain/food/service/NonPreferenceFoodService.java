@@ -53,8 +53,7 @@ public class NonPreferenceFoodService {
             throw new RuntimeException("해당 음식은 이미 비선호 음식으로 등록되어 있습니다.");
         }
 
-        NonPreferenceFood nonPreferenceFood = new NonPreferenceFood();
-        nonPreferenceFood.setFood(food);
+        NonPreferenceFood nonPreferenceFood = new NonPreferenceFood(food);
         NonPreferenceFood savedNonPreference = nonPreferenceFoodRepository.save(nonPreferenceFood);
 
         return new NonPreferenceFoodGetResponseDto(

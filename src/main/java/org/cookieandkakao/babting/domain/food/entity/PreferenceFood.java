@@ -26,15 +26,11 @@ public class PreferenceFood {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public void setFood(Food food) {
+    public PreferenceFood(Food food) {
         this.food = food;
     }
 
     public Food getFood() {
         return food;
-    }
-
-    public void setMember(Member member) {
-        this.member = member;
     }
 }

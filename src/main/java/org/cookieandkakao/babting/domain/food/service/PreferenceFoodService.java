@@ -53,8 +53,7 @@ public class PreferenceFoodService {
             throw new RuntimeException("해당 음식은 이미 선호 음식으로 등록되어 있습니다.");
         }
 
-        PreferenceFood preferenceFood = new PreferenceFood();
-        preferenceFood.setFood(food);
+        PreferenceFood preferenceFood = new PreferenceFood(food);
         PreferenceFood savedPreference = preferenceFoodRepository.save(preferenceFood);
 
         return new PreferenceFoodGetResponseDto(
