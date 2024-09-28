@@ -21,6 +21,18 @@ public class NonPreferenceFood {
     private Food food;
 
     @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
+//    @JoinColumn(name = "member_id", nullable = false)
+//   로그인기능 구현 후 변경할 것
+    @JoinColumn(name = "member_id")
     private Member member;
+
+    protected NonPreferenceFood() {}
+
+    public NonPreferenceFood(Food food) {
+        this.food = food;
+    }
+
+    public Food getFood() {
+        return food;
+    }
 }
