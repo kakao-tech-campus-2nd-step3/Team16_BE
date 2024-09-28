@@ -20,7 +20,7 @@ public class Food {
     @JoinColumn(name = "food_category_id", nullable = false)
     private FoodCategory foodCategory;
 
-    @Column
+    @Column(nullable = false)
     private String name;
 
     public Food(Long foodId, FoodCategory foodCategory, String name) {
@@ -28,6 +28,8 @@ public class Food {
         this.foodCategory = foodCategory;
         this.name = name;
     }
+
+    protected Food() {}
 
     public Long getFoodId() {
         return foodId;
