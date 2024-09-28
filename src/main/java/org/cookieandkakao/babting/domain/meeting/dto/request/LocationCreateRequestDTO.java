@@ -3,7 +3,7 @@ package org.cookieandkakao.babting.domain.meeting.dto.request;
 import jakarta.validation.constraints.NotNull;
 import org.cookieandkakao.babting.domain.meeting.entity.Location;
 
-public record LocationCreateRequestDTO(
+public record LocationCreateRequestDto(
     @NotNull
     String name,
 

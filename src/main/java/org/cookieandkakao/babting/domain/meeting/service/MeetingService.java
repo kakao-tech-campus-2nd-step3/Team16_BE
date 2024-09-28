@@ -3,8 +3,8 @@ package org.cookieandkakao.babting.domain.meeting.service;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
-import org.cookieandkakao.babting.domain.meeting.dto.request.LocationCreateRequestDTO;
-import org.cookieandkakao.babting.domain.meeting.dto.request.MeetingCreateRequestDTO;
+import org.cookieandkakao.babting.domain.meeting.dto.request.LocationCreateRequestDto;
+import org.cookieandkakao.babting.domain.meeting.dto.request.MeetingCreateRequestDto;
 import org.cookieandkakao.babting.domain.meeting.entity.Location;
 import org.cookieandkakao.babting.domain.meeting.entity.Meeting;
 import org.cookieandkakao.babting.domain.meeting.entity.MemberMeeting;
@@ -32,8 +32,8 @@ public class MeetingService {
     }
 
     // 모임 생성(주최자)
-    public void createMeeting(Member member, MeetingCreateRequestDTO meetingCreateRequestDTO){
-        Meeting meeting = meetingCreateRequestDTO.toEntity();
+    public void createMeeting(Member member, MeetingCreateRequestDto meetingCreateRequestDto){
+        Meeting meeting = meetingCreateRequestDto.toEntity();
         meetingRepository.save(meeting);
         memberMeetingRepository.save(new MemberMeeting(member, meeting, true));
     }
@@ -53,13 +53,13 @@ public class MeetingService {
     }
 
     // 모임 장소 확정(주최자)
-    public void decideMeetingLocation(Member member, LocationCreateRequestDTO locationCreateRequestDTO, Long meetingId){
+    public void decideMeetingLocation(Member member, LocationCreateRequestDto locationCreateRequestDto, Long meetingId){
         Meeting meeting = findMeeting(meetingId);
 
         MemberMeeting memberMeeting = findMemberMeeting(member, meeting);
 
         if (memberMeeting.isHost()){
-            Location meetingLocation = locationCreateRequestDTO.toEntity();
+            Location meetingLocation = locationCreateRequestDto.toEntity();
             locationRepository.save(meetingLocation);
 
             meeting.decideMeetingLocation(meetingLocation);
