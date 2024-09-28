@@ -1,15 +1,15 @@
-package org.cookieandkakao.babting.domain.calendar.dto;
+package org.cookieandkakao.babting.domain.calendar.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
-public record EventListDTO(
+public record EventListGetResponseDto(
 
     int status,
 
     String message,
 
-    List<EventBriefDTO> events,
+    List<EventGetResponseDto> events,
 
     @JsonProperty("has_next")
     boolean hasNext
