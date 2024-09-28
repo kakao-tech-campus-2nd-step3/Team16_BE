@@ -25,4 +25,17 @@ public class MemberMeeting {
     @JoinColumn(name = "meeting_id")
     private Meeting meeting;
 
+    private boolean isHost;
+
+    protected MemberMeeting(){}
+
+    public MemberMeeting(Member member, Meeting meeting, boolean isHost) {
+        this.member = member;
+        this.meeting = meeting;
+        this.isHost = isHost;
+    }
+
+    public boolean isHost() {
+        return isHost;
+    }
 }
