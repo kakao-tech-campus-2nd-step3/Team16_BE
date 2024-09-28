@@ -23,4 +23,3 @@ public class FoodCategoryService {
                 .collect(Collectors.toList());
     }
 }
-
