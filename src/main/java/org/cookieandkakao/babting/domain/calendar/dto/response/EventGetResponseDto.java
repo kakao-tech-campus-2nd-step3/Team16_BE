@@ -45,6 +45,8 @@ public record EventGetResponseDto(
         return new Event(
             personalCalendar,
             timeEntity,
+            this.location,
+            this.id,
             this.title,
             this.type,
             this.isRecurEvent,

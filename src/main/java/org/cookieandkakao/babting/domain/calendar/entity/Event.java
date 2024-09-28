@@ -11,6 +11,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.List;
+import org.cookieandkakao.babting.domain.meeting.entity.Location;
 
 @Entity
 @Table(name= "event")
@@ -27,6 +28,13 @@ public class Event {
     @OneToOne
     @JoinColumn(name = "time_id", nullable = false)
     private Time time;
+
+    @OneToOne
+    @JoinColumn(name = "location")
+    private Location location;
+
+    @Column
+    private String kakaoEventId;
 
     @Column(nullable = false)
     private String title;
@@ -54,11 +62,13 @@ public class Event {
 
     protected Event() {}
 
-    public Event(PersonalCalendar personalCalendar, Time time, String title,
-        String type, boolean repeatedSchedule, String scheduleRepeatCycle,
-        String dtStart, String description, String eventColor, String memo) {
+    public Event(PersonalCalendar personalCalendar, Time time, Location location,
+        String kakaoEventId, String title, String type, boolean repeatedSchedule,
+        String scheduleRepeatCycle, String dtStart, String description, String eventColor, String memo) {
         this.personalCalendar = personalCalendar;
         this.time = time;
+        this.location = location;
+        this.kakaoEventId = kakaoEventId;
         this.title = title;
         this.type = type;
         this.repeatedSchedule = repeatedSchedule;
