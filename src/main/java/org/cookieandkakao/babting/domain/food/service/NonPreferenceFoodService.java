@@ -1,7 +1,7 @@
 package org.cookieandkakao.babting.domain.food.service;
 
-import org.cookieandkakao.babting.domain.food.dto.NonPreferenceFoodCreateRequestDto;
-import org.cookieandkakao.babting.domain.food.dto.NonPreferenceFoodGetResponseDto;
+import org.cookieandkakao.babting.domain.food.dto.NonPreferenceFoodCreateRequest;
+import org.cookieandkakao.babting.domain.food.dto.NonPreferenceFoodGetResponse;
 import org.cookieandkakao.babting.domain.food.entity.NonPreferenceFood;
 import org.cookieandkakao.babting.domain.food.repository.NonPreferenceFoodRepository;
 import org.cookieandkakao.babting.domain.food.repository.PreferenceFoodRepository;
@@ -26,10 +26,10 @@ public class NonPreferenceFoodService {
     }
 
     //비선호 음식 조희
-    public List<NonPreferenceFoodGetResponseDto> getAllNonPreferences() {
+    public List<NonPreferenceFoodGetResponse> getAllNonPreferences() {
         List<NonPreferenceFood> nonPreferences = nonPreferenceFoodRepository.findAll();
         return nonPreferences.stream()
-                .map(nonPreferenceFood -> new NonPreferenceFoodGetResponseDto(
+                .map(nonPreferenceFood -> new NonPreferenceFoodGetResponse(
                         nonPreferenceFood.getFood().getFoodId(),
                         nonPreferenceFood.getFood().getFoodCategory().getName(),
                         nonPreferenceFood.getFood().getName()))
@@ -37,8 +37,8 @@ public class NonPreferenceFoodService {
     }
 
     // 비선호 음식 추가
-    public NonPreferenceFoodGetResponseDto addNonPreference(NonPreferenceFoodCreateRequestDto nonPreferenceFoodCreateRequestDto) {
-        Food food = foodRepository.findById(nonPreferenceFoodCreateRequestDto.foodId())
+    public NonPreferenceFoodGetResponse addNonPreference(NonPreferenceFoodCreateRequest nonPreferenceFoodCreateRequest) {
+        Food food = foodRepository.findById(nonPreferenceFoodCreateRequest.foodId())
                 .orElseThrow(() -> new RuntimeException("해당 음식을 찾을 수 없습니다."));
 
         // 이미 선호 음식으로 등록되어 있는지 확인
@@ -56,21 +56,21 @@ public class NonPreferenceFoodService {
         NonPreferenceFood nonPreferenceFood = new NonPreferenceFood(food);
         NonPreferenceFood savedNonPreference = nonPreferenceFoodRepository.save(nonPreferenceFood);
 
-        return new NonPreferenceFoodGetResponseDto(
+        return new NonPreferenceFoodGetResponse(
                 savedNonPreference.getFood().getFoodId(),
                 savedNonPreference.getFood().getFoodCategory().getName(),
                 savedNonPreference.getFood().getName());
     }
 
     // 비선호 음식 삭제
-    public void deleteNonPreference(NonPreferenceFoodCreateRequestDto nonPreferenceFoodCreateRequestDto) {
-        foodRepository.findById(nonPreferenceFoodCreateRequestDto.foodId())
+    public void deleteNonPreference(NonPreferenceFoodCreateRequest nonPreferenceFoodCreateRequest) {
+        foodRepository.findById(nonPreferenceFoodCreateRequest.foodId())
                 .orElseThrow(() -> new RuntimeException("해당 음식을 찾을 수 없습니다."));
 
-        boolean exists = nonPreferenceFoodRepository.existsById(nonPreferenceFoodCreateRequestDto.foodId());
+        boolean exists = nonPreferenceFoodRepository.existsById(nonPreferenceFoodCreateRequest.foodId());
         if (!exists) {
             throw new RuntimeException("해당 비선호 음식을 찾을 수 없습니다.");
         }
-        nonPreferenceFoodRepository.deleteById(nonPreferenceFoodCreateRequestDto.foodId());
+        nonPreferenceFoodRepository.deleteById(nonPreferenceFoodCreateRequest.foodId());
     }
 }

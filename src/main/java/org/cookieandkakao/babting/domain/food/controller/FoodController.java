@@ -1,7 +1,7 @@
 package org.cookieandkakao.babting.domain.food.controller;
 
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseGenerator;
-import org.cookieandkakao.babting.domain.food.dto.FoodGetResponseDto;
+import org.cookieandkakao.babting.domain.food.dto.FoodGetResponse;
 import org.cookieandkakao.babting.domain.food.service.FoodService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +24,7 @@ public class FoodController {
 
     @GetMapping("/foods")
     public ResponseEntity<?> getFoodsByCategory(@RequestParam String category) {
-        List<FoodGetResponseDto> foods = foodService.getFoodsByCategory(category);
+        List<FoodGetResponse> foods = foodService.getFoodsByCategory(category);
         return ApiResponseGenerator.success(HttpStatus.OK, "카테고리별 음식 조회 성공", foods);
     }
 }
