@@ -82,6 +82,8 @@ public class MeetingService {
         if (memberMeeting.isHost()){
             // 단일 쿼리로 삭제되는지 쿼리 여러개로 삭제되는지 확인해야됨.
             memberMeetingRepository.deleteAllByMeeting(meeting);
+            //Todo 모임 삭제 시 해당 모임의 모임 일정도 전부 삭제해야함.
+            meetingRepository.delete(meeting);
         } else {
             memberMeetingRepository.delete(memberMeeting);
         }
