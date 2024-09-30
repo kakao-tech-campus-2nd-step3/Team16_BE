@@ -36,7 +36,7 @@ public class Event {
     @Column
     private String kakaoEventId;
 
-    @Column(nullable = false)
+    @Column
     private String title;
 
     @Column
