@@ -42,7 +42,8 @@ public class EventService {
     @Transactional
     public void saveEvent(EventGetResponseDto eventGetResponseDto, Long memberId) {
         // 개인 캘린더 조회 또는 생성
-        PersonalCalendar personalCalendar = personalCalendarService.findOrCreatePersonalCalendar(memberId);
+        PersonalCalendar personalCalendar = personalCalendarService.findOrCreatePersonalCalendar(
+            memberId);
 
         //Time 엔티티 저장
         Time time = timeRepository.save(eventGetResponseDto.time().toEntity());
@@ -55,21 +56,26 @@ public class EventService {
 
         // Event 엔티티 저장
         Event event = new Event(personalCalendar, time, location, eventGetResponseDto.id(),
-            eventGetResponseDto.title(), eventGetResponseDto.type(), eventGetResponseDto.isRecurEvent(),
-            eventGetResponseDto.rrule(), eventGetResponseDto.dtStart(), eventGetResponseDto.description(),
+            eventGetResponseDto.title(), eventGetResponseDto.type(),
+            eventGetResponseDto.isRecurEvent(),
+            eventGetResponseDto.rrule(), eventGetResponseDto.dtStart(),
+            eventGetResponseDto.description(),
             eventGetResponseDto.color(), eventGetResponseDto.memo());
         eventRepository.save(event);
 
         // Reminder 저장 (있을 경우)
         if (eventGetResponseDto.reminders() != null) {
-            reminderRepository.save(new Reminder(event, eventGetResponseDto.reminders().getRemindTime()));
+            reminderRepository.save(
+                new Reminder(event, eventGetResponseDto.reminders().getRemindTime()));
         }
     }
 
     @Transactional
-    public void saveCreatedEvent(EventCreateRequestDto eventCreateRequestDto, String eventId, Long memberId) {
+    public void saveCreatedEvent(EventCreateRequestDto eventCreateRequestDto, String eventId,
+        Long memberId) {
         // 개인 캘린더 조회 또는 생성
-        PersonalCalendar personalCalendar = personalCalendarService.findOrCreatePersonalCalendar(memberId);
+        PersonalCalendar personalCalendar = personalCalendarService.findOrCreatePersonalCalendar(
+            memberId);
 
         //Time 엔티티 저장
         Time time = timeRepository.save(eventCreateRequestDto.time().toEntity());
@@ -87,7 +93,8 @@ public class EventService {
         eventRepository.save(event);
 
         // Reminder 저장 (있을 경우)
-        if (eventCreateRequestDto.reminders() != null && !eventCreateRequestDto.reminders().isEmpty()) {
+        if (eventCreateRequestDto.reminders() != null && !eventCreateRequestDto.reminders()
+            .isEmpty()) {
             for (Long remindTime : eventCreateRequestDto.reminders()) {
                 reminderRepository.save(new Reminder(event, remindTime));
             }

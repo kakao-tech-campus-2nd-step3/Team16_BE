@@ -24,7 +24,8 @@ public class Reminder {
     @Column
     private Long remindTime;
 
-    protected Reminder() {}
+    protected Reminder() {
+    }
 
     public Reminder(Event event, Long remindTime) {
         this.event = event;

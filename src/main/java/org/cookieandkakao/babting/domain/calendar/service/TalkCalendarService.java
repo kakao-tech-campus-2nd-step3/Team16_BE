@@ -41,20 +41,25 @@ public class TalkCalendarService {
     }
 
     private URI buildUri(String baseUrl, String from, String to) {
-        return URI.create(String.format("%s?from=%s&to=%s&limit=100&time_zone=Asia/Seoul", baseUrl, from, to));
+        return URI.create(
+            String.format("%s?from=%s&to=%s&limit=100&time_zone=Asia/Seoul", baseUrl, from, to));
     }
 
-    public EventCreateResponseDto createEvent(String accessToken, EventCreateRequestDto eventCreateRequestDto, Long memberId) {
+    public EventCreateResponseDto createEvent(String accessToken,
+        EventCreateRequestDto eventCreateRequestDto, Long memberId) {
         String url = "https://kapi.kakao.com/v2/api/calendar/create/event";
         URI uri = URI.create(url);
 
         try {
             MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+
             // event라는 key에 JSON 형태의 데이터를 추가해야 함
             // EventCreateRequestDto를 JSON으로 변환
             String eventJson = convertToJSONString(eventCreateRequestDto);
+
             // event라는 key로 JSON 데이터를 추가
             formData.add("event", eventJson);
+
             // POST 요청 실행
             ResponseEntity<Map> response = restClient.post()
                 .uri(uri)
@@ -63,6 +68,7 @@ public class TalkCalendarService {
                 .body(formData)
                 .retrieve()
                 .toEntity(Map.class);
+
             // 응답에서 event_id 추출
             Map<String, Object> responseBody = response.getBody();
             if (responseBody != null && responseBody.containsKey("event_id")) {

@@ -14,7 +14,8 @@ public class PersonalCalendarService {
     private PersonalCalendarRepository personalCalendarRepository;
     private MemberRepository memberRepository;
 
-    public PersonalCalendarService(PersonalCalendarRepository personalCalendarRepository, MemberRepository memberRepository) {
+    public PersonalCalendarService(PersonalCalendarRepository personalCalendarRepository,
+        MemberRepository memberRepository) {
         this.personalCalendarRepository = personalCalendarRepository;
         this.memberRepository = memberRepository;
     }

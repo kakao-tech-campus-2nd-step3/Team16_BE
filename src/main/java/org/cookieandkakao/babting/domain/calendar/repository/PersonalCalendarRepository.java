@@ -7,5 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PersonalCalendarRepository extends JpaRepository<PersonalCalendar, Long> {
+
     Optional<PersonalCalendar> findByMemberMemberId(Long memberId);
 }

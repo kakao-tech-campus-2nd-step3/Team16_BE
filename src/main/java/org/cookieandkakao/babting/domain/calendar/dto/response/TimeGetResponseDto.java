@@ -19,7 +19,8 @@ public record TimeGetResponseDto(
     boolean allDay
 ) {
 
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(
+        "yyyy-MM-dd'T'HH:mm:ssX");
 
     public Time toEntity() {
         LocalDateTime start = LocalDateTime.parse(startAt, FORMATTER);

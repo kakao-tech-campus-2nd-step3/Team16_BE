@@ -21,7 +21,8 @@ public class PersonalCalendar {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    protected PersonalCalendar() {}
+    protected PersonalCalendar() {
+    }
 
     public PersonalCalendar(Member member) {
         this.member = member;

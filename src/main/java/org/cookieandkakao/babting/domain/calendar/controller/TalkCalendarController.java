@@ -25,7 +25,8 @@ public class TalkCalendarController {
     private final TalkCalendarService talkCalendarService;
     private final EventService eventService;
 
-    public TalkCalendarController(TalkCalendarService talkCalendarService, EventService eventService) {
+    public TalkCalendarController(TalkCalendarService talkCalendarService,
+        EventService eventService) {
         this.talkCalendarService = talkCalendarService;
         this.eventService = eventService;
     }
@@ -41,21 +42,24 @@ public class TalkCalendarController {
             String from = eventListRequestDTO.from();
             String to = eventListRequestDTO.to();
 
-            EventListGetResponseDto eventList = talkCalendarService.getEventList(accessToken, from, to);
+            EventListGetResponseDto eventList = talkCalendarService.getEventList(accessToken, from,
+                to);
 
             for (EventGetResponseDto event : eventList.events()) {
-                // memberId를 사용해 저장
                 eventService.saveEvent(event, memberId);
             }
 
             if (eventList.events().isEmpty()) {
-                return ApiResponseGenerator.success(HttpStatus.NO_CONTENT, "조회된 일정이 없습니다.", eventList.events());
+                return ApiResponseGenerator.success(HttpStatus.NO_CONTENT, "조회된 일정이 없습니다.",
+                    eventList.events());
             }
 
-            return ApiResponseGenerator.success(HttpStatus.OK, "일정 목록을 조회했습니다.", eventList.events());
+            return ApiResponseGenerator.success(HttpStatus.OK, "일정 목록을 조회했습니다.",
+                eventList.events());
 
         } catch (Exception e) {
-            return ApiResponseGenerator.fail(HttpStatus.INTERNAL_SERVER_ERROR, "일정 조회 중 오류가 발생했습니다.");
+            return ApiResponseGenerator.fail(HttpStatus.INTERNAL_SERVER_ERROR,
+                "일정 조회 중 오류가 발생했습니다.");
         }
     }
 
@@ -68,10 +72,13 @@ public class TalkCalendarController {
         String accessToken = authorizationHeader.replace("Bearer ", "");
         try {
             // 카카오 api로 일정 생성
-            EventCreateResponseDto eventCreateResponseDto = talkCalendarService.createEvent(accessToken, eventRequestDto, memberId);
-            return ApiResponseGenerator.success(HttpStatus.OK, "일정이 성공적으로 생성되었습니다.", eventCreateResponseDto);
+            EventCreateResponseDto eventCreateResponseDto = talkCalendarService.createEvent(
+                accessToken, eventRequestDto, memberId);
+            return ApiResponseGenerator.success(HttpStatus.OK, "일정이 성공적으로 생성되었습니다.",
+                eventCreateResponseDto);
         } catch (Exception e) {
-            return ApiResponseGenerator.fail(HttpStatus.INTERNAL_SERVER_ERROR, "일정 생성 중 오류가 발생했습니다.");
+            return ApiResponseGenerator.fail(HttpStatus.INTERNAL_SERVER_ERROR,
+                "일정 생성 중 오류가 발생했습니다.");
         }
     }
 }
