@@ -48,7 +48,6 @@ public record EventGetResponseDto(
             this.location,
             this.id,
             this.title,
-            this.type,
             this.isRecurEvent,
             this.rrule,
             this.dtStart,
