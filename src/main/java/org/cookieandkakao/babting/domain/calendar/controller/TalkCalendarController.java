@@ -6,7 +6,6 @@ import org.cookieandkakao.babting.domain.calendar.dto.request.EventCreateRequest
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventCreateResponseDto;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventGetResponseDto;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventListGetResponseDto;
-import org.cookieandkakao.babting.domain.calendar.dto.request.EventListGetRequestDto;
 import org.cookieandkakao.babting.domain.calendar.service.EventService;
 import org.cookieandkakao.babting.domain.calendar.service.TalkCalendarService;
 import org.springframework.http.HttpStatus;
@@ -35,12 +34,11 @@ public class TalkCalendarController {
     @GetMapping("/events")
     public ResponseEntity<SuccessBody<EventListGetResponseDto>> getEventList(
         @RequestHeader(value = "Authorization") String authorizationHeader,
-        @RequestBody EventListGetRequestDto eventListRequestDTO,
+        @RequestParam String from,
+        @RequestParam String to,
         @RequestParam Long memberId
     ) {
         String accessToken = authorizationHeader.replace("Bearer ", "");
-        String from = eventListRequestDTO.from();
-        String to = eventListRequestDTO.to();
 
         EventListGetResponseDto eventList = talkCalendarService.getEventList(accessToken, from, to);
 
