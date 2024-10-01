@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class PersonalCalendarService {
 
-    private PersonalCalendarRepository personalCalendarRepository;
-    private MemberRepository memberRepository;
+    private final PersonalCalendarRepository personalCalendarRepository;
+    private final MemberRepository memberRepository;
 
     public PersonalCalendarService(PersonalCalendarRepository personalCalendarRepository,
         MemberRepository memberRepository) {
