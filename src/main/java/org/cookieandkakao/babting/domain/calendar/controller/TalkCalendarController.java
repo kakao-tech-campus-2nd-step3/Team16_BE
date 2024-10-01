@@ -1,5 +1,6 @@
 package org.cookieandkakao.babting.domain.calendar.controller;
 
+import org.cookieandkakao.babting.common.apiresponse.ApiResponseBody.SuccessBody;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseGenerator;
 import org.cookieandkakao.babting.domain.calendar.dto.request.EventCreateRequestDto;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventCreateResponseDto;
@@ -32,53 +33,41 @@ public class TalkCalendarController {
     }
 
     @GetMapping("/events")
-    public ResponseEntity<?> getEventList(
+    public ResponseEntity<SuccessBody<EventListGetResponseDto>> getEventList(
         @RequestHeader(value = "Authorization") String authorizationHeader,
         @RequestBody EventListGetRequestDto eventListRequestDTO,
         @RequestParam Long memberId
     ) {
         String accessToken = authorizationHeader.replace("Bearer ", "");
-        try {
-            String from = eventListRequestDTO.from();
-            String to = eventListRequestDTO.to();
+        String from = eventListRequestDTO.from();
+        String to = eventListRequestDTO.to();
 
-            EventListGetResponseDto eventList = talkCalendarService.getEventList(accessToken, from,
-                to);
+        EventListGetResponseDto eventList = talkCalendarService.getEventList(accessToken, from, to);
 
-            for (EventGetResponseDto event : eventList.events()) {
-                eventService.saveEvent(event, memberId);
-            }
-
-            if (eventList.events().isEmpty()) {
-                return ApiResponseGenerator.success(HttpStatus.NO_CONTENT, "조회된 일정이 없습니다.",
-                    eventList.events());
-            }
-
-            return ApiResponseGenerator.success(HttpStatus.OK, "일정 목록을 조회했습니다.",
-                eventList.events());
-
-        } catch (Exception e) {
-            return ApiResponseGenerator.fail(HttpStatus.INTERNAL_SERVER_ERROR,
-                "일정 조회 중 오류가 발생했습니다.");
+        for (EventGetResponseDto event : eventList.events()) {
+            eventService.saveEvent(event, memberId);
         }
+
+        if (eventList.events().isEmpty()) {
+            return ApiResponseGenerator.success(HttpStatus.NO_CONTENT, "조회된 일정이 없습니다.",
+                eventList);
+        }
+
+        return ApiResponseGenerator.success(HttpStatus.OK, "일정 목록을 조회했습니다.",
+            eventList);
     }
 
     @PostMapping("/events")
-    public ResponseEntity<?> createEvent(
+    public ResponseEntity<SuccessBody<EventCreateResponseDto>> createEvent(
         @RequestHeader(value = "Authorization") String authorizationHeader,
         @RequestBody EventCreateRequestDto eventRequestDto,
         @RequestParam Long memberId
     ) {
         String accessToken = authorizationHeader.replace("Bearer ", "");
-        try {
-            // 카카오 api로 일정 생성
-            EventCreateResponseDto eventCreateResponseDto = talkCalendarService.createEvent(
-                accessToken, eventRequestDto, memberId);
-            return ApiResponseGenerator.success(HttpStatus.OK, "일정이 성공적으로 생성되었습니다.",
-                eventCreateResponseDto);
-        } catch (Exception e) {
-            return ApiResponseGenerator.fail(HttpStatus.INTERNAL_SERVER_ERROR,
-                "일정 생성 중 오류가 발생했습니다.");
-        }
+        // 카카오 api로 일정 생성
+        EventCreateResponseDto eventCreateResponseDto = talkCalendarService.createEvent(
+            accessToken, eventRequestDto, memberId);
+        return ApiResponseGenerator.success(HttpStatus.OK, "일정이 성공적으로 생성되었습니다.",
+            eventCreateResponseDto);
     }
 }
