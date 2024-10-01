@@ -1,5 +1,4 @@
-package org.cookieandkakao.babting.domain.calendar.controller;
-import org.cookieandkakao.babting.common.apiresponse.ApiResponseBody;
+package org.cookieandkakao.babting.common.exception;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseBody.FailureBody;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseGenerator;
 import org.springframework.http.HttpStatus;
