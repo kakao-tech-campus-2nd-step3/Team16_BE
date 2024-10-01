@@ -36,7 +36,7 @@ public class TalkCalendarService {
                 .toEntity(EventListGetResponseDto.class);
             return response.getBody();
         } catch (Exception e) {
-            throw new RuntimeException("API 호출 중 오류 발생: " + e.getMessage(), e);
+            throw new RuntimeException("API 호출 중 오류 발생");
         }
     }
 
@@ -81,7 +81,7 @@ public class TalkCalendarService {
             throw new RuntimeException("Event 생성 중 오류 발생: 응답에서 event_id가 없습니다.");
 
         } catch (Exception e) {
-            throw new RuntimeException("API 호출 중 오류 발생: " + e.getMessage(), e);
+            throw new RuntimeException("API 호출 중 오류 발생");
         }
     }
 
