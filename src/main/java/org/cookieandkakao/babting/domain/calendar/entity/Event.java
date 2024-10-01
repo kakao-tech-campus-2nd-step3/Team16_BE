@@ -62,7 +62,7 @@ public class Event {
     }
 
     public Event(PersonalCalendar personalCalendar, Time time, Location location,
-        String kakaoEventId, String title, String type, boolean repeatedSchedule,
+        String kakaoEventId, String title, boolean repeatedSchedule,
         String scheduleRepeatCycle, String dtStart, String description, String eventColor,
         String memo) {
         this.personalCalendar = personalCalendar;
@@ -70,7 +70,7 @@ public class Event {
         this.location = location;
         this.kakaoEventId = kakaoEventId;
         this.title = title;
-        this.type = type;
+        this.type = "USER";
         this.repeatedSchedule = repeatedSchedule;
         this.scheduleRepeatCycle = scheduleRepeatCycle;
         this.dtStart = dtStart;

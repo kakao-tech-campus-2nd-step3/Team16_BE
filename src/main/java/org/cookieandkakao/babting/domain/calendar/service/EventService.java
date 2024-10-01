@@ -56,7 +56,7 @@ public class EventService {
 
         // Event 엔티티 저장
         Event event = new Event(personalCalendar, time, location, eventGetResponseDto.id(),
-            eventGetResponseDto.title(), eventGetResponseDto.type(),
+            eventGetResponseDto.title(),
             eventGetResponseDto.isRecurEvent(),
             eventGetResponseDto.rrule(), eventGetResponseDto.dtStart(),
             eventGetResponseDto.description(),
@@ -82,7 +82,7 @@ public class EventService {
 
         // Event 엔티티 저장
         Event event = new Event(personalCalendar, time, null, eventId,
-            eventCreateRequestDto.title(), "USER", false, eventCreateRequestDto.rrule(),
+            eventCreateRequestDto.title(), false, eventCreateRequestDto.rrule(),
             null, eventCreateRequestDto.description(), null, null);
         eventRepository.save(event);
 
