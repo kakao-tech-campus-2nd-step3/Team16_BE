@@ -50,7 +50,7 @@ public class TalkCalendarController {
 
         if (eventList.events().isEmpty()) {
             return ApiResponseGenerator.success(HttpStatus.NO_CONTENT, "조회된 일정이 없습니다.",
-                eventList);
+                null);
         }
 
         return ApiResponseGenerator.success(HttpStatus.OK, "일정 목록을 조회했습니다.",
