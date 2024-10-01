@@ -80,25 +80,12 @@ public class EventService {
         //Time 엔티티 저장
         Time time = timeRepository.save(eventCreateRequestDto.time().toEntity());
 
-        //Location 엔티티 저장
-        Location location = null;
-        if (eventCreateRequestDto.location() != null) {
-            location = locationRepository.save(eventCreateRequestDto.location().toEntity());
-        }
-
         // Event 엔티티 저장
-        Event event = new Event(personalCalendar, time, location, eventId,
+        Event event = new Event(personalCalendar, time, null, eventId,
             eventCreateRequestDto.title(), "USER", false, eventCreateRequestDto.rrule(),
-            null, eventCreateRequestDto.description(), eventCreateRequestDto.color(), null);
+            null, eventCreateRequestDto.description(), null, null);
         eventRepository.save(event);
 
-        // Reminder 저장 (있을 경우)
-        if (eventCreateRequestDto.reminders() != null && !eventCreateRequestDto.reminders()
-            .isEmpty()) {
-            for (Long remindTime : eventCreateRequestDto.reminders()) {
-                reminderRepository.save(new Reminder(event, remindTime));
-            }
-        }
     }
 
 }
