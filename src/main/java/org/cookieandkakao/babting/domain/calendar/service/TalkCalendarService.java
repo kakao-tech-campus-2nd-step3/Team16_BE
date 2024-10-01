@@ -6,6 +6,7 @@ import java.net.URI;
 import java.util.Map;
 import org.cookieandkakao.babting.domain.calendar.dto.request.EventCreateRequestDto;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventCreateResponseDto;
+import org.cookieandkakao.babting.domain.calendar.dto.response.EventDetailGetResponseDto;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventListGetResponseDto;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -40,9 +41,29 @@ public class TalkCalendarService {
         }
     }
 
+    public EventDetailGetResponseDto getEvent(String accessToken, String eventId) {
+        String url = "https://kapi.kakao.com/v2/api/calendar/event";
+        URI uri = buildGetEventUri(url, eventId);
+
+        try {
+            ResponseEntity<EventDetailGetResponseDto> response = restClient.get()
+                .uri(uri)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                .retrieve()
+                .toEntity(EventDetailGetResponseDto.class);
+            return response.getBody();
+        } catch (Exception e) {
+            throw new RuntimeException("API 호출 중 오류 발생", e);
+        }
+    }
+
     private URI buildUri(String baseUrl, String from, String to) {
         return URI.create(
             String.format("%s?from=%s&to=%s&limit=100&time_zone=Asia/Seoul", baseUrl, from, to));
+    }
+
+    private URI buildGetEventUri(String baseUrl, String eventId) {
+        return URI.create(String.format("%s?event_id=%s", baseUrl, eventId));
     }
 
     public EventCreateResponseDto createEvent(String accessToken,
