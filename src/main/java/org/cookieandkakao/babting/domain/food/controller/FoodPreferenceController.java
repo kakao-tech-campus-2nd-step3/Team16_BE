@@ -34,8 +34,8 @@ public class FoodPreferenceController {
                                     NonPreferenceFoodService nonPreferenceFoodService) {
         this.foodRepositoryService = foodRepositoryService;
         strategies = Map.of(
-                "preference", preferenceFoodService,
-                "non-preference", nonPreferenceFoodService
+                "preferences", preferenceFoodService,
+                "non-preferences", nonPreferenceFoodService
         );
     }
 
