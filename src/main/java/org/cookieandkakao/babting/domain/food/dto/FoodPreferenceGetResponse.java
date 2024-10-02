@@ -1,6 +1,6 @@
 package org.cookieandkakao.babting.domain.food.dto;
 
-public record PreferenceFoodGetResponse(
+public record FoodPreferenceGetResponse(
         Long foodId,
         String category,
         String name
