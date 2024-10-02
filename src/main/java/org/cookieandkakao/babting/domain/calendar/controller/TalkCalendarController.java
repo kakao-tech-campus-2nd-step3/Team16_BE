@@ -1,5 +1,7 @@
 package org.cookieandkakao.babting.domain.calendar.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseBody.SuccessBody;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseGenerator;
 import org.cookieandkakao.babting.domain.calendar.dto.request.EventCreateRequestDto;
@@ -44,17 +46,25 @@ public class TalkCalendarController {
 
         EventListGetResponseDto eventList = talkCalendarService.getEventList(accessToken, from, to);
 
+        List<EventGetResponseDto> updatedEvents = new ArrayList<>();
+
         for (EventGetResponseDto event : eventList.events()) {
-            eventService.saveEvent(event, memberId);
+            if (event.id() != null) {
+                event = talkCalendarService.getEvent(accessToken, event.id()).event();
+                eventService.saveEvent(event, memberId);
+                updatedEvents.add(event);
+            } else {
+                updatedEvents.add(event);
+            }
         }
 
-        if (eventList.events().isEmpty()) {
-            return ApiResponseGenerator.success(HttpStatus.NO_CONTENT, "조회된 일정이 없습니다.",
-                eventList);
+        eventList = new EventListGetResponseDto(updatedEvents);
+
+        if (updatedEvents.isEmpty()) {
+            return ApiResponseGenerator.success(HttpStatus.NO_CONTENT, "조회된 일정이 없습니다.", eventList);
         }
 
-        return ApiResponseGenerator.success(HttpStatus.OK, "일정 목록을 조회했습니다.",
-            eventList);
+        return ApiResponseGenerator.success(HttpStatus.OK, "일정 목록을 조회했습니다.", eventList);
     }
 
     @GetMapping("/events/{event_id}")
