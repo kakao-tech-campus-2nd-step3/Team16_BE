@@ -1,5 +1,6 @@
 package org.cookieandkakao.babting.domain.food.controller;
 
+import org.cookieandkakao.babting.common.apiresponse.ApiResponseBody.SuccessBody;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseGenerator;
 import org.cookieandkakao.babting.domain.food.dto.FoodGetResponse;
 import org.cookieandkakao.babting.domain.food.service.FoodService;
@@ -23,7 +24,7 @@ public class FoodController {
     }
 
     @GetMapping("/foods")
-    public ResponseEntity<?> getFoodsByCategory(@RequestParam String category) {
+    public ResponseEntity<SuccessBody<List<FoodGetResponse>>> getFoodsByCategory(@RequestParam String category) {
         List<FoodGetResponse> foods = foodService.getFoodsByCategory(category);
         return ApiResponseGenerator.success(HttpStatus.OK, "카테고리별 음식 조회 성공", foods);
     }

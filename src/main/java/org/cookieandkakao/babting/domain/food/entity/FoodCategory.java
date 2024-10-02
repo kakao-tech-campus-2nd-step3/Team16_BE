@@ -17,7 +17,7 @@ public class FoodCategory {
     @Column(nullable = false)
     private String name;
 
-    public FoodCategory() {}
+    protected FoodCategory() {}
 
     public String getName() {
         return name;
