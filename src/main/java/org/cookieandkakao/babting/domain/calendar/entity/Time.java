@@ -28,7 +28,8 @@ public class Time {
     @Column(nullable = false)
     private boolean allDay;
 
-    protected Time() {}
+    protected Time() {
+    }
 
     public Time(LocalDateTime startAt, LocalDateTime endAt, String timeZone, boolean allDay) {
         this.startAt = startAt;
@@ -36,8 +37,6 @@ public class Time {
         this.timeZone = timeZone;
         this.allDay = allDay;
     }
-
-
 
 
 }

@@ -24,11 +24,20 @@ public class Reminder {
     @Column
     private Long remindTime;
 
-    protected Reminder() {}
+    protected Reminder() {
+    }
 
     public Reminder(Event event, Long remindTime) {
         this.event = event;
         this.remindTime = remindTime;
+    }
+
+    public Long getReminderId() {
+        return reminderId;
+    }
+
+    public Long getRemindTime() {
+        return remindTime;
     }
 
 }

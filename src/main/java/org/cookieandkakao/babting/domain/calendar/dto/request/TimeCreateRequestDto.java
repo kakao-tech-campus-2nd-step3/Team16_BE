@@ -1,4 +1,4 @@
-package org.cookieandkakao.babting.domain.calendar.dto.response;
+package org.cookieandkakao.babting.domain.calendar.dto.request;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -8,8 +8,7 @@ import java.time.format.DateTimeFormatter;
 import org.cookieandkakao.babting.domain.calendar.entity.Time;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public record TimeGetResponseDto(
-
+public record TimeCreateRequestDto(
     String startAt,
 
     String endAt,
