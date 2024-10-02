@@ -5,9 +5,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.cookieandkakao.babting.domain.meeting.entity.Meeting;
 
-public record MeetingCreateRequestDto(
+public record MeetingCreateRequest(
     @NotNull
-    LocationCreateRequestDto baseLocation,
+    LocationCreateRequest baseLocation,
 
     @NotNull
     String title,
