@@ -4,6 +4,7 @@ import org.cookieandkakao.babting.common.apiresponse.ApiResponseBody.SuccessBody
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseGenerator;
 import org.cookieandkakao.babting.domain.calendar.dto.request.EventCreateRequestDto;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventCreateResponseDto;
+import org.cookieandkakao.babting.domain.calendar.dto.response.EventDetailGetResponseDto;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventGetResponseDto;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventListGetResponseDto;
 import org.cookieandkakao.babting.domain.calendar.service.EventService;
@@ -11,6 +12,7 @@ import org.cookieandkakao.babting.domain.calendar.service.TalkCalendarService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -53,6 +55,23 @@ public class TalkCalendarController {
 
         return ApiResponseGenerator.success(HttpStatus.OK, "일정 목록을 조회했습니다.",
             eventList);
+    }
+
+    @GetMapping("/events/{event_id}")
+    public ResponseEntity<SuccessBody<EventDetailGetResponseDto>> getEvent(
+        @RequestHeader(value = "Authorization") String authorizationHeader,
+        @PathVariable("event_id") String eventId,
+        @RequestParam Long memberId
+    ) {
+        String accessToken = authorizationHeader.replace("Bearer ", "");
+
+        EventDetailGetResponseDto eventDetailGetResponseDto = talkCalendarService.getEvent(accessToken, eventId);
+
+        if (eventDetailGetResponseDto == null) {
+            return ApiResponseGenerator.success(HttpStatus.NO_CONTENT, "조회된 일정이 없습니다.", eventDetailGetResponseDto);
+        }
+
+        return ApiResponseGenerator.success(HttpStatus.OK, "일정 목록을 조회했습니다.", eventDetailGetResponseDto);
     }
 
     @PostMapping("/events")
