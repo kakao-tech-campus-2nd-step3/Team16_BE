@@ -1,16 +1,17 @@
 package org.cookieandkakao.babting.domain.member.controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.cookieandkakao.babting.domain.member.dto.KakaoMemberInfoGetResponseDto;
 import org.cookieandkakao.babting.domain.member.dto.KakaoTokenGetResponseDto;
 import org.cookieandkakao.babting.domain.member.dto.TokenIssueResponseDto;
 import org.cookieandkakao.babting.domain.member.service.AuthService;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
-@RestController
+@Controller
 @RequestMapping("/api/auth")
 public class AuthController {
 
@@ -21,23 +22,39 @@ public class AuthController {
     }
 
     @GetMapping("/login")
-    public ModelAndView login() {
-        return new ModelAndView("redirect:" + authService.getAuthUrl());
+    public String login() {
+        return "redirect:" + authService.getAuthUrl();
     }
 
     @GetMapping("/login/code/kakao")
-    public TokenIssueResponseDto issueToken(
-        @RequestParam(name = "code") String authorizeCode) {
+    public String issueToken(
+        @RequestParam(name = "code") String authorizeCode, HttpServletResponse response) {
 
-        KakaoTokenGetResponseDto kakaoTokenGetResponseDto = authService.requestKakaoToken(
-            authorizeCode);
+        KakaoTokenGetResponseDto kakaoTokenDto;
+        KakaoMemberInfoGetResponseDto kakaoMemberInfoDto;
 
-        KakaoMemberInfoGetResponseDto kakaoMemberInfoGetResponseDto = authService.requestKakaoMemberInfo(
-            kakaoTokenGetResponseDto);
+        try {
+            kakaoTokenDto = authService.requestKakaoToken(authorizeCode);
+            kakaoMemberInfoDto = authService.requestKakaoMemberInfo(kakaoTokenDto);
+        } catch (Exception e) {
+            return "redirect:/login/fail";  // 프론트 페이지 구현 후 수정 예정
+        }
 
-        authService.saveMemberInfo(kakaoMemberInfoGetResponseDto);
-        authService.saveKakaoToken(kakaoMemberInfoGetResponseDto.id(), kakaoTokenGetResponseDto);
+        authService.saveMemberInfo(kakaoMemberInfoDto);
+        authService.saveKakaoToken(kakaoMemberInfoDto.id(), kakaoTokenDto);
+        TokenIssueResponseDto tokenDto = authService.issueToken(kakaoMemberInfoDto.id());
 
-        return authService.issueToken(kakaoMemberInfoGetResponseDto.id());
+        Cookie accessTokenCookie = new Cookie("accessToken", tokenDto.accessToken());
+        accessTokenCookie.setPath("/");
+
+        Cookie refreshTokenCookie = new Cookie("refreshToken", tokenDto.refreshToken());
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setMaxAge(60 * 60 * 24 * 14); // 2주
+
+        response.addCookie(accessTokenCookie);
+        response.addCookie(refreshTokenCookie);
+
+        return "redirect:/login/success";  // 프론트 페이지 구현 후 수정 예정
     }
 }
