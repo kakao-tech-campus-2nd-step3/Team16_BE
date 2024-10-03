@@ -98,4 +98,8 @@ public class MeetingService {
         return memberMeetingRepository.findMemberMeetingByMemberAndMeeting(member, meeting)
             .orElseThrow(() -> new NoSuchElementException("해당 모임에 회원이 존재하지 않습니다."));
     }
+
+    private void saveMeetingEvent(Member member){
+        //Todo 모임일정추가 or 계산 로직 생각중...
+    }
 }
