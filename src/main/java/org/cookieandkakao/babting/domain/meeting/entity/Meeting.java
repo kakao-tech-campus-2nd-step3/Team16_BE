@@ -61,4 +61,8 @@ public class Meeting {
     public void confirmDateTime(LocalDateTime confirmDateTime){
         this.confirmDateTime = confirmDateTime;
     }
+
+    public LocalDateTime getConfirmDateTime() {
+        return confirmDateTime;
+    }
 }

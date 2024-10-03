@@ -35,7 +35,7 @@ public class MeetingService {
     public void createMeeting(Member member, MeetingCreateRequest meetingCreateRequest){
         Meeting meeting = meetingCreateRequest.toEntity();
         Location baseLocation = meetingCreateRequest.baseLocation().toEntity();
-        
+
         locationRepository.save(baseLocation);
         meetingRepository.save(meeting);
         memberMeetingRepository.save(new MemberMeeting(member, meeting, true));
@@ -52,6 +52,10 @@ public class MeetingService {
         } else {
             //Todo 예외처리
             throw new IllegalStateException("권한이 없습니다.");
+        }
+
+        if (meeting.getConfirmDateTime() != null){
+            throw new IllegalStateException("이미 모임 시간이 확정되었습니다.");
         }
     }
 
