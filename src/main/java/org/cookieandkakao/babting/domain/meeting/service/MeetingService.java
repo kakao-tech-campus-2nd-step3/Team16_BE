@@ -34,6 +34,9 @@ public class MeetingService {
     // 모임 생성(주최자)
     public void createMeeting(Member member, MeetingCreateRequest meetingCreateRequest){
         Meeting meeting = meetingCreateRequest.toEntity();
+        Location baseLocation = meetingCreateRequest.baseLocation().toEntity();
+        
+        locationRepository.save(baseLocation);
         meetingRepository.save(meeting);
         memberMeetingRepository.save(new MemberMeeting(member, meeting, true));
     }
