@@ -47,9 +47,7 @@ public class MeetingService {
 
         MemberMeeting memberMeeting = findMemberMeeting(member, meeting);
 
-        if (memberMeeting.isHost()){
-            meeting.confirmDateTime(confirmDateTime);
-        } else {
+        if (!memberMeeting.isHost()){
             //Todo 예외처리
             throw new IllegalStateException("권한이 없습니다.");
         }
@@ -57,6 +55,8 @@ public class MeetingService {
         if (meeting.getConfirmDateTime() != null){
             throw new IllegalStateException("이미 모임 시간이 확정되었습니다.");
         }
+        
+        meeting.confirmDateTime(confirmDateTime);
     }
 
     // 모임 참가(초대받은사람)
