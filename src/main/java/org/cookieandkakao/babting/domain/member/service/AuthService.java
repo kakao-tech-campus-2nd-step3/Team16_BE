@@ -4,6 +4,7 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED;
 
 import org.cookieandkakao.babting.domain.member.dto.KakaoMemberInfoGetResponseDto;
 import org.cookieandkakao.babting.domain.member.dto.KakaoTokenGetResponseDto;
+import org.cookieandkakao.babting.domain.member.dto.TokenIssueResponseDto;
 import org.cookieandkakao.babting.domain.member.entity.KakaoToken;
 import org.cookieandkakao.babting.domain.member.entity.Member;
 import org.cookieandkakao.babting.common.properties.KakaoClientProperties;
@@ -11,6 +12,7 @@ import org.cookieandkakao.babting.common.properties.KakaoProviderProperties;
 import org.cookieandkakao.babting.domain.member.repository.KakaoTokenRepository;
 import org.cookieandkakao.babting.domain.member.repository.MemberRepository;
 import org.cookieandkakao.babting.domain.member.util.AuthorizationUriBuilder;
+import org.cookieandkakao.babting.domain.member.util.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,7 @@ public class AuthService {
     private final RestClient restClient = RestClient.builder().build();
     private final MemberRepository memberRepository;
     private final KakaoTokenRepository kakaoTokenRepository;
+    private final JwtUtil jwtUtil = new JwtUtil();
 
     public AuthService(KakaoClientProperties kakaoClientProperties,
         KakaoProviderProperties kakaoProviderProperties, MemberRepository memberRepository,
@@ -103,5 +106,12 @@ public class AuthService {
         kakaoTokenRepository.save(kakaoToken);
 
         member.updateKakaoToken(kakaoToken);
+    }
+
+    public TokenIssueResponseDto issueToken(Long kakaoMemberId) {
+        Member member = memberRepository.findByKakaoMemberId(kakaoMemberId)
+            .orElseThrow(IllegalArgumentException::new);
+
+        return jwtUtil.issueToken(member.getMemberId());
     }
 }

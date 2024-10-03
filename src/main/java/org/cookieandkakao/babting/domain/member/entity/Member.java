@@ -50,4 +50,8 @@ public class Member {
     public void updateKakaoToken(KakaoToken kakaoToken) {
         this.kakaoToken = kakaoToken;
     }
+
+    public Long getMemberId() {
+        return memberId;
+    }
 }

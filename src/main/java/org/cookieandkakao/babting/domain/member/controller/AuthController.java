@@ -1,8 +1,8 @@
 package org.cookieandkakao.babting.domain.member.controller;
 
 import org.cookieandkakao.babting.domain.member.dto.KakaoMemberInfoGetResponseDto;
-import org.cookieandkakao.babting.domain.member.dto.KakaoMemberProfileGetResponseDto;
 import org.cookieandkakao.babting.domain.member.dto.KakaoTokenGetResponseDto;
+import org.cookieandkakao.babting.domain.member.dto.TokenIssueResponseDto;
 import org.cookieandkakao.babting.domain.member.service.AuthService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +26,7 @@ public class AuthController {
     }
 
     @GetMapping("/login/code/kakao")
-    public KakaoMemberProfileGetResponseDto getToken(
+    public TokenIssueResponseDto issueToken(
         @RequestParam(name = "code") String authorizeCode) {
 
         KakaoTokenGetResponseDto kakaoTokenGetResponseDto = authService.requestKakaoToken(
@@ -38,6 +38,6 @@ public class AuthController {
         authService.saveMemberInfo(kakaoMemberInfoGetResponseDto);
         authService.saveKakaoToken(kakaoMemberInfoGetResponseDto.id(), kakaoTokenGetResponseDto);
 
-        return kakaoMemberInfoGetResponseDto.properties();
+        return authService.issueToken(kakaoMemberInfoGetResponseDto.id());
     }
 }
