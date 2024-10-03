@@ -52,23 +52,6 @@ public class MeetingService {
         }
     }
 
-    // 모임 장소 확정(주최자)
-    public void decideMeetingLocation(Member member, LocationCreateRequest locationCreateRequest, Long meetingId){
-        Meeting meeting = findMeeting(meetingId);
-
-        MemberMeeting memberMeeting = findMemberMeeting(member, meeting);
-
-        if (memberMeeting.isHost()){
-            Location meetingLocation = locationCreateRequest.toEntity();
-            locationRepository.save(meetingLocation);
-
-            meeting.decideMeetingLocation(meetingLocation);
-        } else {
-            //Todo 예외처리
-            throw new IllegalStateException("권한이 없습니다.");
-        }
-    }
-
     // 모임 참가(초대받은사람)
     public void joinMeeting(Member member, Long meetingId){
         Meeting meeting = findMeeting(meetingId);
