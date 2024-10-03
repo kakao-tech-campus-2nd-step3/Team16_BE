@@ -1,7 +1,7 @@
 package org.cookieandkakao.babting.domain.meeting.dto.response;
 
-public record LocationCreateResponse(
-    Long location_id,
+public record LocationGetResponse(
+    Long locationId,
 
     String name,
 
