@@ -2,17 +2,18 @@ package org.cookieandkakao.babting.domain.member.service;
 
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED;
 
+import org.cookieandkakao.babting.common.properties.KakaoClientProperties;
+import org.cookieandkakao.babting.common.properties.KakaoProviderProperties;
 import org.cookieandkakao.babting.domain.member.dto.KakaoMemberInfoGetResponseDto;
 import org.cookieandkakao.babting.domain.member.dto.KakaoTokenGetResponseDto;
 import org.cookieandkakao.babting.domain.member.dto.TokenIssueResponseDto;
 import org.cookieandkakao.babting.domain.member.entity.KakaoToken;
 import org.cookieandkakao.babting.domain.member.entity.Member;
-import org.cookieandkakao.babting.common.properties.KakaoClientProperties;
-import org.cookieandkakao.babting.common.properties.KakaoProviderProperties;
 import org.cookieandkakao.babting.domain.member.repository.KakaoTokenRepository;
 import org.cookieandkakao.babting.domain.member.repository.MemberRepository;
 import org.cookieandkakao.babting.domain.member.util.AuthorizationUriBuilder;
 import org.cookieandkakao.babting.domain.member.util.JwtUtil;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,10 +63,15 @@ public class AuthService {
             .contentType(APPLICATION_FORM_URLENCODED)
             .body(body)
             .retrieve()
+            .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
+                throw new IllegalArgumentException("카카오 토큰 발급 실패");
+            })
+            .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
+                throw new RuntimeException("카카오 인증 서버 에러");
+            })
             .toEntity(KakaoTokenGetResponseDto.class);
 
         return entity.getBody();
-
     }
 
     public KakaoMemberInfoGetResponseDto requestKakaoMemberInfo(
@@ -78,6 +84,12 @@ public class AuthService {
             .header("Authorization", "Bearer " + kakaoToken.accessToken())
             .header("Content-Type", "application/x-www-form-urlencoded")
             .retrieve()
+            .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
+                throw new IllegalArgumentException("카카오 사용자 정보 조회 실패");
+            })
+            .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
+                throw new RuntimeException("카카오 사용자 정보 서버 에러");
+            })
             .toEntity(KakaoMemberInfoGetResponseDto.class);
 
         return entity.getBody();
