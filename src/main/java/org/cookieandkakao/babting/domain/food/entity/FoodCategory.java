@@ -17,6 +17,8 @@ public class FoodCategory {
     @Column(nullable = false)
     private String name;
 
+    protected FoodCategory() {}
+
     public String getName() {
         return name;
     }

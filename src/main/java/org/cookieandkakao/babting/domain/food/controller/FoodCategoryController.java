@@ -1,7 +1,9 @@
 package org.cookieandkakao.babting.domain.food.controller;
 
-import org.cookieandkakao.babting.domain.food.dto.ApiResponseDto;
+import org.cookieandkakao.babting.common.apiresponse.ApiResponseBody.SuccessBody;
+import org.cookieandkakao.babting.common.apiresponse.ApiResponseGenerator;
 import org.cookieandkakao.babting.domain.food.service.FoodCategoryService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,11 +22,8 @@ public class FoodCategoryController {
     }
 
     @GetMapping("/food-categories")
-    public ResponseEntity<ApiResponseDto> getFoodCategories() {
+    public ResponseEntity<SuccessBody<List<String>>> getFoodCategories() {
         List<String> categories = foodCategoryService.getFoodCategories();
-
-        ApiResponseDto response = new ApiResponseDto(200, "음식 카테고리 목록 조회 성공", categories);
-
-        return ResponseEntity.ok(response);
+        return ApiResponseGenerator.success(HttpStatus.OK, "음식 카테고리 목록 조회 성공", categories);
     }
 }
