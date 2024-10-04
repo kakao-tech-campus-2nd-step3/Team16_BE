@@ -2,7 +2,7 @@ package org.cookieandkakao.babting.domain.food.controller;
 
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseBody.SuccessBody;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseGenerator;
-import org.cookieandkakao.babting.domain.food.dto.FoodCreateRequest;
+import org.cookieandkakao.babting.domain.food.dto.FoodPreferenceCreateRequest;
 import org.cookieandkakao.babting.domain.food.dto.FoodPreferenceGetResponse;
 import org.cookieandkakao.babting.domain.food.service.FoodPreferenceStrategy;
 import org.cookieandkakao.babting.domain.food.service.NonPreferenceFoodService;
@@ -36,7 +36,7 @@ public class FoodPreferenceController {
 
     // 선호/비선호 음식 추가
     @PostMapping("/{type}")
-    public ResponseEntity<SuccessBody<FoodPreferenceGetResponse>> addFoodPreference(@PathVariable String type, @RequestBody FoodCreateRequest request) {
+    public ResponseEntity<SuccessBody<FoodPreferenceGetResponse>> addFoodPreference(@PathVariable String type, @RequestBody FoodPreferenceCreateRequest request) {
         FoodPreferenceStrategy strategy = strategies.get(type);
         if (strategy == null) {
             return ApiResponseGenerator.success(HttpStatus.NOT_FOUND, "Invalid preference type", null);
@@ -61,7 +61,7 @@ public class FoodPreferenceController {
 
     // 선호/비선호 음식 삭제
     @DeleteMapping("/{type}")
-    public ResponseEntity<SuccessBody<Void>> deleteFoodPreference(@PathVariable String type, @RequestBody FoodCreateRequest request) {
+    public ResponseEntity<SuccessBody<Void>> deleteFoodPreference(@PathVariable String type, @RequestBody FoodPreferenceCreateRequest request) {
         FoodPreferenceStrategy strategy = strategies.get(type);
         if (strategy == null) {
             return ApiResponseGenerator.success(HttpStatus.NOT_FOUND, "Invalid preference type");

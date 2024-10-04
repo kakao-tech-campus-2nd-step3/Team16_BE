@@ -1,6 +1,6 @@
 package org.cookieandkakao.babting.domain.food.service;
 
-import org.cookieandkakao.babting.domain.food.dto.FoodCreateRequest;
+import org.cookieandkakao.babting.domain.food.dto.FoodPreferenceCreateRequest;
 import org.cookieandkakao.babting.domain.food.dto.FoodPreferenceGetResponse;
 import org.cookieandkakao.babting.domain.food.entity.Food;
 import org.cookieandkakao.babting.domain.food.entity.PreferenceFood;
@@ -33,7 +33,7 @@ public class PreferenceFoodService implements FoodPreferenceStrategy {
     }
 
     @Override
-    public FoodPreferenceGetResponse addPreference(FoodCreateRequest request) {
+    public FoodPreferenceGetResponse addPreference(FoodPreferenceCreateRequest request) {
         Food food = foodRepositoryService.findFoodById(request.foodId());
         PreferenceFood preferenceFood = new PreferenceFood(food);
 
