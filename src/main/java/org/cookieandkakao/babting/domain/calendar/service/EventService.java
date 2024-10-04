@@ -1,7 +1,7 @@
 package org.cookieandkakao.babting.domain.calendar.service;
 
-import org.cookieandkakao.babting.domain.calendar.dto.request.EventCreateRequestDto;
-import org.cookieandkakao.babting.domain.calendar.dto.response.EventGetResponseDto;
+import org.cookieandkakao.babting.domain.calendar.dto.request.EventCreateRequest;
+import org.cookieandkakao.babting.domain.calendar.dto.response.EventGetResponse;
 import org.cookieandkakao.babting.domain.calendar.entity.Event;
 import org.cookieandkakao.babting.domain.calendar.entity.PersonalCalendar;
 import org.cookieandkakao.babting.domain.calendar.entity.Reminder;
@@ -40,50 +40,50 @@ public class EventService {
     }
 
     @Transactional
-    public void saveEvent(EventGetResponseDto eventGetResponseDto, Long memberId) {
+    public void saveEvent(EventGetResponse eventGetResponse, Long memberId) {
         // 개인 캘린더 조회 또는 생성
         PersonalCalendar personalCalendar = personalCalendarService.findOrCreatePersonalCalendar(
             memberId);
 
         //Time 엔티티 저장
-        Time time = timeRepository.save(eventGetResponseDto.time().toEntity());
+        Time time = timeRepository.save(eventGetResponse.time().toEntity());
 
         //Location 엔티티 저장
         Location location = null;
-        if (eventGetResponseDto.location() != null) {
-            location = locationRepository.save(eventGetResponseDto.location());
+        if (eventGetResponse.location() != null) {
+            location = locationRepository.save(eventGetResponse.location());
         }
 
         // Event 엔티티 저장
-        Event event = new Event(personalCalendar, time, location, eventGetResponseDto.id(),
-            eventGetResponseDto.title(),
-            eventGetResponseDto.isRecurEvent(),
-            eventGetResponseDto.rrule(), eventGetResponseDto.dtStart(),
-            eventGetResponseDto.description(),
-            eventGetResponseDto.color(), eventGetResponseDto.memo());
+        Event event = new Event(personalCalendar, time, location, eventGetResponse.id(),
+            eventGetResponse.title(),
+            eventGetResponse.isRecurEvent(),
+            eventGetResponse.rrule(), eventGetResponse.dtStart(),
+            eventGetResponse.description(),
+            eventGetResponse.color(), eventGetResponse.memo());
         eventRepository.save(event);
 
         // Reminder 저장 (있을 경우)
-        if (eventGetResponseDto.reminders() != null) {
+        if (eventGetResponse.reminders() != null) {
             reminderRepository.save(
-                new Reminder(event, eventGetResponseDto.reminders().getRemindTime()));
+                new Reminder(event, eventGetResponse.reminders().getRemindTime()));
         }
     }
 
     @Transactional
-    public void saveCreatedEvent(EventCreateRequestDto eventCreateRequestDto, String eventId,
+    public void saveCreatedEvent(EventCreateRequest eventCreateRequest, String eventId,
         Long memberId) {
         // 개인 캘린더 조회 또는 생성
         PersonalCalendar personalCalendar = personalCalendarService.findOrCreatePersonalCalendar(
             memberId);
 
         //Time 엔티티 저장
-        Time time = timeRepository.save(eventCreateRequestDto.time().toEntity());
+        Time time = timeRepository.save(eventCreateRequest.time().toEntity());
 
         // Event 엔티티 저장
         Event event = new Event(personalCalendar, time, null, eventId,
-            eventCreateRequestDto.title(), false, eventCreateRequestDto.rrule(),
-            null, eventCreateRequestDto.description(), null, null);
+            eventCreateRequest.title(), false, eventCreateRequest.rrule(),
+            null, eventCreateRequest.description(), null, null);
         eventRepository.save(event);
 
     }

@@ -3,10 +3,16 @@ package org.cookieandkakao.babting.domain.calendar.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import org.cookieandkakao.babting.domain.calendar.dto.request.EventCreateRequestDto;
-import org.cookieandkakao.babting.domain.calendar.dto.response.EventCreateResponseDto;
-import org.cookieandkakao.babting.domain.calendar.dto.response.EventListGetResponseDto;
+import org.cookieandkakao.babting.domain.calendar.dto.request.EventCreateRequest;
+import org.cookieandkakao.babting.domain.calendar.dto.response.EventCreateResponse;
+import org.cookieandkakao.babting.domain.calendar.dto.response.EventDetailGetResponse;
+import org.cookieandkakao.babting.domain.calendar.dto.response.EventGetResponse;
+import org.cookieandkakao.babting.domain.calendar.dto.response.EventListGetResponse;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -25,18 +31,53 @@ public class TalkCalendarService {
         this.eventService = eventService;
     }
 
-    public EventListGetResponseDto getEventList(String accessToken, String from, String to) {
+    public EventListGetResponse getEventList(String accessToken, String from, String to) {
         String url = "https://kapi.kakao.com/v2/api/calendar/events";
         URI uri = buildUri(url, from, to);
         try {
-            ResponseEntity<EventListGetResponseDto> response = restClient.get()
+            ResponseEntity<EventListGetResponse> response = restClient.get()
                 .uri(uri)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .retrieve()
-                .toEntity(EventListGetResponseDto.class);
+                .toEntity(EventListGetResponse.class);
             return response.getBody();
         } catch (Exception e) {
             throw new RuntimeException("API 호출 중 오류 발생");
+        }
+    }
+
+    // 일정 목록을 조회할 때 캐시 적용
+    @Cacheable(value = "eventListCache", key = "#memberId")
+    public List<EventGetResponse> getUpdatedEventList(String accessToken, String from, String to, Long memberId) {
+        EventListGetResponse eventList = getEventList(accessToken, from, to);
+        List<EventGetResponse> updatedEvents = new ArrayList<>();
+
+        for (EventGetResponse event : eventList.events()) {
+            if (event.id() != null) {
+                event = getEvent(accessToken, event.id()).event();
+                updatedEvents.add(event);
+            } else {
+                updatedEvents.add(event);
+            }
+        }
+
+        return updatedEvents;
+    }
+
+    @Cacheable(value = "eventDetailCache", key = "#eventId")
+    public EventDetailGetResponse getEvent(String accessToken, String eventId) {
+        String url = "https://kapi.kakao.com/v2/api/calendar/event";
+        URI uri = buildGetEventUri(url, eventId);
+
+        try {
+            ResponseEntity<EventDetailGetResponse> response = restClient.get()
+                .uri(uri)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                .retrieve()
+                .toEntity(EventDetailGetResponse.class);
+            return response.getBody();
+        } catch (Exception e) {
+            throw new RuntimeException("API 호출 중 오류 발생", e);
         }
     }
 
@@ -45,8 +86,13 @@ public class TalkCalendarService {
             String.format("%s?from=%s&to=%s&limit=100&time_zone=Asia/Seoul", baseUrl, from, to));
     }
 
-    public EventCreateResponseDto createEvent(String accessToken,
-        EventCreateRequestDto eventCreateRequestDto, Long memberId) {
+    private URI buildGetEventUri(String baseUrl, String eventId) {
+        return URI.create(String.format("%s?event_id=%s", baseUrl, eventId));
+    }
+
+    @CacheEvict(value = "eventListCache", key = "#memberId")
+    public EventCreateResponse createEvent(String accessToken,
+        EventCreateRequest eventCreateRequest, Long memberId) {
         String url = "https://kapi.kakao.com/v2/api/calendar/create/event";
         URI uri = URI.create(url);
 
@@ -55,7 +101,7 @@ public class TalkCalendarService {
 
             // event라는 key에 JSON 형태의 데이터를 추가해야 함
             // EventCreateRequestDto를 JSON으로 변환
-            String eventJson = convertToJSONString(eventCreateRequestDto);
+            String eventJson = convertToJSONString(eventCreateRequest);
 
             // event라는 key로 JSON 데이터를 추가
             formData.add("event", eventJson);
@@ -73,10 +119,8 @@ public class TalkCalendarService {
             Map<String, Object> responseBody = response.getBody();
             if (responseBody != null && responseBody.containsKey("event_id")) {
                 String eventId = responseBody.get("event_id").toString();
-                // EventService를 호출하여 일정 저장
-                eventService.saveCreatedEvent(eventCreateRequestDto, eventId, memberId);
                 // EventCreateResponseDto로 응답 반환
-                return new EventCreateResponseDto(eventId);
+                return new EventCreateResponse(eventId);
             }
             throw new RuntimeException("Event 생성 중 오류 발생: 응답에서 event_id가 없습니다.");
 
@@ -86,9 +130,9 @@ public class TalkCalendarService {
     }
 
     // EventCreateRequestDto를 JSON 문자열로 변환하는 메서드
-    private String convertToJSONString(EventCreateRequestDto eventCreateRequestDto) {
+    private String convertToJSONString(EventCreateRequest eventCreateRequest) {
         try {
-            return objectMapper.writeValueAsString(eventCreateRequestDto);
+            return objectMapper.writeValueAsString(eventCreateRequest);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

@@ -2,8 +2,8 @@ package org.cookieandkakao.babting.domain.calendar.dto.response;
 
 import java.util.List;
 
-public record EventListGetResponseDto(
-    List<EventGetResponseDto> events
+public record EventListGetResponse(
+    List<EventGetResponse> events
 ) {
 
 }

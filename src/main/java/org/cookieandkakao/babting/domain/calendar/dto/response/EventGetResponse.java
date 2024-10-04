@@ -9,7 +9,7 @@ import org.cookieandkakao.babting.domain.calendar.entity.Time;
 import org.cookieandkakao.babting.domain.meeting.entity.Location;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public record EventGetResponseDto(
+public record EventGetResponse(
 
     String id,
 
@@ -19,7 +19,7 @@ public record EventGetResponseDto(
 
     String calendarId,
 
-    TimeGetResponseDto time,
+    TimeGetResponse time,
 
     boolean isHost,
 
