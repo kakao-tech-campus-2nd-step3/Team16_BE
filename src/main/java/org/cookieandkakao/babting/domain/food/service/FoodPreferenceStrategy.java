@@ -9,5 +9,6 @@ public interface FoodPreferenceStrategy {
     FoodPreferenceGetResponse addPreference(FoodPreferenceCreateRequest request);
 
     void deletePreference(Long foodId);
+
     List<FoodPreferenceGetResponse> getAllPreferences();
 }

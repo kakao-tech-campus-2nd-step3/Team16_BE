@@ -17,7 +17,9 @@ public class PreferenceFoodService implements FoodPreferenceStrategy {
     private final PreferenceFoodRepository preferenceFoodRepository;
     private final FoodRepositoryService foodRepositoryService;
 
-    public PreferenceFoodService(PreferenceFoodRepository preferenceFoodRepository, FoodRepositoryService foodRepositoryService) {
+    public PreferenceFoodService(PreferenceFoodRepository preferenceFoodRepository,
+                                 FoodRepositoryService foodRepositoryService
+    ) {
         this.preferenceFoodRepository = preferenceFoodRepository;
         this.foodRepositoryService = foodRepositoryService;
     }

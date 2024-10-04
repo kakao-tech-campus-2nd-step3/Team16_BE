@@ -37,10 +37,7 @@ public class FoodPreferenceController {
     // 선호/비선호 음식 추가
     @PostMapping("/{type}")
     public ResponseEntity<SuccessBody<FoodPreferenceGetResponse>> addFoodPreference(@PathVariable String type, @RequestBody FoodPreferenceCreateRequest request) {
-        FoodPreferenceStrategy strategy = strategies.get(type);
-        if (strategy == null) {
-            return ApiResponseGenerator.success(HttpStatus.NOT_FOUND, "Invalid preference type", null);
-        }
+        FoodPreferenceStrategy strategy = getStrategy(type);
 
         FoodPreferenceGetResponse response = strategy.addPreference(request);
         return ApiResponseGenerator.success(HttpStatus.OK, "음식 추가 성공", response);
@@ -50,10 +47,7 @@ public class FoodPreferenceController {
     // 선호/비선호 음식 조회
     @GetMapping("/{type}")
     public ResponseEntity<SuccessBody<List<FoodPreferenceGetResponse>>> getFoodPreferences(@PathVariable String type) {
-        FoodPreferenceStrategy strategy = strategies.get(type);
-        if (strategy == null) {
-            return ApiResponseGenerator.success(HttpStatus.NOT_FOUND, "Invalid preference type", null);
-        }
+        FoodPreferenceStrategy strategy = getStrategy(type);
 
         List<FoodPreferenceGetResponse> preferences = strategy.getAllPreferences();
         return ApiResponseGenerator.success(HttpStatus.OK, "음식 조회 성공", preferences);
@@ -62,12 +56,17 @@ public class FoodPreferenceController {
     // 선호/비선호 음식 삭제
     @DeleteMapping("/{type}")
     public ResponseEntity<SuccessBody<Void>> deleteFoodPreference(@PathVariable String type, @RequestBody FoodPreferenceCreateRequest request) {
-        FoodPreferenceStrategy strategy = strategies.get(type);
-        if (strategy == null) {
-            return ApiResponseGenerator.success(HttpStatus.NOT_FOUND, "Invalid preference type");
-        }
+        FoodPreferenceStrategy strategy = getStrategy(type);
 
         strategy.deletePreference(request.foodId());
         return ApiResponseGenerator.success(HttpStatus.OK, "음식 삭제 성공");
+    }
+
+    private FoodPreferenceStrategy getStrategy(String type) {
+        FoodPreferenceStrategy strategy = strategies.get(type);
+        if (strategy == null) {
+            throw new IllegalArgumentException("Invalid preference type");
+        }
+        return strategy;
     }
 }

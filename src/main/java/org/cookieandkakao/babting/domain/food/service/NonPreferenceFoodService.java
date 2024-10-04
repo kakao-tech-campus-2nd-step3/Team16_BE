@@ -17,7 +17,9 @@ public class NonPreferenceFoodService implements FoodPreferenceStrategy {
     private final NonPreferenceFoodRepository nonPreferenceFoodRepository;
     private final FoodRepositoryService foodRepositoryService;
 
-    public NonPreferenceFoodService(NonPreferenceFoodRepository nonPreferenceFoodRepository, FoodRepositoryService foodRepositoryService) {
+    public NonPreferenceFoodService(NonPreferenceFoodRepository nonPreferenceFoodRepository,
+                                    FoodRepositoryService foodRepositoryService
+    ) {
         this.nonPreferenceFoodRepository = nonPreferenceFoodRepository;
         this.foodRepositoryService = foodRepositoryService;
     }
