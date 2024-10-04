@@ -1,9 +1,9 @@
 package org.cookieandkakao.babting.domain.calendar.dto.request;
 
-public record EventCreateRequestDto(
+public record EventCreateRequest(
     String title,
 
-    TimeCreateRequestDto time,
+    TimeCreateRequest time,
 
     String rrule,
 

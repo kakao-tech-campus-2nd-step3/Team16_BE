@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 import org.cookieandkakao.babting.domain.calendar.entity.Time;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public record TimeGetResponseDto(
+public record TimeGetResponse(
 
     String startAt,
 
