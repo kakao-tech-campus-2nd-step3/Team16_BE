@@ -24,10 +24,6 @@ public class Meeting {
     @JoinColumn(name = "base_location_id")
     private Location baseLocation;
 
-    @OneToOne
-    @JoinColumn(name = "meeting_location_id")
-    private Location meetingLocation;
-
     @Column(nullable = false)
     private String title;
 
@@ -66,7 +62,7 @@ public class Meeting {
         this.confirmDateTime = confirmDateTime;
     }
 
-    public void decideMeetingLocation(Location meetingLocation){
-        this.meetingLocation = meetingLocation;
+    public LocalDateTime getConfirmDateTime() {
+        return confirmDateTime;
     }
 }
