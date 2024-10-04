@@ -81,7 +81,7 @@ public class TalkCalendarController {
         // 카카오 api로 일정 생성
         EventCreateResponse eventCreateResponse = talkCalendarService.createEvent(
             accessToken, eventRequestDto, memberId);
-        return ApiResponseGenerator.success(HttpStatus.OK, "일정이 성공적으로 생성되었습니다.",
+        return ApiResponseGenerator.success(HttpStatus.CREATED, "일정이 성공적으로 생성되었습니다.",
             eventCreateResponse);
     }
 }
