@@ -8,5 +8,8 @@ import java.util.Optional;
 
 public interface NonPreferenceFoodRepository extends JpaRepository<NonPreferenceFood, Long> {
     boolean existsByFood(Food food);
-    Optional<NonPreferenceFood> findByFoodId(Long foodId);
+
+    Optional<NonPreferenceFood> findByFood(Food food);
+
+    void deleteByFood(Food food);
 }

@@ -4,9 +4,7 @@ import org.cookieandkakao.babting.common.apiresponse.ApiResponseBody.SuccessBody
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseGenerator;
 import org.cookieandkakao.babting.domain.food.dto.FoodCreateRequest;
 import org.cookieandkakao.babting.domain.food.dto.FoodPreferenceGetResponse;
-import org.cookieandkakao.babting.domain.food.entity.Food;
 import org.cookieandkakao.babting.domain.food.service.FoodPreferenceStrategy;
-import org.cookieandkakao.babting.domain.food.service.FoodRepositoryService;
 import org.cookieandkakao.babting.domain.food.service.NonPreferenceFoodService;
 import org.cookieandkakao.babting.domain.food.service.PreferenceFoodService;
 import org.springframework.http.HttpStatus;
@@ -26,13 +24,10 @@ import java.util.Map;
 @RequestMapping("/api")
 public class FoodPreferenceController {
 
-    private final FoodRepositoryService foodRepositoryService;
     private final Map<String, FoodPreferenceStrategy> strategies;
 
-    public FoodPreferenceController(FoodRepositoryService foodRepositoryService,
-                                    PreferenceFoodService preferenceFoodService,
+    public FoodPreferenceController(PreferenceFoodService preferenceFoodService,
                                     NonPreferenceFoodService nonPreferenceFoodService) {
-        this.foodRepositoryService = foodRepositoryService;
         strategies = Map.of(
                 "preferences", preferenceFoodService,
                 "non-preferences", nonPreferenceFoodService
@@ -44,7 +39,7 @@ public class FoodPreferenceController {
     public ResponseEntity<SuccessBody<FoodPreferenceGetResponse>> addFoodPreference(@PathVariable String type, @RequestBody FoodCreateRequest request) {
         FoodPreferenceStrategy strategy = strategies.get(type);
         if (strategy == null) {
-            return ApiResponseGenerator.success(HttpStatus.NOT_FOUND, "Invalid preference type",null);
+            return ApiResponseGenerator.success(HttpStatus.NOT_FOUND, "Invalid preference type", null);
         }
 
         FoodPreferenceGetResponse response = strategy.addPreference(request);
@@ -57,7 +52,7 @@ public class FoodPreferenceController {
     public ResponseEntity<SuccessBody<List<FoodPreferenceGetResponse>>> getFoodPreferences(@PathVariable String type) {
         FoodPreferenceStrategy strategy = strategies.get(type);
         if (strategy == null) {
-            return ApiResponseGenerator.success(HttpStatus.NOT_FOUND, "Invalid preference type",null);
+            return ApiResponseGenerator.success(HttpStatus.NOT_FOUND, "Invalid preference type", null);
         }
 
         List<FoodPreferenceGetResponse> preferences = strategy.getAllPreferences();
@@ -72,8 +67,7 @@ public class FoodPreferenceController {
             return ApiResponseGenerator.success(HttpStatus.NOT_FOUND, "Invalid preference type");
         }
 
-        Food food = foodRepositoryService.findFoodById(request.foodId());
-        strategy.deletePreference(food.getFoodId());
+        strategy.deletePreference(request.foodId());
         return ApiResponseGenerator.success(HttpStatus.OK, "음식 삭제 성공");
     }
 }

@@ -4,10 +4,10 @@ import org.cookieandkakao.babting.domain.food.dto.FoodCreateRequest;
 import org.cookieandkakao.babting.domain.food.dto.FoodPreferenceGetResponse;
 import org.cookieandkakao.babting.domain.food.entity.Food;
 import org.cookieandkakao.babting.domain.food.entity.NonPreferenceFood;
-import org.cookieandkakao.babting.domain.food.entity.PreferenceFood;
 import org.cookieandkakao.babting.domain.food.repository.FoodRepository;
 import org.cookieandkakao.babting.domain.food.repository.NonPreferenceFoodRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,10 +46,13 @@ public class NonPreferenceFoodService implements FoodPreferenceStrategy {
                 savedNonPreference.getFood().getName());
     }
 
+    @Transactional
     @Override
     public void deletePreference(Long foodId) {
-        nonPreferenceFoodRepository.findByFoodId(foodId)
+        Food food = foodRepositoryService.findFoodById(foodId);
+
+        nonPreferenceFoodRepository.findByFood(food)
                 .orElseThrow(() -> new RuntimeException("해당 비선호 음식을 찾을 수 없습니다."));
-        nonPreferenceFoodRepository.deleteById(foodId);
+        nonPreferenceFoodRepository.deleteByFood(food);
     }
 }

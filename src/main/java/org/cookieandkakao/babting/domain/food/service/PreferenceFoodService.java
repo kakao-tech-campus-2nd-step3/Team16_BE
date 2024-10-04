@@ -6,6 +6,7 @@ import org.cookieandkakao.babting.domain.food.entity.Food;
 import org.cookieandkakao.babting.domain.food.entity.PreferenceFood;
 import org.cookieandkakao.babting.domain.food.repository.PreferenceFoodRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,11 +45,13 @@ public class PreferenceFoodService implements FoodPreferenceStrategy {
                 savedPreference.getFood().getName());
     }
 
+    @Transactional
     @Override
     public void deletePreference(Long foodId) {
-        preferenceFoodRepository.findByFoodId(foodId)
+        Food food = foodRepositoryService.findFoodById(foodId);
+
+        preferenceFoodRepository.findByFood(food)
                 .orElseThrow(() -> new RuntimeException("해당 선호 음식을 찾을 수 없습니다."));
-        preferenceFoodRepository.deleteById(foodId);
+        preferenceFoodRepository.deleteByFood(food);
     }
 }
-
