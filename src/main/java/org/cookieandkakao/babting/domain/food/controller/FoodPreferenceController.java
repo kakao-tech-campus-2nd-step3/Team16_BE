@@ -44,11 +44,10 @@ public class FoodPreferenceController {
     public ResponseEntity<SuccessBody<FoodPreferenceGetResponse>> addFoodPreference(@PathVariable String type, @RequestBody FoodCreateRequest request) {
         FoodPreferenceStrategy strategy = strategies.get(type);
         if (strategy == null) {
-            throw new IllegalArgumentException("Invalid preference type");
+            return ApiResponseGenerator.success(HttpStatus.NOT_FOUND, "Invalid preference type",null);
         }
 
-        Food food = foodRepositoryService.findFoodById(request.foodId());
-        FoodPreferenceGetResponse response = strategy.addPreference(food);
+        FoodPreferenceGetResponse response = strategy.addPreference(request);
         return ApiResponseGenerator.success(HttpStatus.OK, "음식 추가 성공", response);
     }
 
@@ -58,7 +57,7 @@ public class FoodPreferenceController {
     public ResponseEntity<SuccessBody<List<FoodPreferenceGetResponse>>> getFoodPreferences(@PathVariable String type) {
         FoodPreferenceStrategy strategy = strategies.get(type);
         if (strategy == null) {
-            throw new IllegalArgumentException("Invalid preference type");
+            return ApiResponseGenerator.success(HttpStatus.NOT_FOUND, "Invalid preference type",null);
         }
 
         List<FoodPreferenceGetResponse> preferences = strategy.getAllPreferences();
@@ -70,7 +69,7 @@ public class FoodPreferenceController {
     public ResponseEntity<SuccessBody<Void>> deleteFoodPreference(@PathVariable String type, @RequestBody FoodCreateRequest request) {
         FoodPreferenceStrategy strategy = strategies.get(type);
         if (strategy == null) {
-            throw new IllegalArgumentException("Invalid preference type");
+            return ApiResponseGenerator.success(HttpStatus.NOT_FOUND, "Invalid preference type");
         }
 
         Food food = foodRepositoryService.findFoodById(request.foodId());

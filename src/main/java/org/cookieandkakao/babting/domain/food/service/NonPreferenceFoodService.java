@@ -1,8 +1,10 @@
 package org.cookieandkakao.babting.domain.food.service;
 
+import org.cookieandkakao.babting.domain.food.dto.FoodCreateRequest;
 import org.cookieandkakao.babting.domain.food.dto.FoodPreferenceGetResponse;
 import org.cookieandkakao.babting.domain.food.entity.Food;
 import org.cookieandkakao.babting.domain.food.entity.NonPreferenceFood;
+import org.cookieandkakao.babting.domain.food.entity.PreferenceFood;
 import org.cookieandkakao.babting.domain.food.repository.FoodRepository;
 import org.cookieandkakao.babting.domain.food.repository.NonPreferenceFoodRepository;
 import org.springframework.stereotype.Service;
@@ -32,7 +34,8 @@ public class NonPreferenceFoodService implements FoodPreferenceStrategy {
     }
 
     @Override
-    public FoodPreferenceGetResponse addPreference(Food food) {
+    public FoodPreferenceGetResponse addPreference(FoodCreateRequest request) {
+        Food food = foodRepositoryService.findFoodById(request.foodId());
         NonPreferenceFood nonPreferenceFood = new NonPreferenceFood(food);
 
         foodRepositoryService.validateNotAlreadyPreferredOrNonPreferred(food);
