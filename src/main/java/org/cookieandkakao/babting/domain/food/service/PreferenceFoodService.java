@@ -44,10 +44,8 @@ public class PreferenceFoodService implements FoodPreferenceStrategy {
 
     @Override
     public void deletePreference(Long foodId) {
-        if (!preferenceFoodRepository.existsById(foodId)) {
-            throw new RuntimeException("해당 비선호 음식을 찾을 수 없습니다.");
-        }
-
+        preferenceFoodRepository.findByFoodId(foodId)
+                .orElseThrow(() -> new RuntimeException("해당 선호 음식을 찾을 수 없습니다."));
         preferenceFoodRepository.deleteById(foodId);
     }
 }
