@@ -29,15 +29,16 @@ public class AuthService {
     private final RestClient restClient = RestClient.builder().build();
     private final MemberRepository memberRepository;
     private final KakaoTokenRepository kakaoTokenRepository;
-    private final JwtUtil jwtUtil = new JwtUtil();
+    private final JwtUtil jwtUtil;
 
     public AuthService(KakaoClientProperties kakaoClientProperties,
         KakaoProviderProperties kakaoProviderProperties, MemberRepository memberRepository,
-        KakaoTokenRepository kakaoTokenRepository) {
+        KakaoTokenRepository kakaoTokenRepository, JwtUtil jwtUtil) {
         this.kakaoClientProperties = kakaoClientProperties;
         this.kakaoProviderProperties = kakaoProviderProperties;
         this.memberRepository = memberRepository;
         this.kakaoTokenRepository = kakaoTokenRepository;
+        this.jwtUtil = jwtUtil;
     }
 
     public String getAuthUrl() {

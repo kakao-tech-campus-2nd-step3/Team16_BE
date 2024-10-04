@@ -8,7 +8,9 @@ import java.time.Instant;
 import java.util.Date;
 import javax.crypto.SecretKey;
 import org.cookieandkakao.babting.domain.member.dto.TokenIssueResponseDto;
+import org.springframework.stereotype.Component;
 
+@Component
 public class JwtUtil {
 
     private final SecretKey key = SIG.HS256.key().build();

@@ -54,4 +54,20 @@ public class Member {
     public Long getMemberId() {
         return memberId;
     }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public String getThumbnailImageUrl() {
+        return thumbnailImageUrl;
+    }
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public KakaoToken getKakaoToken() {
+        return kakaoToken;
+    }
 }
