@@ -2,9 +2,9 @@ package org.cookieandkakao.babting.domain.member.controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import org.cookieandkakao.babting.domain.member.dto.KakaoMemberInfoGetResponseDto;
-import org.cookieandkakao.babting.domain.member.dto.KakaoTokenGetResponseDto;
-import org.cookieandkakao.babting.domain.member.dto.TokenIssueResponseDto;
+import org.cookieandkakao.babting.domain.member.dto.KakaoMemberInfoGetResponse;
+import org.cookieandkakao.babting.domain.member.dto.KakaoTokenGetResponse;
+import org.cookieandkakao.babting.domain.member.dto.TokenIssueResponse;
 import org.cookieandkakao.babting.domain.member.service.AuthService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,8 +30,8 @@ public class AuthController {
     public String issueToken(
         @RequestParam(name = "code") String authorizeCode, HttpServletResponse response) {
 
-        KakaoTokenGetResponseDto kakaoTokenDto;
-        KakaoMemberInfoGetResponseDto kakaoMemberInfoDto;
+        KakaoTokenGetResponse kakaoTokenDto;
+        KakaoMemberInfoGetResponse kakaoMemberInfoDto;
 
         try {
             kakaoTokenDto = authService.requestKakaoToken(authorizeCode);
@@ -42,7 +42,7 @@ public class AuthController {
 
         authService.saveMemberInfo(kakaoMemberInfoDto);
         authService.saveKakaoToken(kakaoMemberInfoDto.id(), kakaoTokenDto);
-        TokenIssueResponseDto tokenDto = authService.issueToken(kakaoMemberInfoDto.id());
+        TokenIssueResponse tokenDto = authService.issueToken(kakaoMemberInfoDto.id());
 
         Cookie accessTokenCookie = new Cookie("accessToken", tokenDto.accessToken());
         accessTokenCookie.setPath("/");

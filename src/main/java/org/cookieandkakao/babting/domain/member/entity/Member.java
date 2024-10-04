@@ -8,7 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import org.cookieandkakao.babting.domain.member.dto.KakaoMemberProfileGetResponseDto;
+import org.cookieandkakao.babting.domain.member.dto.KakaoMemberProfileGetResponse;
 
 @Entity
 @Table(name = "member")
@@ -41,7 +41,7 @@ public class Member {
         this.kakaoMemberId = kakaoMemberId;
     }
 
-    public void updateProfile(KakaoMemberProfileGetResponseDto profileDto) {
+    public void updateProfile(KakaoMemberProfileGetResponse profileDto) {
         this.nickname = profileDto.nickname();
         this.thumbnailImageUrl = profileDto.thumbnailImage();
         this.profileImageUrl = profileDto.profileImage();

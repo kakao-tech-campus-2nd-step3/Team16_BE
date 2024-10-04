@@ -1,6 +1,6 @@
 package org.cookieandkakao.babting.domain.member.dto;
 
-public record TokenIssueResponseDto(
+public record TokenIssueResponse(
     String accessToken,
     String refreshToken) {
 

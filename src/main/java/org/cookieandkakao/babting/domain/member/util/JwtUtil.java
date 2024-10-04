@@ -7,7 +7,7 @@ import io.jsonwebtoken.Jwts.SIG;
 import java.time.Instant;
 import java.util.Date;
 import javax.crypto.SecretKey;
-import org.cookieandkakao.babting.domain.member.dto.TokenIssueResponseDto;
+import org.cookieandkakao.babting.domain.member.dto.TokenIssueResponse;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -37,11 +37,11 @@ public class JwtUtil {
         return generateToken(userId, REFRESH_TOKEN_EXPIRES_IN);
     }
 
-    public TokenIssueResponseDto issueToken(Long userId) {
+    public TokenIssueResponse issueToken(Long userId) {
         String accessToken = generateAccessToken(userId);
         String refreshToken = generateRefreshToken(userId);
 
-        return new TokenIssueResponseDto(accessToken, refreshToken);
+        return new TokenIssueResponse(accessToken, refreshToken);
     }
 
     public Claims parseClaims(String token) {

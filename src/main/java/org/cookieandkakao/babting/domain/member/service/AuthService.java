@@ -4,9 +4,9 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED;
 
 import org.cookieandkakao.babting.common.properties.KakaoClientProperties;
 import org.cookieandkakao.babting.common.properties.KakaoProviderProperties;
-import org.cookieandkakao.babting.domain.member.dto.KakaoMemberInfoGetResponseDto;
-import org.cookieandkakao.babting.domain.member.dto.KakaoTokenGetResponseDto;
-import org.cookieandkakao.babting.domain.member.dto.TokenIssueResponseDto;
+import org.cookieandkakao.babting.domain.member.dto.KakaoMemberInfoGetResponse;
+import org.cookieandkakao.babting.domain.member.dto.KakaoTokenGetResponse;
+import org.cookieandkakao.babting.domain.member.dto.TokenIssueResponse;
 import org.cookieandkakao.babting.domain.member.entity.KakaoToken;
 import org.cookieandkakao.babting.domain.member.entity.Member;
 import org.cookieandkakao.babting.domain.member.repository.KakaoTokenRepository;
@@ -48,7 +48,7 @@ public class AuthService {
             .build();
     }
 
-    public KakaoTokenGetResponseDto requestKakaoToken(String authorizeCode) {
+    public KakaoTokenGetResponse requestKakaoToken(String authorizeCode) {
 
         String tokenUri = kakaoProviderProperties.tokenUri();
 
@@ -59,7 +59,7 @@ public class AuthService {
         body.add("client_id", kakaoClientProperties.clientId());
         body.add("client_secret", kakaoClientProperties.clientSecret());
 
-        ResponseEntity<KakaoTokenGetResponseDto> entity = restClient.post()
+        ResponseEntity<KakaoTokenGetResponse> entity = restClient.post()
             .uri(tokenUri)
             .contentType(APPLICATION_FORM_URLENCODED)
             .body(body)
@@ -70,17 +70,17 @@ public class AuthService {
             .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
                 throw new RuntimeException("카카오 인증 서버 에러");
             })
-            .toEntity(KakaoTokenGetResponseDto.class);
+            .toEntity(KakaoTokenGetResponse.class);
 
         return entity.getBody();
     }
 
-    public KakaoMemberInfoGetResponseDto requestKakaoMemberInfo(
-        KakaoTokenGetResponseDto kakaoToken) {
+    public KakaoMemberInfoGetResponse requestKakaoMemberInfo(
+        KakaoTokenGetResponse kakaoToken) {
 
         String userInfoUri = kakaoProviderProperties.userInfoUri();
 
-        ResponseEntity<KakaoMemberInfoGetResponseDto> entity = restClient.get()
+        ResponseEntity<KakaoMemberInfoGetResponse> entity = restClient.get()
             .uri(userInfoUri)
             .header("Authorization", "Bearer " + kakaoToken.accessToken())
             .header("Content-Type", "application/x-www-form-urlencoded")
@@ -91,37 +91,37 @@ public class AuthService {
             .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
                 throw new RuntimeException("카카오 사용자 정보 서버 에러");
             })
-            .toEntity(KakaoMemberInfoGetResponseDto.class);
+            .toEntity(KakaoMemberInfoGetResponse.class);
 
         return entity.getBody();
     }
 
     @Transactional
-    public void saveMemberInfo(KakaoMemberInfoGetResponseDto kakaoMemberInfoGetResponseDto) {
+    public void saveMemberInfo(KakaoMemberInfoGetResponse kakaoMemberInfoGetResponse) {
 
-        Long kakaoMemberId = kakaoMemberInfoGetResponseDto.id();
+        Long kakaoMemberId = kakaoMemberInfoGetResponse.id();
 
         Member member = memberRepository.findByKakaoMemberId(kakaoMemberId)
             .orElse(new Member(kakaoMemberId));
-        member.updateProfile(kakaoMemberInfoGetResponseDto.properties());
+        member.updateProfile(kakaoMemberInfoGetResponse.properties());
 
         memberRepository.save(member);
     }
 
     @Transactional
     public void saveKakaoToken(Long kakaoMemberId,
-        KakaoTokenGetResponseDto kakaoTokenGetResponseDto) {
+        KakaoTokenGetResponse kakaoTokenGetResponse) {
 
         Member member = memberRepository.findByKakaoMemberId(kakaoMemberId)
             .orElseThrow(IllegalArgumentException::new);
-        KakaoToken kakaoToken = kakaoTokenGetResponseDto.toEntity();
+        KakaoToken kakaoToken = kakaoTokenGetResponse.toEntity();
 
         kakaoTokenRepository.save(kakaoToken);
 
         member.updateKakaoToken(kakaoToken);
     }
 
-    public TokenIssueResponseDto issueToken(Long kakaoMemberId) {
+    public TokenIssueResponse issueToken(Long kakaoMemberId) {
         Member member = memberRepository.findByKakaoMemberId(kakaoMemberId)
             .orElseThrow(IllegalArgumentException::new);
 
