@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import org.cookieandkakao.babting.domain.member.entity.KakaoToken;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public record KakaoTokenGetResponseDto(
+public record KakaoTokenGetResponse(
     String accessToken,
     Integer expiresIn,
     String refreshToken,

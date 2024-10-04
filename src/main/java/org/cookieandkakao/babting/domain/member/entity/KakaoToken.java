@@ -36,4 +36,20 @@ public class KakaoToken {
         this.refreshToken = refreshToken;
         this.refreshTokenExpiresAt = refreshTokenExpiresAt;
     }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public LocalDateTime getExpiresAt() {
+        return expiresAt;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public LocalDateTime getRefreshTokenExpiresAt() {
+        return refreshTokenExpiresAt;
+    }
 }
