@@ -1,5 +1,6 @@
 package org.cookieandkakao.babting.domain.calendar.controller;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseBody.SuccessBody;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseGenerator;
@@ -74,7 +75,7 @@ public class TalkCalendarController {
     @PostMapping("/events")
     public ResponseEntity<SuccessBody<EventCreateResponse>> createEvent(
         @RequestHeader(value = "Authorization") String authorizationHeader,
-        @RequestBody EventCreateRequest eventRequestDto,
+        @Valid @RequestBody EventCreateRequest eventRequestDto,
         @RequestParam Long memberId
     ) {
         String accessToken = authorizationHeader.replace("Bearer ", "");
