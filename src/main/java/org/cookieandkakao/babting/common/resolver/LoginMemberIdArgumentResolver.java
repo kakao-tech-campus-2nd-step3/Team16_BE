@@ -1,6 +1,7 @@
-package org.cookieandkakao.babting.domain.member;
+package org.cookieandkakao.babting.common.resolver;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.cookieandkakao.babting.common.annotaion.LoginMemberId;
 import org.cookieandkakao.babting.domain.member.repository.MemberRepository;
 import org.cookieandkakao.babting.domain.member.util.JwtUtil;
 import org.springframework.core.MethodParameter;

@@ -1,4 +1,4 @@
-package org.cookieandkakao.babting.domain.member;
+package org.cookieandkakao.babting.common.annotaion;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
