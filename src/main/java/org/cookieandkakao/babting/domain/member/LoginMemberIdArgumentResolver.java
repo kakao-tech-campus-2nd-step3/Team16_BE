@@ -1,9 +1,6 @@
 package org.cookieandkakao.babting.domain.member;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.cookieandkakao.babting.domain.member.dto.KakaoTokenDto;
-import org.cookieandkakao.babting.domain.member.dto.MemberDto;
-import org.cookieandkakao.babting.domain.member.entity.Member;
 import org.cookieandkakao.babting.domain.member.repository.MemberRepository;
 import org.cookieandkakao.babting.domain.member.util.JwtUtil;
 import org.springframework.core.MethodParameter;
@@ -15,19 +12,17 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 @Component
-public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
+public class LoginMemberIdArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final MemberRepository memberRepository;
     private final JwtUtil jwtUtil;
 
-    public LoginMemberArgumentResolver(MemberRepository memberRepository, JwtUtil jwtUtil) {
-        this.memberRepository = memberRepository;
+    public LoginMemberIdArgumentResolver(MemberRepository memberRepository, JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(LoginMember.class);
+        return parameter.hasParameterAnnotation(LoginMemberId.class);
     }
 
     @Override
@@ -45,11 +40,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
         Long userId = Long.parseLong(jwtUtil.parseClaims(accessToken).getSubject());
 
-        Member loginMember = memberRepository.findById(userId)
-            .orElseThrow(IllegalArgumentException::new);
-
-        return new MemberDto(loginMember.getMemberId(), loginMember.getNickname(),
-            loginMember.getThumbnailImageUrl(), loginMember.getProfileImageUrl(),
-            new KakaoTokenDto(loginMember.getKakaoToken()));
+        return userId;
     }
 }
