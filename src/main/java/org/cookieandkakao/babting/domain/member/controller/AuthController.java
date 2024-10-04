@@ -40,8 +40,7 @@ public class AuthController {
             return "redirect:/login/fail";  // 프론트 페이지 구현 후 수정 예정
         }
 
-        authService.saveMemberInfo(kakaoMemberInfoDto);
-        authService.saveKakaoToken(kakaoMemberInfoDto.id(), kakaoTokenDto);
+        authService.saveMemberInfoAndKakaoToken(kakaoMemberInfoDto, kakaoTokenDto);
         TokenIssueResponse tokenDto = authService.issueToken(kakaoMemberInfoDto.id());
 
         Cookie accessTokenCookie = new Cookie("accessToken", tokenDto.accessToken());

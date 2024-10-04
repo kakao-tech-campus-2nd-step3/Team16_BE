@@ -97,6 +97,24 @@ public class AuthService {
     }
 
     @Transactional
+    public void saveMemberInfoAndKakaoToken(
+        KakaoMemberInfoGetResponse kakaoMemberInfoGetResponse,
+        KakaoTokenGetResponse kakaoTokenGetResponse) {
+
+        Long kakaoMemberId = kakaoMemberInfoGetResponse.id();
+
+        Member member = memberRepository.findByKakaoMemberId(kakaoMemberId)
+            .orElse(new Member(kakaoMemberId));
+        member.updateProfile(kakaoMemberInfoGetResponse.properties());
+
+        memberRepository.save(member);
+
+        KakaoToken kakaoToken = kakaoTokenGetResponse.toEntity();
+
+        member.updateKakaoToken(kakaoToken);
+    }
+
+    @Transactional
     public void saveMemberInfo(KakaoMemberInfoGetResponse kakaoMemberInfoGetResponse) {
 
         Long kakaoMemberId = kakaoMemberInfoGetResponse.id();
