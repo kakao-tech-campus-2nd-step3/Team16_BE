@@ -2,16 +2,19 @@ package org.cookieandkakao.babting.domain.meeting.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
-import org.cookieandkakao.babting.domain.calendar.entity.Time;
+import jakarta.persistence.Table;
+import org.cookieandkakao.babting.domain.calendar.entity.Event;
 
 @Entity
+@Table(name = "meeting_event")
 public class MeetingEvent {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long meetingEventId;
 
     @ManyToOne
@@ -19,6 +22,6 @@ public class MeetingEvent {
     private MemberMeeting memberMeeting;
 
     @OneToOne
-    @JoinColumn(name = "time_id")
-    private Time time;
+    @JoinColumn(name = "event_id")
+    private Event event;
 }

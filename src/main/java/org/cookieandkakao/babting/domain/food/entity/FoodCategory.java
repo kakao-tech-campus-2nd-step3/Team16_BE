@@ -14,6 +14,12 @@ public class FoodCategory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long foodCategoryId;
 
-    @Column
+    @Column(nullable = false)
     private String name;
+
+    protected FoodCategory() {}
+
+    public String getName() {
+        return name;
+    }
 }
