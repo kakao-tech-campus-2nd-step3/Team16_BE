@@ -12,6 +12,7 @@ import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import org.cookieandkakao.babting.domain.food.entity.Food;
 
 @Entity
 @Table(name = "meeting")
@@ -23,6 +24,10 @@ public class Meeting {
     @OneToOne
     @JoinColumn(name = "base_location_id")
     private Location baseLocation;
+
+    @OneToOne
+    @JoinColumn(name = "confirmed_food")
+    private Food confirmedFood;
 
     @Column(nullable = false)
     private String title;
