@@ -50,7 +50,7 @@ public class MeetingService {
         meetingRepository.save(meeting);
         memberMeetingRepository.save(new MemberMeeting(member, meeting, true));
     }
-    // 모임 시간 확정(주최자)
+    // 모임 확정(주최자)
     public void decideMeeting(Long memberId, Long confirmFoodId, LocalDateTime confirmDateTime, Long meetingId){
         Member member = memberService.findMember(memberId);
         Meeting meeting = findMeeting(meetingId);
