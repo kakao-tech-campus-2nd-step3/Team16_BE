@@ -3,7 +3,6 @@ package org.cookieandkakao.babting.domain.meeting.service;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
-import org.cookieandkakao.babting.domain.meeting.dto.request.LocationCreateRequest;
 import org.cookieandkakao.babting.domain.meeting.dto.request.MeetingCreateRequest;
 import org.cookieandkakao.babting.domain.meeting.entity.Location;
 import org.cookieandkakao.babting.domain.meeting.entity.Meeting;
@@ -41,14 +40,12 @@ public class MeetingService {
         memberMeetingRepository.save(new MemberMeeting(member, meeting, true));
     }
     // 모임 시간 확정(주최자)
-    // Todo 예외처리
     public void decideMeetingTime(Member member, LocalDateTime confirmDateTime, Long meetingId){
         Meeting meeting = findMeeting(meetingId);
 
         MemberMeeting memberMeeting = findMemberMeeting(member, meeting);
 
         if (!memberMeeting.isHost()){
-            //Todo 예외처리
             throw new IllegalStateException("권한이 없습니다.");
         }
 
