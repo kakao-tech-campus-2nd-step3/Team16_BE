@@ -3,7 +3,7 @@ package org.cookieandkakao.babting.domain.meeting.controller;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseBody.SuccessBody;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseGenerator;
 import org.cookieandkakao.babting.domain.food.service.FoodService;
-import org.cookieandkakao.babting.domain.meeting.dto.request.ConfirmDateTimeGetRequest;
+import org.cookieandkakao.babting.domain.meeting.dto.request.ConfirmMeetingGetRequest;
 import org.cookieandkakao.babting.domain.meeting.dto.request.MeetingCreateRequest;
 import org.cookieandkakao.babting.domain.meeting.service.MeetingService;
 import org.cookieandkakao.babting.domain.member.entity.Member;
@@ -50,9 +50,10 @@ public class MeetingController {
     public ResponseEntity<SuccessBody<Void>> decideMeeting(
         @PathVariable("meetingId") Long meetingId,
         Member member,
-        ConfirmDateTimeGetRequest confirmDateTimeGetRequest
+        ConfirmMeetingGetRequest confirmMeetingGetRequest
     ){
-        meetingService.decideMeetingTime(member, confirmDateTimeGetRequest.confirmDateTime(), meetingId);
+        meetingService.decideMeeting(member, confirmMeetingGetRequest.confirmFoodId(),
+            confirmMeetingGetRequest.confirmDateTime(), meetingId);
         return ApiResponseGenerator.success(HttpStatus.OK, "모임 시간 확정 성공");
     }
 

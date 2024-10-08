@@ -3,6 +3,8 @@ package org.cookieandkakao.babting.domain.meeting.service;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
+import org.cookieandkakao.babting.domain.food.entity.Food;
+import org.cookieandkakao.babting.domain.food.service.FoodRepositoryService;
 import org.cookieandkakao.babting.domain.meeting.dto.request.MeetingCreateRequest;
 import org.cookieandkakao.babting.domain.meeting.entity.Location;
 import org.cookieandkakao.babting.domain.meeting.entity.Meeting;
@@ -21,13 +23,17 @@ public class MeetingService {
     private final MeetingEventRepository meetingEventRepository;
     private final MemberMeetingRepository memberMeetingRepository;
     private final LocationRepository locationRepository;
+    private final FoodRepositoryService foodRepositoryService;
 
-    public MeetingService(MeetingRepository meetingRepository, MeetingEventRepository meetingEventRepository,
-        MemberMeetingRepository memberMeetingRepository, LocationRepository locationRepository) {
+    public MeetingService(MeetingRepository meetingRepository,
+        MeetingEventRepository meetingEventRepository,
+        MemberMeetingRepository memberMeetingRepository,
+        LocationRepository locationRepository, FoodRepositoryService foodRepositoryService) {
         this.meetingRepository = meetingRepository;
         this.meetingEventRepository = meetingEventRepository;
         this.memberMeetingRepository = memberMeetingRepository;
         this.locationRepository = locationRepository;
+        this.foodRepositoryService = foodRepositoryService;
     }
 
     // 모임 생성(주최자)
@@ -40,7 +46,7 @@ public class MeetingService {
         memberMeetingRepository.save(new MemberMeeting(member, meeting, true));
     }
     // 모임 시간 확정(주최자)
-    public void decideMeetingTime(Member member, LocalDateTime confirmDateTime, Long meetingId){
+    public void decideMeeting(Member member, Long confirmFoodId, LocalDateTime confirmDateTime, Long meetingId){
         Meeting meeting = findMeeting(meetingId);
 
         MemberMeeting memberMeeting = findMemberMeeting(member, meeting);
@@ -53,6 +59,10 @@ public class MeetingService {
             throw new IllegalStateException("이미 모임 시간이 확정되었습니다.");
         }
         
+        if (confirmFoodId != null){
+            Food food = foodRepositoryService.findFoodById(confirmFoodId);
+            meeting.confirmFood(food);
+        }
         meeting.confirmDateTime(confirmDateTime);
     }
 

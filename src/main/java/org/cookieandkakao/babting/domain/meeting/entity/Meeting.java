@@ -66,6 +66,10 @@ public class Meeting {
         this.confirmDateTime = confirmDateTime;
     }
 
+    public void confirmFood (Food food){
+        this.confirmedFood = food;
+    }
+
     public LocalDateTime getConfirmDateTime() {
         return confirmDateTime;
     }
