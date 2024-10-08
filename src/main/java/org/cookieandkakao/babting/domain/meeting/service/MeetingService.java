@@ -14,6 +14,7 @@ import org.cookieandkakao.babting.domain.meeting.repository.MeetingEventReposito
 import org.cookieandkakao.babting.domain.meeting.repository.MeetingRepository;
 import org.cookieandkakao.babting.domain.meeting.repository.MemberMeetingRepository;
 import org.cookieandkakao.babting.domain.member.entity.Member;
+import org.cookieandkakao.babting.domain.member.service.MemberService;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,20 +25,24 @@ public class MeetingService {
     private final MemberMeetingRepository memberMeetingRepository;
     private final LocationRepository locationRepository;
     private final FoodRepositoryService foodRepositoryService;
+    private final MemberService memberService;
 
     public MeetingService(MeetingRepository meetingRepository,
         MeetingEventRepository meetingEventRepository,
         MemberMeetingRepository memberMeetingRepository,
-        LocationRepository locationRepository, FoodRepositoryService foodRepositoryService) {
+        LocationRepository locationRepository, FoodRepositoryService foodRepositoryService,
+        MemberService memberService) {
         this.meetingRepository = meetingRepository;
         this.meetingEventRepository = meetingEventRepository;
         this.memberMeetingRepository = memberMeetingRepository;
         this.locationRepository = locationRepository;
         this.foodRepositoryService = foodRepositoryService;
+        this.memberService = memberService;
     }
 
     // 모임 생성(주최자)
-    public void createMeeting(Member member, MeetingCreateRequest meetingCreateRequest){
+    public void createMeeting(Long memberId, MeetingCreateRequest meetingCreateRequest){
+        Member member = memberService.findMember(memberId);
         Meeting meeting = meetingCreateRequest.toEntity();
         Location baseLocation = meetingCreateRequest.baseLocation().toEntity();
 
@@ -46,7 +51,8 @@ public class MeetingService {
         memberMeetingRepository.save(new MemberMeeting(member, meeting, true));
     }
     // 모임 시간 확정(주최자)
-    public void decideMeeting(Member member, Long confirmFoodId, LocalDateTime confirmDateTime, Long meetingId){
+    public void decideMeeting(Long memberId, Long confirmFoodId, LocalDateTime confirmDateTime, Long meetingId){
+        Member member = memberService.findMember(memberId);
         Meeting meeting = findMeeting(meetingId);
 
         MemberMeeting memberMeeting = findMemberMeeting(member, meeting);
@@ -67,13 +73,15 @@ public class MeetingService {
     }
 
     // 모임 참가(초대받은사람)
-    public void joinMeeting(Member member, Long meetingId){
+    public void joinMeeting(Long memberId, Long meetingId){
+        Member member = memberService.findMember(memberId);
         Meeting meeting = findMeeting(meetingId);
         //Todo 초대받았는지 확인하는 로직 추가
         memberMeetingRepository.save(new MemberMeeting(member, meeting, false));
     }
     // 모임 탈퇴(주최자, 초대받은 사람)
-    public void exitMeeting(Member member, Long meetingId){
+    public void exitMeeting(Long memberId, Long meetingId){
+        Member member = memberService.findMember(memberId);
         Meeting meeting = findMeeting(meetingId);
         MemberMeeting memberMeeting = findMemberMeeting(member, meeting);
         if (memberMeeting.isHost()){

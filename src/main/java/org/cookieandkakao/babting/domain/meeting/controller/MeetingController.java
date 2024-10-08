@@ -1,5 +1,6 @@
 package org.cookieandkakao.babting.domain.meeting.controller;
 
+import org.cookieandkakao.babting.common.annotaion.LoginMemberId;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseBody.SuccessBody;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseGenerator;
 import org.cookieandkakao.babting.domain.food.service.FoodService;
@@ -29,9 +30,9 @@ public class MeetingController {
     // 모임 생성(주최자)
     @PostMapping
     public ResponseEntity<SuccessBody<Void>> createMeeting(
-        Member member,
+        @LoginMemberId Long memberId,
         MeetingCreateRequest meetingCreateRequest){
-        meetingService.createMeeting(member, meetingCreateRequest);
+        meetingService.createMeeting(memberId, meetingCreateRequest);
         return ApiResponseGenerator.success(HttpStatus.CREATED, "모임 생성 성공");
     }
 
@@ -39,7 +40,7 @@ public class MeetingController {
     @PostMapping("/{meetingId}/join")
     public ResponseEntity<SuccessBody<Void>> joinMeeting(
         @PathVariable("meetingId") Long meetingId,
-        Member member
+        @LoginMemberId Long memberId
     ){
         // Todo 지우님 전략 패턴 적용 후 코드 추가 예정
         return ApiResponseGenerator.success(HttpStatus.OK, "모임 참가 성공");
@@ -49,10 +50,10 @@ public class MeetingController {
     @PostMapping("/{meetingId}/confirm")
     public ResponseEntity<SuccessBody<Void>> decideMeeting(
         @PathVariable("meetingId") Long meetingId,
-        Member member,
+        @LoginMemberId Long memberId,
         ConfirmMeetingGetRequest confirmMeetingGetRequest
     ){
-        meetingService.decideMeeting(member, confirmMeetingGetRequest.confirmFoodId(),
+        meetingService.decideMeeting(memberId, confirmMeetingGetRequest.confirmFoodId(),
             confirmMeetingGetRequest.confirmDateTime(), meetingId);
         return ApiResponseGenerator.success(HttpStatus.OK, "모임 시간 확정 성공");
     }
@@ -61,9 +62,9 @@ public class MeetingController {
     @DeleteMapping("/{meetingId}")
     public ResponseEntity<SuccessBody<Void>> exitMeeting(
         @PathVariable("meetingId") Long meetingId,
-        Member member
+        @LoginMemberId Long memberId
     ){
-        meetingService.exitMeeting(member, meetingId);
+        meetingService.exitMeeting(memberId, meetingId);
         return ApiResponseGenerator.success(HttpStatus.OK, "모임 탈퇴 성공");
     }
 
