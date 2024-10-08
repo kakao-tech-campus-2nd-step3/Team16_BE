@@ -47,7 +47,7 @@ public class Meeting {
     private LocalTime endTime;
 
     @Column
-    private LocalDateTime confirmDateTime;
+    private LocalDateTime confirmedDateTime;
 
     protected Meeting(){}
 
@@ -62,8 +62,8 @@ public class Meeting {
         this.endTime = endTime;
     }
 
-    public void confirmDateTime(LocalDateTime confirmDateTime){
-        this.confirmDateTime = confirmDateTime;
+    public void confirmDateTime(LocalDateTime confirmedDateTime){
+        this.confirmedDateTime = confirmedDateTime;
     }
 
     public void confirmFood (Food food){
@@ -71,6 +71,6 @@ public class Meeting {
     }
 
     public LocalDateTime getConfirmDateTime() {
-        return confirmDateTime;
+        return confirmedDateTime;
     }
 }
