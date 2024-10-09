@@ -6,9 +6,9 @@ import org.cookieandkakao.babting.domain.food.dto.FoodPreferenceGetResponse;
 import java.util.List;
 
 public interface FoodPreferenceStrategy {
-    FoodPreferenceGetResponse addPreference(FoodPreferenceCreateRequest request);
+    FoodPreferenceGetResponse addPreference(FoodPreferenceCreateRequest request, Long memberId);
 
-    void deletePreference(Long foodId);
+    void deletePreference(Long foodId, Long memberId);
 
-    List<FoodPreferenceGetResponse> getAllPreferences();
+    List<FoodPreferenceGetResponse> getAllPreferencesByMember(Long memberId);
 }

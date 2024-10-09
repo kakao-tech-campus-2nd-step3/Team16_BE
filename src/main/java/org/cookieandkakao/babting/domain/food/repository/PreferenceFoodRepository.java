@@ -2,14 +2,15 @@ package org.cookieandkakao.babting.domain.food.repository;
 
 import org.cookieandkakao.babting.domain.food.entity.Food;
 import org.cookieandkakao.babting.domain.food.entity.PreferenceFood;
+import org.cookieandkakao.babting.domain.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
 public interface PreferenceFoodRepository extends JpaRepository<PreferenceFood, Long> {
-    boolean existsByFood(Food food);
+    boolean existsByFoodAndMember(Food food, Member member);
 
-    Optional<PreferenceFood> findByFood(Food food);
+    Optional<PreferenceFood> findByFoodAndMember(Food food, Member member);
 
-    void deleteByFood(Food food);
+    void deleteByFoodAndMember(Food food, Member member);
 }
