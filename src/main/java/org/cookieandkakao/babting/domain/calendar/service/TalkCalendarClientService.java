@@ -3,6 +3,7 @@ package org.cookieandkakao.babting.domain.calendar.service;
 
 import java.net.URI;
 import java.util.Map;
+import org.cookieandkakao.babting.common.properties.KakaoProviderProperties;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventDetailGetResponse;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventListGetResponse;
 import org.springframework.http.HttpHeaders;
@@ -15,9 +16,14 @@ import org.springframework.web.client.RestClient;
 public class TalkCalendarClientService {
 
     private final RestClient restClient = RestClient.builder().build();
+    private final KakaoProviderProperties kakaoProviderProperties;
+
+    public TalkCalendarClientService(KakaoProviderProperties kakaoProviderProperties) {
+        this.kakaoProviderProperties = kakaoProviderProperties;
+    }
 
     public EventListGetResponse getEventList(String accessToken, String from, String to) {
-        String url = "https://kapi.kakao.com/v2/api/calendar/events";
+        String url = kakaoProviderProperties.calendarEventListUri();
         URI uri = buildUri(url, from, to);
         try {
             ResponseEntity<EventListGetResponse> response = restClient.get()
@@ -32,7 +38,7 @@ public class TalkCalendarClientService {
     }
 
     public EventDetailGetResponse getEvent(String accessToken, String eventId) {
-        String url = "https://kapi.kakao.com/v2/api/calendar/event";
+        String url = kakaoProviderProperties.calendarEventDetailUri();
         URI uri = buildGetEventUri(url, eventId);
 
         try {
@@ -49,7 +55,7 @@ public class TalkCalendarClientService {
 
     public Map<String, Object> createEvent(String accessToken,
         MultiValueMap<String, String> formData) {
-        String url = "https://kapi.kakao.com/v2/api/calendar/create/event";
+        String url = kakaoProviderProperties.calendarCreateEventUri();
         URI uri = URI.create(url);
         try {
             ResponseEntity<Map> response = restClient.post()
