@@ -2,6 +2,7 @@ package org.cookieandkakao.babting.domain.calendar.controller;
 
 import jakarta.validation.Valid;
 import java.util.List;
+import org.cookieandkakao.babting.common.annotaion.LoginMemberId;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseBody.SuccessBody;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseGenerator;
 import org.cookieandkakao.babting.domain.calendar.dto.request.EventCreateRequest;
@@ -37,14 +38,12 @@ public class TalkCalendarController {
 
     @GetMapping("/events")
     public ResponseEntity<SuccessBody<EventListGetResponse>> getEventList(
-        @RequestHeader(value = "Authorization") String authorizationHeader,
         @RequestParam String from,
         @RequestParam String to,
-        @RequestParam Long memberId
+        @LoginMemberId Long memberId
     ) {
-        String accessToken = authorizationHeader.replace("Bearer ", "");
 
-        List<EventGetResponse> updatedEvents = talkCalendarService.getUpdatedEventList(accessToken, from, to, memberId);
+        List<EventGetResponse> updatedEvents = talkCalendarService.getUpdatedEventList(from, to, memberId);
         EventListGetResponse eventList = new EventListGetResponse(updatedEvents);
 
         if (updatedEvents.isEmpty()) {
@@ -56,13 +55,10 @@ public class TalkCalendarController {
 
     @GetMapping("/events/{event_id}")
     public ResponseEntity<SuccessBody<EventDetailGetResponse>> getEvent(
-        @RequestHeader(value = "Authorization") String authorizationHeader,
         @PathVariable("event_id") String eventId,
-        @RequestParam Long memberId
+        @LoginMemberId Long memberId
     ) {
-        String accessToken = authorizationHeader.replace("Bearer ", "");
-
-        EventDetailGetResponse eventDetailGetResponse = talkCalendarService.getEvent(accessToken, eventId);
+        EventDetailGetResponse eventDetailGetResponse = talkCalendarService.getEvent(memberId, eventId);
 
         if (eventDetailGetResponse == null) {
             return ApiResponseGenerator.success(HttpStatus.OK, "조회된 일정이 없습니다.",
@@ -74,14 +70,11 @@ public class TalkCalendarController {
 
     @PostMapping("/events")
     public ResponseEntity<SuccessBody<EventCreateResponse>> createEvent(
-        @RequestHeader(value = "Authorization") String authorizationHeader,
         @Valid @RequestBody EventCreateRequest eventRequestDto,
-        @RequestParam Long memberId
+        @LoginMemberId Long memberId
     ) {
-        String accessToken = authorizationHeader.replace("Bearer ", "");
         // 카카오 api로 일정 생성
-        EventCreateResponse eventCreateResponse = talkCalendarService.createEvent(
-            accessToken, eventRequestDto, memberId);
+        EventCreateResponse eventCreateResponse = talkCalendarService.createEvent(eventRequestDto, memberId);
         return ApiResponseGenerator.success(HttpStatus.CREATED, "일정이 성공적으로 생성되었습니다.",
             eventCreateResponse);
     }
