@@ -2,7 +2,6 @@ package org.cookieandkakao.babting.domain.calendar.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +10,8 @@ import org.cookieandkakao.babting.domain.calendar.dto.response.EventCreateRespon
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventDetailGetResponse;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventGetResponse;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventListGetResponse;
+import org.cookieandkakao.babting.domain.member.entity.KakaoToken;
+import org.cookieandkakao.babting.domain.member.service.MemberService;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -23,21 +24,25 @@ public class TalkCalendarService {
     private final TalkCalendarClientService talkCalendarClientService;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final EventService eventService;
+    private final MemberService memberService;
 
-    public TalkCalendarService(EventService eventService, TalkCalendarClientService talkCalendarClientService) {
+    public TalkCalendarService(EventService eventService, TalkCalendarClientService talkCalendarClientService,
+        MemberService memberService) {
         this.eventService = eventService;
         this.talkCalendarClientService = talkCalendarClientService;
+        this.memberService = memberService;
     }
 
     // 일정 목록을 조회할 때 캐시 적용
     @Cacheable(value = "eventListCache", key = "#memberId")
-    public List<EventGetResponse> getUpdatedEventList(String accessToken, String from, String to, Long memberId) {
-        EventListGetResponse eventList = talkCalendarClientService.getEventList(accessToken, from, to);
+    public List<EventGetResponse> getUpdatedEventList(String from, String to, Long memberId) {
+        String kakaoAccessToken = getKakaoAccessToken(memberId);
+        EventListGetResponse eventList = talkCalendarClientService.getEventList(kakaoAccessToken, from, to);
         List<EventGetResponse> updatedEvents = new ArrayList<>();
 
         for (EventGetResponse event : eventList.events()) {
             if (event.id() != null) {
-                event = talkCalendarClientService.getEvent(accessToken, event.id()).event();
+                event = talkCalendarClientService.getEvent(kakaoAccessToken, event.id()).event();
                 updatedEvents.add(event);
             } else {
                 updatedEvents.add(event);
@@ -48,13 +53,15 @@ public class TalkCalendarService {
     }
 
     @Cacheable(value = "eventDetailCache", key = "#eventId")
-    public EventDetailGetResponse getEvent(String accessToken, String eventId) {
-        return talkCalendarClientService.getEvent(accessToken, eventId);
+    public EventDetailGetResponse getEvent(Long memberId, String eventId) {
+        String kakaoAccessToken = getKakaoAccessToken(memberId);
+        return talkCalendarClientService.getEvent(kakaoAccessToken, eventId);
     }
 
     @CacheEvict(value = "eventListCache", key = "#memberId")
-    public EventCreateResponse createEvent(String accessToken,
+    public EventCreateResponse createEvent(
         EventCreateRequest eventCreateRequest, Long memberId) {
+        String kakaoAccessToken = getKakaoAccessToken(memberId);
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         // event라는 key에 JSON 형태의 데이터를 추가해야 함
         // EventCreateRequestDto를 JSON으로 변환
@@ -62,7 +69,7 @@ public class TalkCalendarService {
         // event라는 key로 JSON 데이터를 추가
         formData.add("event", eventJson);
         // 응답에서 event_id 추출
-        Map<String, Object> responseBody =talkCalendarClientService.createEvent(accessToken, formData);
+        Map<String, Object> responseBody =talkCalendarClientService.createEvent(kakaoAccessToken, formData);
         if (responseBody != null && responseBody.containsKey("event_id")) {
             String eventId = responseBody.get("event_id").toString();
             // EventCreateResponseDto로 응답 반환
@@ -78,5 +85,10 @@ public class TalkCalendarService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+    private String getKakaoAccessToken(Long memberId) {
+        KakaoToken kakaoToken = memberService.getKakaoToken(memberId);
+        String kakaoAccessToken = kakaoToken.getAccessToken();
+        return kakaoAccessToken;
     }
 }
