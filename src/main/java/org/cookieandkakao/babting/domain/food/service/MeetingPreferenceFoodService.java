@@ -43,4 +43,3 @@ public class MeetingPreferenceFoodService implements MeetingFoodPreferenceStrate
                 .collect(Collectors.toList());
     }
 }
-

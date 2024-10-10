@@ -43,4 +43,3 @@ public class MeetingNonPreferenceFoodService implements MeetingFoodPreferenceStr
                 .collect(Collectors.toList());
     }
 }
-

@@ -24,8 +24,7 @@ public class MeetingPreferenceFood {
     @JoinColumn(name = "member_meeting_id", nullable = false)
     private MemberMeeting memberMeeting;
 
-    public MeetingPreferenceFood() {
-    }
+    protected MeetingPreferenceFood() {}
 
     public MeetingPreferenceFood(Food food, MemberMeeting memberMeeting) {
         this.food = food;
