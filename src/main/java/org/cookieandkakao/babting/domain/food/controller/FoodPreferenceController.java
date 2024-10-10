@@ -42,8 +42,12 @@ public class FoodPreferenceController {
             @LoginMemberId Long memberId
     ) {
         FoodPreferenceStrategy strategy = getStrategy(type);
-
         List<FoodPreferenceGetResponse> preferences = strategy.getAllPreferencesByMember(memberId);
+
+        if (preferences.isEmpty()) {
+            return ApiResponseGenerator.success(HttpStatus.NO_CONTENT, "조회된 음식이 없습니다", null);
+        }
+
         return ApiResponseGenerator.success(HttpStatus.OK, "음식 조회 성공", preferences);
     }
 
