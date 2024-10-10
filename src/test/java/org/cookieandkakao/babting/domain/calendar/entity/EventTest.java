@@ -13,14 +13,17 @@ class EventTest {
     @Test
     void eventCreationTest() {
         // Given
-        PersonalCalendar personalCalendar = new PersonalCalendar(new Member(1L)); // Member ID는 예시입니다.
-        Time time = new Time(LocalDateTime.now(), LocalDateTime.now().plusHours(1), "Asia/Seoul", false);
+        PersonalCalendar personalCalendar = new PersonalCalendar(
+            new Member(1L)); // Member ID는 예시입니다.
+        Time time = new Time(LocalDateTime.now(), LocalDateTime.now().plusHours(1), "Asia/Seoul",
+            false);
         String kakaoEventId = "12345";
         String title = "Test Event";
         String description = "This is a test event";
 
         // When
-        Event event = new Event(personalCalendar, time, null, kakaoEventId, title, false, null, null, description, null, null);
+        Event event = new Event(personalCalendar, time, null, kakaoEventId, title, false, null,
+            null, description, null, null);
 
         // Then
         assertNotNull(event);

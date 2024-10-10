@@ -13,7 +13,9 @@ class ReminderTest {
     @Test
     void reminderCreateTest() {
         // Given
-        Event event = new Event(new PersonalCalendar(new Member(1L)), new Time(LocalDateTime.now(), LocalDateTime.now().plusHours(1), "Asia/Seoul", false), null, "12345", "Test Event", false, null, null, null, null, null);
+        Event event = new Event(new PersonalCalendar(new Member(1L)),
+            new Time(LocalDateTime.now(), LocalDateTime.now().plusHours(1), "Asia/Seoul", false),
+            null, "12345", "Test Event", false, null, null, null, null, null);
         Long remindTime = 60L;
 
         // When
