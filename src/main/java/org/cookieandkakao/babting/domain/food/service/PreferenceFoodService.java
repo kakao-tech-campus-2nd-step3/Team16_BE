@@ -31,7 +31,9 @@ public class PreferenceFoodService implements FoodPreferenceStrategy {
 
     @Override
     public List<FoodPreferenceGetResponse> getAllPreferencesByMember(Long memberId) {
-        return preferenceFoodRepository.findAll().stream()
+        Member member = memberService.findMember(memberId);
+
+        return preferenceFoodRepository.findAllByMember(member).stream()
                 .map(preferenceFood -> new FoodPreferenceGetResponse(
                         preferenceFood.getFood().getFoodId(),
                         preferenceFood.getFood().getFoodCategory().getName(),

@@ -5,6 +5,7 @@ import org.cookieandkakao.babting.domain.food.entity.PreferenceFood;
 import org.cookieandkakao.babting.domain.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface PreferenceFoodRepository extends JpaRepository<PreferenceFood, Long> {
@@ -13,4 +14,6 @@ public interface PreferenceFoodRepository extends JpaRepository<PreferenceFood, 
     Optional<PreferenceFood> findByFoodAndMember(Food food, Member member);
 
     void deleteByFoodAndMember(Food food, Member member);
+
+    List<PreferenceFood> findAllByMember(Member member);
 }
