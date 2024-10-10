@@ -2,7 +2,6 @@ package org.cookieandkakao.babting.domain.food.repository;
 
 import org.cookieandkakao.babting.domain.food.entity.Food;
 import org.cookieandkakao.babting.domain.food.entity.NonPreferenceFood;
-import org.cookieandkakao.babting.domain.food.entity.PreferenceFood;
 import org.cookieandkakao.babting.domain.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -16,5 +15,5 @@ public interface NonPreferenceFoodRepository extends JpaRepository<NonPreference
 
     void deleteByFoodAndMember(Food food, Member member);
 
-    List<PreferenceFood> findAllByMember(Member member);
+    List<NonPreferenceFood> findAllByMember(Member member);
 }
