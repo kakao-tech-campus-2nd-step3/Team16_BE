@@ -1,5 +1,6 @@
 package org.cookieandkakao.babting.domain.calendar.service;
 
+import org.cookieandkakao.babting.common.exception.customexception.MemberNotFoundException;
 import org.cookieandkakao.babting.domain.calendar.entity.PersonalCalendar;
 import org.cookieandkakao.babting.domain.calendar.repository.PersonalCalendarRepository;
 import org.cookieandkakao.babting.domain.member.entity.Member;
@@ -27,7 +28,7 @@ public class PersonalCalendarService {
             .orElseGet(() -> {
                 // 멤버를 먼저 조회
                 Member member = memberRepository.findById(memberId)
-                    .orElseThrow(() -> new IllegalArgumentException("해당 ID의 멤버를 찾을 수 없습니다."));
+                    .orElseThrow(() -> new MemberNotFoundException("해당 ID의 멤버를 찾을 수 없습니다."));
 
                 // 새로운 개인 캘린더 생성
                 PersonalCalendar newCalendar = new PersonalCalendar(member);

@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.cookieandkakao.babting.common.exception.customexception.EventCreationException;
+import org.cookieandkakao.babting.common.exception.customexception.JsonConversionException;
 import org.cookieandkakao.babting.domain.calendar.dto.request.EventCreateRequest;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventCreateResponse;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventDetailGetResponse;
@@ -75,7 +77,7 @@ public class TalkCalendarService {
             // EventCreateResponseDto로 응답 반환
             return new EventCreateResponse(eventId);
         }
-        throw new RuntimeException("Event 생성 중 오류 발생: 응답에서 event_id가 없습니다.");
+        throw new EventCreationException("Event 생성 중 오류 발생: 응답에서 event_id가 없습니다.");
     }
 
     // EventCreateRequestDto를 JSON 문자열로 변환하는 메서드
@@ -83,7 +85,7 @@ public class TalkCalendarService {
         try {
             return objectMapper.writeValueAsString(eventCreateRequest);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new JsonConversionException("JSON 변환 중 오류가 발생했습니다.");
         }
     }
     private String getKakaoAccessToken(Long memberId) {

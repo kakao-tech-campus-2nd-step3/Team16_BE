@@ -3,6 +3,7 @@ package org.cookieandkakao.babting.domain.calendar.service;
 
 import java.net.URI;
 import java.util.Map;
+import org.cookieandkakao.babting.common.exception.customexception.ApiException;
 import org.cookieandkakao.babting.common.properties.KakaoProviderProperties;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventDetailGetResponse;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventListGetResponse;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 
 @Service
 public class TalkCalendarClientService {
@@ -32,8 +34,8 @@ public class TalkCalendarClientService {
                 .retrieve()
                 .toEntity(EventListGetResponse.class);
             return response.getBody();
-        } catch (Exception e) {
-            throw new RuntimeException("API 호출 중 오류 발생");
+        } catch (RestClientException e) {
+            throw new ApiException("API 호출 중 오류 발생");
         }
     }
 
@@ -48,8 +50,8 @@ public class TalkCalendarClientService {
                 .retrieve()
                 .toEntity(EventDetailGetResponse.class);
             return response.getBody();
-        } catch (Exception e) {
-            throw new RuntimeException("API 호출 중 오류 발생", e);
+        } catch (RestClientException e) {
+            throw new ApiException("API 호출 중 오류 발생");
         }
     }
 
@@ -66,8 +68,8 @@ public class TalkCalendarClientService {
                 .retrieve()
                 .toEntity(Map.class);
             return response.getBody();
-        } catch (Exception e) {
-            throw new RuntimeException("API 호출 중 오류 발생", e);
+        } catch (RestClientException e) {
+            throw new ApiException("API 호출 중 오류 발생");
         }
     }
 
