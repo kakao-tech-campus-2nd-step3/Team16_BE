@@ -1,5 +1,6 @@
 package org.cookieandkakao.babting.domain.meeting.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.cookieandkakao.babting.domain.meeting.entity.Meeting;
 import org.cookieandkakao.babting.domain.meeting.entity.MemberMeeting;
@@ -11,4 +12,5 @@ import org.springframework.stereotype.Repository;
 public interface MemberMeetingRepository extends JpaRepository<MemberMeeting, Long> {
     Optional<MemberMeeting> findMemberMeetingByMemberAndMeeting(Member member, Meeting meeting);
     void deleteAllByMeeting(Meeting meeting);
+    Optional<List<MemberMeeting>> findByMeeting(Meeting meeting);
 }
