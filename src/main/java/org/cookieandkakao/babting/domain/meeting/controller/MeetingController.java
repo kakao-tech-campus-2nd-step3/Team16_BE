@@ -1,16 +1,20 @@
 package org.cookieandkakao.babting.domain.meeting.controller;
 
+import java.util.List;
 import org.cookieandkakao.babting.common.annotaion.LoginMemberId;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseBody.SuccessBody;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseGenerator;
 import org.cookieandkakao.babting.domain.food.service.FoodService;
 import org.cookieandkakao.babting.domain.meeting.dto.request.ConfirmMeetingGetRequest;
 import org.cookieandkakao.babting.domain.meeting.dto.request.MeetingCreateRequest;
+import org.cookieandkakao.babting.domain.meeting.dto.response.MeetingGetResponse;
+import org.cookieandkakao.babting.domain.meeting.entity.MemberMeeting;
 import org.cookieandkakao.babting.domain.meeting.service.MeetingService;
 import org.cookieandkakao.babting.domain.member.entity.Member;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -69,10 +73,11 @@ public class MeetingController {
     }
 
     // 참여 모임 목록 조회
-//    @GetMapping
-//    public ResponseEntity<SuccessBody<MeetingGetResponse>> getAllMeeting(
-//        Member member
-//    ){
-//
-//    }
+    @GetMapping
+    public ResponseEntity<SuccessBody<List<MeetingGetResponse>>> getAllMeeting(
+        @LoginMemberId Long memberId
+    ){
+        List<MeetingGetResponse> meetings = meetingService.getAllMeetings(memberId);
+        return ApiResponseGenerator.success(HttpStatus.OK, "참여 모임 목록 조회 성공", meetings);
+    }
 }

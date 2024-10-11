@@ -2,10 +2,13 @@ package org.cookieandkakao.babting.domain.meeting.service;
 
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 import org.cookieandkakao.babting.domain.food.entity.Food;
 import org.cookieandkakao.babting.domain.food.service.FoodRepositoryService;
 import org.cookieandkakao.babting.domain.meeting.dto.request.MeetingCreateRequest;
+import org.cookieandkakao.babting.domain.meeting.dto.response.MeetingGetResponse;
 import org.cookieandkakao.babting.domain.meeting.entity.Location;
 import org.cookieandkakao.babting.domain.meeting.entity.Meeting;
 import org.cookieandkakao.babting.domain.meeting.entity.MemberMeeting;
@@ -94,6 +97,14 @@ public class MeetingService {
         }
     }
 
+    // 모임 목록 조회
+    public List<MeetingGetResponse> getAllMeetings(Long memberId){
+        Member member = memberService.findMember(memberId);
+        List<Meeting> meetingList = memberMeetingRepository.findMeetingsByMember(member);
+        return meetingList.stream()
+            .map(MeetingGetResponse::from)
+            .collect(Collectors.toList());
+    }
     private Meeting findMeeting(Long meetingId){
         return meetingRepository.findById(meetingId)
             .orElseThrow(() -> new NoSuchElementException("해당 모임이 존재하지 않습니다."));
