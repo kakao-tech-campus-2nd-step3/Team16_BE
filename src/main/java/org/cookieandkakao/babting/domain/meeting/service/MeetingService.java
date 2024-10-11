@@ -79,7 +79,11 @@ public class MeetingService {
     public void joinMeeting(Long memberId, Long meetingId){
         Member member = memberService.findMember(memberId);
         Meeting meeting = findMeeting(meetingId);
-        //Todo 초대받았는지 확인하는 로직 추가
+
+        boolean isJoinMeeting = memberMeetingRepository.existsByMemberAndMeeting(member, meeting);
+        if (isJoinMeeting){
+            throw new IllegalStateException("이미 모임에 참가한 상태입니다.");
+        }
         memberMeetingRepository.save(new MemberMeeting(member, meeting, false));
     }
     // 모임 탈퇴(주최자, 초대받은 사람)
