@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.cookieandkakao.babting.domain.food.entity.Food;
 import org.cookieandkakao.babting.domain.food.service.FoodRepositoryService;
@@ -11,6 +12,7 @@ import org.cookieandkakao.babting.domain.meeting.dto.request.MeetingCreateReques
 import org.cookieandkakao.babting.domain.meeting.dto.response.MeetingGetResponse;
 import org.cookieandkakao.babting.domain.meeting.entity.Location;
 import org.cookieandkakao.babting.domain.meeting.entity.Meeting;
+import org.cookieandkakao.babting.domain.meeting.entity.MeetingEvent;
 import org.cookieandkakao.babting.domain.meeting.entity.MemberMeeting;
 import org.cookieandkakao.babting.domain.meeting.repository.LocationRepository;
 import org.cookieandkakao.babting.domain.meeting.repository.MeetingEventRepository;
@@ -93,14 +95,32 @@ public class MeetingService {
         Member member = memberService.findMember(memberId);
         Meeting meeting = findMeeting(meetingId);
         MemberMeeting memberMeeting = findMemberMeeting(member, meeting);
-        if (memberMeeting.isHost()){
-            // 단일 쿼리로 삭제되는지 쿼리 여러개로 삭제되는지 확인해야됨.
-            memberMeetingRepository.deleteAllByMeeting(meeting);
+
+        // 모임 확정 전
+        if (meeting.getConfirmDateTime() != null){
+            if (memberMeeting.isHost()){
+                // 해당 모임에 속하는 회원 모임 전부 삭제
+                memberMeetingRepository.deleteAllByMeeting(meeting);
+                // 모임 삭제
+                meetingRepository.delete(meeting);
+            } else {
+                // 해당 모임에 속하는 회원 모임 삭제
+                memberMeetingRepository.delete(memberMeeting);
+            }
+        // 모임 확정 후
+        } else{
             //Todo 모임 삭제 시 해당 모임의 모임 일정도 전부 삭제해야함.
-            meetingRepository.delete(meeting);
-        } else {
-            memberMeetingRepository.delete(memberMeeting);
+            //만약 톡 캘린더에서 일정을 삭제했을 시 모임 일정이 없을 수도 있음.
+            if (memberMeeting.isHost()){
+                // 해당 모임의 모든 모임 일정 삭제
+                // 해당 모임에 속하는 회원 모임 전부 삭제
+                // 모임 삭제
+            } else {
+                // 해당 모임의 일정 삭제
+                // 해당 모임에 속하는 회원 모임 전부 삭제
+            }
         }
+
     }
 
     // 모임 목록 조회
@@ -119,6 +139,11 @@ public class MeetingService {
     private MemberMeeting findMemberMeeting(Member member, Meeting meeting){
         return memberMeetingRepository.findByMemberAndMeeting(member, meeting)
             .orElseThrow(() -> new NoSuchElementException("해당 모임에 회원이 존재하지 않습니다."));
+    }
+
+    // MeetingEvent는 없을 수 있기 때문에 Optional로 반환
+    private Optional<MeetingEvent> findMeetingEvent(MemberMeeting memberMeeting){
+        return meetingEventRepository.findByMemberMeeting(memberMeeting);
     }
 
     private void saveMeetingEvent(Member member){
