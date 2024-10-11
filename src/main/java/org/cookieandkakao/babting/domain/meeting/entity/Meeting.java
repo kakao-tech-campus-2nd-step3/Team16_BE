@@ -73,4 +73,16 @@ public class Meeting {
     public LocalDateTime getConfirmDateTime() {
         return confirmedDateTime;
     }
+
+    public Location getBaseLocation() {
+        return baseLocation;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public Food getConfirmedFood() {
+        return confirmedFood;
+    }
 }

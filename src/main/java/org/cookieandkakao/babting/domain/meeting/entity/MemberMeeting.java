@@ -38,4 +38,8 @@ public class MemberMeeting {
     public boolean isHost() {
         return isHost;
     }
+
+    public Meeting getMeeting() {
+        return meeting;
+    }
 }
