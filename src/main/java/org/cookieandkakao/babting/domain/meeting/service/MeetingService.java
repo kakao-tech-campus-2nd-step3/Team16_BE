@@ -145,8 +145,4 @@ public class MeetingService {
     private Optional<MeetingEvent> findMeetingEvent(MemberMeeting memberMeeting){
         return meetingEventRepository.findByMemberMeeting(memberMeeting);
     }
-
-    private void saveMeetingEvent(Member member){
-        //Todo 모임일정추가 or 계산 로직 생각중...
-    }
 }
