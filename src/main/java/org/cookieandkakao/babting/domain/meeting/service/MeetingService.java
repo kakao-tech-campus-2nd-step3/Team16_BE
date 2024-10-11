@@ -117,7 +117,7 @@ public class MeetingService {
     }
 
     private MemberMeeting findMemberMeeting(Member member, Meeting meeting){
-        return memberMeetingRepository.findMemberMeetingByMemberAndMeeting(member, meeting)
+        return memberMeetingRepository.findByMemberAndMeeting(member, meeting)
             .orElseThrow(() -> new NoSuchElementException("해당 모임에 회원이 존재하지 않습니다."));
     }
 
