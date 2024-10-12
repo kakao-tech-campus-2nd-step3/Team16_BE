@@ -32,12 +32,12 @@ public class Reminder {
         this.remindTime = remindTime;
     }
 
-    public Long getReminderId() {
-        return reminderId;
-    }
-
     public Long getRemindTime() {
         return remindTime;
+    }
+
+    public Event getEvent() {
+        return event;
     }
 
 }

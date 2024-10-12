@@ -1,5 +1,6 @@
 package org.cookieandkakao.babting.domain.meeting.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -66,7 +67,7 @@ public class Meeting {
         this.confirmedDateTime = confirmedDateTime;
     }
 
-    public void confirmFood (Food food){
+    public void confirmFood (Food food) {
         this.confirmedFood = food;
     }
 

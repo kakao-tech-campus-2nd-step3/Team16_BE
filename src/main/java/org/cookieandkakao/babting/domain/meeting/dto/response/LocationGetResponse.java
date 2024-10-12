@@ -13,8 +13,12 @@ public record LocationGetResponse(
 
     Double longitude
 ){
-    public static LocationGetResponse from(Location location){
+    public static LocationGetResponse from(Location location) {
         return new LocationGetResponse(location.getLocationId(), location.getName(),
             location.getAddress(), location.getLatitude(), location.getLongitude());
+    }
+    public Location toEntity(){
+        return new Location(name, address, latitude, longitude);
+
     }
 }

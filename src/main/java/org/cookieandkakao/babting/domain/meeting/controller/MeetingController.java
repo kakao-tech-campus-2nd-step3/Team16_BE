@@ -4,6 +4,7 @@ import java.util.List;
 import org.cookieandkakao.babting.common.annotaion.LoginMemberId;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseBody.SuccessBody;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseGenerator;
+import org.cookieandkakao.babting.domain.calendar.dto.response.EventCreateResponse;
 import org.cookieandkakao.babting.domain.food.service.FoodService;
 import org.cookieandkakao.babting.domain.meeting.dto.request.ConfirmMeetingGetRequest;
 import org.cookieandkakao.babting.domain.meeting.dto.request.MeetingCreateRequest;
@@ -48,11 +49,12 @@ public class MeetingController {
         @LoginMemberId Long memberId
     ){
         // Todo 지우님 전략 패턴 적용 후 코드 추가 예정
+        meetingService.joinMeeting(memberId, meetingId);
         return ApiResponseGenerator.success(HttpStatus.OK, "모임 참가 성공");
     }
 
     // 모임 시간 확정(주최자)
-    @PostMapping("/{meetingId}/confirm")
+    /*@PostMapping("/{meetingId}/confirm")
     public ResponseEntity<SuccessBody<Void>> decideMeeting(
         @PathVariable("meetingId") Long meetingId,
         @LoginMemberId Long memberId,
@@ -61,6 +63,16 @@ public class MeetingController {
         meetingService.decideMeeting(memberId, confirmMeetingGetRequest.confirmFoodId(),
             confirmMeetingGetRequest.confirmDateTime(), meetingId);
         return ApiResponseGenerator.success(HttpStatus.OK, "모임 시간 확정 성공");
+    }*/
+
+    // 모임 확정(주최자)
+    @PostMapping("/{meetingId}/confirm")
+    public ResponseEntity<SuccessBody<Void>> confirmMeeting(
+        @PathVariable("meetingId") Long meetingId,
+        @LoginMemberId Long memberId
+    ) {
+        meetingService.confirmMeeting(memberId, meetingId);
+        return ApiResponseGenerator.success(HttpStatus.OK, "모임 확정 성공");
     }
 
     // 모임 탈퇴(주최자, 초대받은 사람)
