@@ -38,5 +38,20 @@ public class Time {
         this.allDay = allDay;
     }
 
+    public LocalDateTime getStartAt() {
+        return startAt;
+    }
+
+    public LocalDateTime getEndAt() {
+        return endAt;
+    }
+
+    public String getTimeZone() {
+        return timeZone;
+    }
+
+    public boolean isAllDay() {
+        return allDay;
+    }
 
 }

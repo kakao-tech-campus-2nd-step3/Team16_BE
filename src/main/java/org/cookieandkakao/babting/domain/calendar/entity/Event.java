@@ -79,4 +79,32 @@ public class Event {
         this.memo = memo;
     }
 
+    public PersonalCalendar getPersonalCalendar() {
+        return personalCalendar;
+    }
+
+    public Time getTime() {
+        return time;
+    }
+
+    public String getKakaoEventId() {
+        return kakaoEventId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getScheduleRepeatCycle() {
+        return scheduleRepeatCycle;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getType() {
+        return type;
+    }
+
 }

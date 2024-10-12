@@ -28,4 +28,8 @@ public class PersonalCalendar {
         this.member = member;
     }
 
+    public Member getMember() {
+        return member;
+    }
+
 }
