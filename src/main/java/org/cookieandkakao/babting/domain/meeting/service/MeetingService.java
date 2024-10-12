@@ -79,12 +79,12 @@ public class MeetingService {
         }
     }
 
-    private Meeting findMeeting(Long meetingId){
+    public Meeting findMeeting(Long meetingId){
         return meetingRepository.findById(meetingId)
             .orElseThrow(() -> new NoSuchElementException("해당 모임이 존재하지 않습니다."));
     }
 
-    private MemberMeeting findMemberMeeting(Member member, Meeting meeting){
+    public MemberMeeting findMemberMeeting(Member member, Meeting meeting){
         return memberMeetingRepository.findMemberMeetingByMemberAndMeeting(member, meeting)
             .orElseThrow(() -> new NoSuchElementException("해당 모임에 회원이 존재하지 않습니다."));
     }

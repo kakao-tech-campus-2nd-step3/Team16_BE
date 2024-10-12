@@ -23,4 +23,15 @@ public class MeetingPreferenceFood {
     @ManyToOne
     @JoinColumn(name = "member_meeting_id", nullable = false)
     private MemberMeeting memberMeeting;
+
+    protected MeetingPreferenceFood() {}
+
+    public MeetingPreferenceFood(Food food, MemberMeeting memberMeeting) {
+        this.food = food;
+        this.memberMeeting = memberMeeting;
+    }
+
+    public Food getFood() {
+        return food;
+    }
 }
