@@ -9,7 +9,6 @@ import org.cookieandkakao.babting.domain.food.service.FoodService;
 import org.cookieandkakao.babting.domain.meeting.dto.request.ConfirmDateTimeGetRequest;
 import org.cookieandkakao.babting.domain.meeting.dto.request.MeetingCreateRequest;
 import org.cookieandkakao.babting.domain.meeting.service.MeetingService;
-import org.cookieandkakao.babting.domain.meeting.service.MemberMeetingService;
 import org.cookieandkakao.babting.domain.member.entity.Member;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +24,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class MeetingController {
     private final MeetingService meetingService;
     private final FoodService foodService;
-    private final MemberMeetingService memberMeetingService;
 
     public MeetingController(MeetingService meetingService, FoodService foodService
-    , MeetingService meetingService2, MemberMeetingService memberMeetingService) {
+    , MeetingService meetingService2) {
         this.meetingService = meetingService;
         this.foodService = foodService;
-        this.memberMeetingService = memberMeetingService;
     }
 
     // 모임 생성(주최자)
