@@ -21,7 +21,7 @@ public class Meeting {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long meetingId;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne
     @JoinColumn(name = "base_location_id")
     private Location baseLocation;
 
