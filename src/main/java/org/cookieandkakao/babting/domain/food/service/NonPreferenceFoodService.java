@@ -5,6 +5,8 @@ import org.cookieandkakao.babting.domain.food.dto.FoodPreferenceGetResponse;
 import org.cookieandkakao.babting.domain.food.entity.Food;
 import org.cookieandkakao.babting.domain.food.entity.NonPreferenceFood;
 import org.cookieandkakao.babting.domain.food.repository.NonPreferenceFoodRepository;
+import org.cookieandkakao.babting.domain.member.entity.Member;
+import org.cookieandkakao.babting.domain.member.service.MemberService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,17 +18,22 @@ public class NonPreferenceFoodService implements FoodPreferenceStrategy {
 
     private final NonPreferenceFoodRepository nonPreferenceFoodRepository;
     private final FoodRepositoryService foodRepositoryService;
+    private final MemberService memberService;
 
     public NonPreferenceFoodService(NonPreferenceFoodRepository nonPreferenceFoodRepository,
-                                    FoodRepositoryService foodRepositoryService
+                                    FoodRepositoryService foodRepositoryService,
+                                    MemberService memberService
     ) {
         this.nonPreferenceFoodRepository = nonPreferenceFoodRepository;
         this.foodRepositoryService = foodRepositoryService;
+        this.memberService = memberService;
     }
 
     @Override
-    public List<FoodPreferenceGetResponse> getAllPreferences() {
-        return nonPreferenceFoodRepository.findAll().stream()
+    public List<FoodPreferenceGetResponse> getAllPreferencesByMember(Long memberId) {
+        Member member = memberService.findMember(memberId);
+
+        return nonPreferenceFoodRepository.findAllByMember(member).stream()
                 .map(nonPreferenceFood -> new FoodPreferenceGetResponse(
                         nonPreferenceFood.getFood().getFoodId(),
                         nonPreferenceFood.getFood().getFoodCategory().getName(),
@@ -35,11 +42,13 @@ public class NonPreferenceFoodService implements FoodPreferenceStrategy {
     }
 
     @Override
-    public FoodPreferenceGetResponse addPreference(FoodPreferenceCreateRequest request) {
+    public FoodPreferenceGetResponse addPreference(FoodPreferenceCreateRequest request, Long memberId) {
         Food food = foodRepositoryService.findFoodById(request.foodId());
-        NonPreferenceFood nonPreferenceFood = new NonPreferenceFood(food);
+        Member member = memberService.findMember(memberId);
 
-        foodRepositoryService.validateNotAlreadyPreferredOrNonPreferred(food);
+        NonPreferenceFood nonPreferenceFood = new NonPreferenceFood(food, member);
+
+        foodRepositoryService.validateNotAlreadyPreferredOrNonPreferred(food, member);
 
         NonPreferenceFood savedNonPreference = nonPreferenceFoodRepository.save(nonPreferenceFood);
         return new FoodPreferenceGetResponse(savedNonPreference.getFood().getFoodId(),
@@ -49,11 +58,12 @@ public class NonPreferenceFoodService implements FoodPreferenceStrategy {
 
     @Transactional
     @Override
-    public void deletePreference(Long foodId) {
+    public void deletePreference(Long foodId, Long memberId) {
         Food food = foodRepositoryService.findFoodById(foodId);
+        Member member = memberService.findMember(memberId);
 
-        nonPreferenceFoodRepository.findByFood(food)
+        nonPreferenceFoodRepository.findByFoodAndMember(food, member)
                 .orElseThrow(() -> new RuntimeException("해당 비선호 음식을 찾을 수 없습니다."));
-        nonPreferenceFoodRepository.deleteByFood(food);
+        nonPreferenceFoodRepository.deleteByFoodAndMember(food, member);
     }
 }
