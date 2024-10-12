@@ -134,17 +134,18 @@ public class MeetingService {
         if (meeting.getConfirmDateTime() != null){
             throw new IllegalStateException("이미 모임 시간이 확정되었습니다.");
         }
-        String startAt = "2024-10-11T06:00:00Z";
+        /*String startAt = "2024-10-11T06:00:00Z";
         String endAt = "2024-10-11T09:00:00Z";
         String timeZone = "Asia/Seoul";
         boolean allDay = false;
 
         MeetingTimeCreateRequest meetingTimeCreateRequest = new MeetingTimeCreateRequest(startAt, endAt, timeZone, allDay);
 
+        */
         MeetingEventCreateRequest meetingEventCreateRequest
             = new MeetingEventCreateRequest(
                 meeting.getTitle(),
-            meetingTimeCreateRequest
+            /*meetingTimeCreateRequest*/
         );
 
         List<Long> memberIds = memberMeetingService.getMemberIdInMeetingId(meetingId);
