@@ -40,13 +40,11 @@ public class MeetingService {
     private final MemberRepository memberRepository;
     private final MemberService memberService;
     private final TalkCalendarClientService talkCalendarClientService;
-    private final MemberMeetingService memberMeetingService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public MeetingService(MeetingRepository meetingRepository, MeetingEventRepository meetingEventRepository,
         MemberMeetingRepository memberMeetingRepository, LocationRepository locationRepository,
-        MemberRepository memberRepository, MemberService memberService, TalkCalendarClientService talkCalendarClientService,
-        MemberMeetingService memberMeetingService) {
+        MemberRepository memberRepository, MemberService memberService, TalkCalendarClientService talkCalendarClientService) {
         this.meetingRepository = meetingRepository;
         this.meetingEventRepository = meetingEventRepository;
         this.memberMeetingRepository = memberMeetingRepository;
@@ -54,7 +52,6 @@ public class MeetingService {
         this.memberRepository = memberRepository;
         this.memberService = memberService;
         this.talkCalendarClientService = talkCalendarClientService;
-        this.memberMeetingService = memberMeetingService;
     }
 
     // 모임 생성(주최자)
@@ -182,6 +179,17 @@ public class MeetingService {
         } catch (JsonProcessingException e) {
             throw new JsonConversionException("JSON 변환 중 오류가 발생했습니다.");
         }
+    }
+
+    public List<Long> getMemberIdInMeetingId(Long meetingId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 모임이 존재하지 않습니다."));
+
+        List<MemberMeeting> memberMeetings = memberMeetingRepository.findByMeeting(meeting)
+            .orElseThrow(() -> new IllegalArgumentException("회원이 없습니다."));
+        return memberMeetings.stream()
+            .map(memberMeeting -> memberMeeting.getMember().getMemberId())
+            .toList();
     }
 
 }
