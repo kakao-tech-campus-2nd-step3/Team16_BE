@@ -34,8 +34,15 @@ public class MemberMeeting {
         this.meeting = meeting;
         this.isHost = isHost;
     }
+    public Member getMember() {
+        return member;
+    }
 
     public boolean isHost() {
         return isHost;
+    }
+
+    public Meeting getMeeting() {
+        return meeting;
     }
 }

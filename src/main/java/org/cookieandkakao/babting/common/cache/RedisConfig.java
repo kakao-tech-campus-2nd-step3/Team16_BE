@@ -20,8 +20,7 @@ public class RedisConfig {
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
         RedisCacheConfiguration cacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
-            /*.entryTtl(Duration.ofSeconds(30))*/
-            .entryTtl(Duration.ofMinutes(10)) // 캐시 TTL 설정
+            .entryTtl(Duration.ofMinutes(5))
             .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
             .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(RedisSerializer.json()));
 
