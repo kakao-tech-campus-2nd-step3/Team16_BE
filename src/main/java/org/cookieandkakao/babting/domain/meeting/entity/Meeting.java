@@ -8,10 +8,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import org.cookieandkakao.babting.domain.food.entity.Food;
 
 @Entity
 @Table(name = "meeting")
@@ -23,6 +23,10 @@ public class Meeting {
     @OneToOne
     @JoinColumn(name = "base_location_id")
     private Location baseLocation;
+
+    @OneToOne
+    @JoinColumn(name = "confirmed_food")
+    private Food confirmedFood;
 
     @Column(nullable = false)
     private String title;
@@ -43,7 +47,7 @@ public class Meeting {
     private LocalTime endTime;
 
     @Column
-    private LocalDateTime confirmDateTime;
+    private LocalDateTime confirmedDateTime;
 
     protected Meeting(){}
 
@@ -58,11 +62,27 @@ public class Meeting {
         this.endTime = endTime;
     }
 
-    public void confirmDateTime(LocalDateTime confirmDateTime){
-        this.confirmDateTime = confirmDateTime;
+    public void confirmDateTime(LocalDateTime confirmedDateTime){
+        this.confirmedDateTime = confirmedDateTime;
+    }
+
+    public void confirmFood (Food food){
+        this.confirmedFood = food;
     }
 
     public LocalDateTime getConfirmDateTime() {
-        return confirmDateTime;
+        return confirmedDateTime;
+    }
+
+    public Location getBaseLocation() {
+        return baseLocation;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public Food getConfirmedFood() {
+        return confirmedFood;
     }
 }

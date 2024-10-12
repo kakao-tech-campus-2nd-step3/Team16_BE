@@ -12,7 +12,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MemberMeetingRepository extends JpaRepository<MemberMeeting, Long> {
-    Optional<MemberMeeting> findMemberMeetingByMemberAndMeeting(Member member, Meeting meeting);
+    Optional<MemberMeeting> findByMemberAndMeeting(Member member, Meeting meeting);
+    @Query("SELECT mm.meeting FROM MemberMeeting mm WHERE mm.member = :member")
+    List<Meeting> findMeetingsByMember(@Param("member") Member member);
+    boolean existsByMemberAndMeeting(Member member, Meeting meeting);
     void deleteAllByMeeting(Meeting meeting);
 
     @Query("SELECT mm.member FROM MemberMeeting mm WHERE mm.meeting.meetingId = :meetingId")

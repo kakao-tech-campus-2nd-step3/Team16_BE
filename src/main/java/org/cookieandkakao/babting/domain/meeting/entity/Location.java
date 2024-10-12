@@ -34,4 +34,24 @@ public class Location {
         this.latitude = latitude;
         this.longitude = longitude;
     }
+
+    public Long getLocationId() {
+        return locationId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
 }
