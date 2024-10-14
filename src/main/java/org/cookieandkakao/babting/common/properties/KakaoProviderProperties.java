@@ -6,6 +6,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record KakaoProviderProperties(
     String authorizationUri,
     String tokenUri,
-    String userInfoUri) {
+    String userInfoUri,
+    String calendarEventListUri,
+    String calendarEventDetailUri,
+    String calendarCreateEventUri
+) {
 
 }

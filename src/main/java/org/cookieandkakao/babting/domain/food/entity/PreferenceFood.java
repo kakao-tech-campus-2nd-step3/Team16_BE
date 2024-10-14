@@ -21,15 +21,14 @@ public class PreferenceFood {
     private Food food;
 
     @ManyToOne
-//    @JoinColumn(name = "member_id", nullable = false)
-//   로그인기능 구현 후 변경할 것
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     protected PreferenceFood() {}
 
-    public PreferenceFood(Food food) {
+    public PreferenceFood(Food food, Member member) {
         this.food = food;
+        this.member = member;
     }
 
     public Food getFood() {

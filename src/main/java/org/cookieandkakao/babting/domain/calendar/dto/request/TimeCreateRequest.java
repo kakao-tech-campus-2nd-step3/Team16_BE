@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import org.cookieandkakao.babting.common.util.TimeFormatterUtil;
 import org.cookieandkakao.babting.domain.calendar.entity.Time;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
@@ -22,17 +23,15 @@ public record TimeCreateRequest(
     boolean allDay
 ) {
 
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(
-        "yyyy-MM-dd'T'HH:mm:ssX");
 
     public Time toEntity() {
-        LocalDateTime start = LocalDateTime.parse(startAt, FORMATTER);
-        LocalDateTime end = LocalDateTime.parse(endAt, FORMATTER);
+        LocalDateTime start = LocalDateTime.parse(startAt, TimeFormatterUtil.FORMATTER);
+        LocalDateTime end = LocalDateTime.parse(endAt, TimeFormatterUtil.FORMATTER);
         return new Time(start, end, this.timeZone, this.allDay);
     }
 
     private LocalDateTime convertToLocalDateTime(String time) {
-        ZonedDateTime zonedDateTime = ZonedDateTime.parse(time, FORMATTER);
+        ZonedDateTime zonedDateTime = ZonedDateTime.parse(time, TimeFormatterUtil.FORMATTER);
         return zonedDateTime.toLocalDateTime();
     }
 

@@ -51,7 +51,7 @@ public class EventService {
         //Location 엔티티 저장
         Location location = null;
         if (eventGetResponse.location() != null) {
-            location = locationRepository.save(eventGetResponse.location());
+            location = locationRepository.save(eventGetResponse.location().toEntity());
         }
 
         // Event 엔티티 저장

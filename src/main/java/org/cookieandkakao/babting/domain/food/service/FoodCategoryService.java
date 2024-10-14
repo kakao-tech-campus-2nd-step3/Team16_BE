@@ -1,7 +1,7 @@
 package org.cookieandkakao.babting.domain.food.service;
 
-import org.cookieandkakao.babting.domain.food.repository.FoodCategoryRepository;
 import org.cookieandkakao.babting.domain.food.entity.FoodCategory;
+import org.cookieandkakao.babting.domain.food.repository.FoodCategoryRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
