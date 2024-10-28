@@ -1,5 +1,6 @@
 package org.cookieandkakao.babting.domain.food.service;
 
+import org.cookieandkakao.babting.common.exception.customexception.FoodNotFoundException;
 import org.cookieandkakao.babting.domain.food.dto.FoodPreferenceCreateRequest;
 import org.cookieandkakao.babting.domain.food.dto.FoodPreferenceGetResponse;
 import org.cookieandkakao.babting.domain.food.entity.Food;
@@ -34,10 +35,7 @@ public class PreferenceFoodService implements FoodPreferenceStrategy {
         Member member = memberService.findMember(memberId);
 
         return preferenceFoodRepository.findAllByMember(member).stream()
-                .map(preferenceFood -> new FoodPreferenceGetResponse(
-                        preferenceFood.getFood().getFoodId(),
-                        preferenceFood.getFood().getFoodCategory().getName(),
-                        preferenceFood.getFood().getName()))
+                .map(FoodPreferenceGetResponse::fromPreferenceFood)
                 .collect(Collectors.toList());
     }
 
@@ -63,7 +61,7 @@ public class PreferenceFoodService implements FoodPreferenceStrategy {
         Member member = memberService.findMember(memberId);
 
         preferenceFoodRepository.findByFoodAndMember(food, member)
-                .orElseThrow(() -> new RuntimeException("해당 선호 음식을 찾을 수 없습니다."));
+                .orElseThrow(() -> new FoodNotFoundException("해당 선호 음식을 찾을 수 없습니다."));
         preferenceFoodRepository.deleteByFoodAndMember(food, member);
     }
 }

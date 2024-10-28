@@ -1,5 +1,6 @@
 package org.cookieandkakao.babting.domain.member.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,7 +31,7 @@ public class Member {
     @Column
     private String profileImageUrl;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "kako_token_id")
     private KakaoToken kakaoToken;
 

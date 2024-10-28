@@ -36,10 +36,7 @@ public class MeetingPreferenceFoodService implements MeetingFoodPreferenceStrate
         MemberMeeting memberMeeting = meetingService.findMemberMeeting(member, meeting);
 
         return meetingPreferenceFoodRepository.findAllByMemberMeeting(memberMeeting).stream()
-                .map(meetingPreferenceFood -> new FoodPreferenceGetResponse(
-                        meetingPreferenceFood.getFood().getFoodId(),
-                        meetingPreferenceFood.getFood().getFoodCategory().getName(),
-                        meetingPreferenceFood.getFood().getName()))
+                .map(FoodPreferenceGetResponse::fromMeetingPreferenceFood)
                 .collect(Collectors.toList());
     }
 }

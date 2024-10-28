@@ -1,6 +1,5 @@
 package org.cookieandkakao.babting.domain.calendar.service;
 
-import org.cookieandkakao.babting.common.exception.customexception.MemberNotFoundException;
 import org.cookieandkakao.babting.domain.calendar.entity.PersonalCalendar;
 import org.cookieandkakao.babting.domain.calendar.repository.PersonalCalendarRepository;
 import org.cookieandkakao.babting.domain.member.entity.Member;

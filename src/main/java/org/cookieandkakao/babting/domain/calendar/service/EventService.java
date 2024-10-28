@@ -64,9 +64,12 @@ public class EventService {
         eventRepository.save(event);
 
         // Reminder 저장 (있을 경우)
-        if (eventGetResponse.reminders() != null) {
-            reminderRepository.save(
-                new Reminder(event, eventGetResponse.reminders().getRemindTime()));
+        for (Integer reminderTime : eventGetResponse.reminders()) {
+            if (reminderTime != null) {
+                reminderRepository.save(
+                    new Reminder(event, reminderTime)
+                );
+            }
         }
     }
 

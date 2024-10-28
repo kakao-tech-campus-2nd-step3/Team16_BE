@@ -1,10 +1,8 @@
 package org.cookieandkakao.babting.domain.calendar.service;
 
-
-import java.net.URI;
-import java.util.Map;
 import org.cookieandkakao.babting.common.exception.customexception.ApiException;
 import org.cookieandkakao.babting.common.properties.KakaoProviderProperties;
+import org.cookieandkakao.babting.domain.calendar.dto.response.EventCreateResponse;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventDetailGetResponse;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventListGetResponse;
 import org.springframework.http.HttpHeaders;
@@ -17,69 +15,64 @@ import org.springframework.web.client.RestClientException;
 @Service
 public class TalkCalendarClientService {
 
-    private final RestClient restClient = RestClient.builder().build();
+    private final RestClient restClient;
     private final KakaoProviderProperties kakaoProviderProperties;
 
-    public TalkCalendarClientService(KakaoProviderProperties kakaoProviderProperties) {
+    public TalkCalendarClientService(RestClient kakaoRestClient,
+        KakaoProviderProperties kakaoProviderProperties) {
+        this.restClient = kakaoRestClient;
         this.kakaoProviderProperties = kakaoProviderProperties;
     }
 
     public EventListGetResponse getEventList(String accessToken, String from, String to) {
-        String url = kakaoProviderProperties.calendarEventListUri();
-        URI uri = buildUri(url, from, to);
+        String relativeUrl = kakaoProviderProperties.calendarEventListUri();
         try {
             ResponseEntity<EventListGetResponse> response = restClient.get()
-                .uri(uri)
+                .uri(uriBuilder -> uriBuilder.path(relativeUrl)
+                    .queryParam("from", from)
+                    .queryParam("to", to)
+                    .queryParam("limit", 100)
+                    .queryParam("time_zone", "Asia/Seoul")
+                    .build())
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .retrieve()
                 .toEntity(EventListGetResponse.class);
             return response.getBody();
         } catch (RestClientException e) {
-            throw new ApiException("API 호출 중 오류 발생");
+            throw new ApiException("일정 목록 조회 중 에러 발생 : " + e.getMessage());
         }
     }
 
     public EventDetailGetResponse getEvent(String accessToken, String eventId) {
-        String url = kakaoProviderProperties.calendarEventDetailUri();
-        URI uri = buildGetEventUri(url, eventId);
-
+        String relativeUrl = kakaoProviderProperties.calendarEventDetailUri();
         try {
             ResponseEntity<EventDetailGetResponse> response = restClient.get()
-                .uri(uri)
+                .uri(uriBuilder -> uriBuilder.path(relativeUrl)
+                    .queryParam("event_id", eventId)
+                    .build())
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .retrieve()
                 .toEntity(EventDetailGetResponse.class);
             return response.getBody();
         } catch (RestClientException e) {
-            throw new ApiException("API 호출 중 오류 발생");
+            throw new ApiException("일정 상세 조회 중 오류 발생 : " + e.getMessage());
         }
     }
 
-    public Map<String, Object> createEvent(String accessToken,
+    public EventCreateResponse createEvent(String accessToken,
         MultiValueMap<String, String> formData) {
-        String url = kakaoProviderProperties.calendarCreateEventUri();
-        URI uri = URI.create(url);
+        String relativeUrl = kakaoProviderProperties.calendarCreateEventUri();
         try {
-            ResponseEntity<Map> response = restClient.post()
-                .uri(uri)
+            ResponseEntity<EventCreateResponse> response = restClient.post()
+                .uri(relativeUrl)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .header(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded")
                 .body(formData)
                 .retrieve()
-                .toEntity(Map.class);
+                .toEntity(EventCreateResponse.class);
             return response.getBody();
         } catch (RestClientException e) {
-            throw new ApiException("API 호출 중 오류 발생");
+            throw new ApiException("일정 생성 중 오류 발생 : " + e.getMessage());
         }
     }
-
-    private URI buildUri(String baseUrl, String from, String to) {
-        return URI.create(
-            String.format("%s?from=%s&to=%s&limit=100&time_zone=Asia/Seoul", baseUrl, from, to));
-    }
-
-    private URI buildGetEventUri(String baseUrl, String eventId) {
-        return URI.create(String.format("%s?event_id=%s", baseUrl, eventId));
-    }
-
 }

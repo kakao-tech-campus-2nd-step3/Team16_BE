@@ -7,6 +7,7 @@ import org.cookieandkakao.babting.domain.member.dto.MemberProfileGetResponse;
 import org.cookieandkakao.babting.domain.member.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,5 +27,12 @@ public class MemberController {
         @LoginMemberId Long memberId) {
         MemberProfileGetResponse memberProfile = memberService.getMemberProfile(memberId);
         return ApiResponseGenerator.success(HttpStatus.OK, "프로필 조회 성공", memberProfile);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<ApiResponseBody.SuccessBody<Void>> deleteMember(
+        @LoginMemberId Long memberId) {
+        memberService.deleteMember(memberId);
+        return ApiResponseGenerator.success(HttpStatus.OK, "회원 탈퇴 성공");
     }
 }

@@ -3,8 +3,11 @@ import org.cookieandkakao.babting.common.apiresponse.ApiResponseBody.FailureBody
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseGenerator;
 import org.cookieandkakao.babting.common.exception.customexception.ApiException;
 import org.cookieandkakao.babting.common.exception.customexception.EventCreationException;
+import org.cookieandkakao.babting.common.exception.customexception.InvalidFoodPreferenceTypeException;
 import org.cookieandkakao.babting.common.exception.customexception.JsonConversionException;
 import org.cookieandkakao.babting.common.exception.customexception.MemberNotFoundException;
+import org.cookieandkakao.babting.common.exception.customexception.FoodNotFoundException;
+import org.cookieandkakao.babting.common.exception.customexception.PreferenceConflictException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -39,10 +42,24 @@ public class GlobalExceptionHandler {
         return ApiResponseGenerator.fail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
+    @ExceptionHandler(FoodNotFoundException.class)
+    public ResponseEntity<FailureBody> handleFoodNotFoundException(FoodNotFoundException ex) {
+        return ApiResponseGenerator.fail(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(PreferenceConflictException.class)
+    public ResponseEntity<FailureBody> handlePreferenceConflictException(PreferenceConflictException ex) {
+        return ApiResponseGenerator.fail(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidFoodPreferenceTypeException.class)
+    public ResponseEntity<FailureBody> handleInvalidFoodPreferenceTypeException(InvalidFoodPreferenceTypeException ex) {
+        return ApiResponseGenerator.fail(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
     // 모든 Exception을 처리하는 핸들러
     @ExceptionHandler(Exception.class)
     public ResponseEntity<FailureBody> handleAllExceptions(Exception ex) {
         return ApiResponseGenerator.fail(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
-
 }

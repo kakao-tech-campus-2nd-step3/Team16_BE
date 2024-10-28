@@ -96,6 +96,22 @@ public class AuthService {
         return entity.getBody();
     }
 
+    public void unlinkMember(String accessToken) {
+
+        String unlinkUri = kakaoProviderProperties.unlinkUri();
+
+        restClient.get()
+            .uri(unlinkUri)
+            .header("Authorization", "Bearer " + accessToken)
+            .retrieve()
+            .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
+                throw new IllegalArgumentException("카카오 연결 끊기 실패");
+            })
+            .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
+                throw new RuntimeException("카카오 인증 서버 에러");
+            });
+    }
+
     @Transactional
     public void saveMemberInfoAndKakaoToken(
         KakaoMemberInfoGetResponse kakaoMemberInfoGetResponse,

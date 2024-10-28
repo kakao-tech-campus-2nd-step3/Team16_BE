@@ -2,6 +2,7 @@ package org.cookieandkakao.babting.domain.calendar.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
 
 public record EventCreateRequest(
     @NotBlank(message = "제목은 비어있으면 안됩니다!")
@@ -11,6 +12,8 @@ public record EventCreateRequest(
     TimeCreateRequest time,
 
     String rrule,
+
+    List<Integer> reminders,
 
     String description
 ) {

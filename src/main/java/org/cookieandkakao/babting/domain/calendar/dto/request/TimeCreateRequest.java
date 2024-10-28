@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import org.cookieandkakao.babting.common.util.TimeFormatterUtil;
 import org.cookieandkakao.babting.domain.calendar.entity.Time;
 

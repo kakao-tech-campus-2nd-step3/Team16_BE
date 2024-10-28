@@ -86,4 +86,8 @@ public class Meeting {
     public Food getConfirmedFood() {
         return confirmedFood;
     }
+
+    public Integer getDurationTime() {
+        return durationTime;
+    }
 }

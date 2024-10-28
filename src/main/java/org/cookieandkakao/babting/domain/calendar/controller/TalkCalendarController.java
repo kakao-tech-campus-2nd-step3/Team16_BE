@@ -42,11 +42,12 @@ public class TalkCalendarController {
         @LoginMemberId Long memberId
     ) {
 
-        List<EventGetResponse> updatedEvents = talkCalendarService.getUpdatedEventList(from, to, memberId);
+        List<EventGetResponse> updatedEvents = talkCalendarService.getUpdatedEventList(from, to,
+            memberId);
         EventListGetResponse eventList = new EventListGetResponse(updatedEvents);
 
         if (updatedEvents.isEmpty()) {
-            return ApiResponseGenerator.success(HttpStatus.OK, "조회된 일정이 없습니다.", eventList);
+            return ApiResponseGenerator.success(HttpStatus.OK, "조회된 일정 목록이 없습니다.", eventList);
         }
 
         return ApiResponseGenerator.success(HttpStatus.OK, "일정 목록을 조회했습니다.", eventList);
@@ -57,14 +58,16 @@ public class TalkCalendarController {
         @PathVariable("event_id") String eventId,
         @LoginMemberId Long memberId
     ) {
-        EventDetailGetResponse eventDetailGetResponse = talkCalendarService.getEvent(memberId, eventId);
+        EventDetailGetResponse eventDetailGetResponse = talkCalendarService.getEvent(memberId,
+            eventId);
 
         if (eventDetailGetResponse == null) {
             return ApiResponseGenerator.success(HttpStatus.OK, "조회된 일정이 없습니다.",
                 eventDetailGetResponse);
         }
 
-        return ApiResponseGenerator.success(HttpStatus.OK, "일정 목록을 조회했습니다.", eventDetailGetResponse);
+        return ApiResponseGenerator.success(HttpStatus.OK, "일정을 조회했습니다.",
+            eventDetailGetResponse);
     }
 
     @PostMapping("/events")
@@ -73,7 +76,8 @@ public class TalkCalendarController {
         @LoginMemberId Long memberId
     ) {
         // 카카오 api로 일정 생성
-        EventCreateResponse eventCreateResponse = talkCalendarService.createEvent(eventRequestDto, memberId);
+        EventCreateResponse eventCreateResponse = talkCalendarService.createEvent(eventRequestDto,
+            memberId);
         return ApiResponseGenerator.success(HttpStatus.CREATED, "일정이 성공적으로 생성되었습니다.",
             eventCreateResponse);
     }

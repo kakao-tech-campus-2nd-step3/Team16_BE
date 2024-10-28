@@ -13,7 +13,12 @@ import org.cookieandkakao.babting.domain.member.service.MemberService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class MeetingFoodPreferenceUpdater {
@@ -46,18 +51,22 @@ public class MeetingFoodPreferenceUpdater {
         meetingPreferenceFoodRepository.deleteAllByMemberMeeting(memberMeeting);
         meetingNonPreferenceFoodRepository.deleteAllByMemberMeeting(memberMeeting);
 
-        // 새로운 선호 음식 추가
-        preferences.forEach(foodId -> {
-            Food food = foodRepositoryService.findFoodById(foodId);
-            MeetingPreferenceFood preferenceFood = new MeetingPreferenceFood(food, memberMeeting);
-            meetingPreferenceFoodRepository.save(preferenceFood);
-        });
+        Set<Long> allFoodIds = new HashSet<>(preferences);
+        allFoodIds.addAll(nonPreferences);
+        Map<Long, Food> foodsMap = foodRepositoryService.findFoodsByIds(allFoodIds)
+                .stream().collect(Collectors.toMap(Food::getFoodId, Function.identity()));
 
-        // 새로운 비선호 음식 추가
-        nonPreferences.forEach(foodId -> {
-            Food food = foodRepositoryService.findFoodById(foodId);
-            MeetingNonPreferenceFood nonPreferenceFood = new MeetingNonPreferenceFood(food, memberMeeting);
-            meetingNonPreferenceFoodRepository.save(nonPreferenceFood);
-        });
+        // 선호음식 stream 생성
+        List<MeetingPreferenceFood> newPreferenceFoods = preferences.stream()
+                .map(foodId -> new MeetingPreferenceFood(foodsMap.get(foodId), memberMeeting))
+                .collect(Collectors.toList());
+
+        // 비선호음식 stream 생성
+        List<MeetingNonPreferenceFood> newNonPreferenceFoods = nonPreferences.stream()
+                .map(foodId -> new MeetingNonPreferenceFood(foodsMap.get(foodId), memberMeeting))
+                .collect(Collectors.toList());
+
+        meetingPreferenceFoodRepository.saveAll(newPreferenceFoods);
+        meetingNonPreferenceFoodRepository.saveAll(newNonPreferenceFoods);
     }
 }

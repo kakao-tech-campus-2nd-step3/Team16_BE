@@ -3,6 +3,7 @@ package org.cookieandkakao.babting.domain.food.controller;
 import org.cookieandkakao.babting.common.annotaion.LoginMemberId;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseBody.SuccessBody;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseGenerator;
+import org.cookieandkakao.babting.common.exception.customexception.InvalidFoodPreferenceTypeException;
 import org.cookieandkakao.babting.domain.food.dto.FoodPreferenceCreateRequest;
 import org.cookieandkakao.babting.domain.food.dto.FoodPreferenceGetResponse;
 import org.cookieandkakao.babting.domain.food.service.FoodPreferenceStrategy;
@@ -37,7 +38,7 @@ public class FoodPreferenceController {
 
     // 선호/비선호 음식 조회
     @GetMapping("/{type}")
-    public ResponseEntity<SuccessBody<List<FoodPreferenceGetResponse>>> getFoodPreferences(
+    public ResponseEntity<?> getFoodPreferences(
             @PathVariable String type,
             @LoginMemberId Long memberId
     ) {
@@ -45,7 +46,7 @@ public class FoodPreferenceController {
         List<FoodPreferenceGetResponse> preferences = strategy.getAllPreferencesByMember(memberId);
 
         if (preferences.isEmpty()) {
-            return ApiResponseGenerator.success(HttpStatus.NO_CONTENT, "조회된 음식이 없습니다", null);
+            return ApiResponseGenerator.fail(HttpStatus.OK, "조회된 음식이 없습니다");
         }
 
         return ApiResponseGenerator.success(HttpStatus.OK, "음식 조회 성공", preferences);
@@ -80,7 +81,7 @@ public class FoodPreferenceController {
     private FoodPreferenceStrategy getStrategy(String type) {
         FoodPreferenceStrategy strategy = strategies.get(type);
         if (strategy == null) {
-            throw new IllegalArgumentException("Invalid preference type");
+            throw new InvalidFoodPreferenceTypeException("잘못된 선호 타입입니다");
         }
         return strategy;
     }
