@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.util.List;
 import org.cookieandkakao.babting.domain.calendar.entity.Event;
-import org.cookieandkakao.babting.domain.calendar.entity.PersonalCalendar;
 import org.cookieandkakao.babting.domain.calendar.entity.Time;
 import org.cookieandkakao.babting.domain.meeting.dto.response.LocationGetResponse;
 import org.cookieandkakao.babting.domain.meeting.entity.Location;
@@ -17,8 +16,6 @@ public record EventGetResponse(
     String title,
 
     String type,
-
-    String calendarId,
 
     TimeGetResponse time,
 
@@ -41,11 +38,10 @@ public record EventGetResponse(
     String memo
 ) {
 
-    public Event toEntity(PersonalCalendar personalCalendar) {
+    public Event toEntity() {
         Time timeEntity = this.time.toEntity();
         Location locationEntity = this.location.toEntity();
         return new Event(
-            personalCalendar,
             timeEntity,
             locationEntity,
             this.id,

@@ -27,4 +27,14 @@ public class ApiResponseGenerator {
         return new ResponseEntity<>(
             new ApiResponseBody.FailureBody(String.valueOf(status), message), status);
     }
+
+    // 기본 HttpStatus.OK로 설정 (응답이 없고 성공인 경우)
+    public static ResponseEntity<ApiResponseBody.SuccessBody<Void>> success(String message) {
+        return success(HttpStatus.OK, message);
+    }
+
+    // 기본 HttpStatus.OK로 설정 (응답이 있고 성공인 경우)
+    public static <D> ResponseEntity<ApiResponseBody.SuccessBody<D>> success(String message, D data) {
+        return success(HttpStatus.OK, message, data);
+    }
 }

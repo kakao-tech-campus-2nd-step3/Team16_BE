@@ -4,93 +4,123 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import org.cookieandkakao.babting.common.exception.customexception.EventCreationException;
 import org.cookieandkakao.babting.common.exception.customexception.JsonConversionException;
+import org.cookieandkakao.babting.domain.calendar.dto.request.EventCreateRequest;
+import org.cookieandkakao.babting.domain.calendar.dto.request.TimeCreateRequest;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventCreateResponse;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventGetResponse;
 import org.cookieandkakao.babting.domain.calendar.dto.response.TimeGetResponse;
+import org.cookieandkakao.babting.domain.calendar.entity.Event;
+import org.cookieandkakao.babting.domain.calendar.repository.EventRepository;
 import org.cookieandkakao.babting.domain.calendar.service.TalkCalendarClientService;
+import org.cookieandkakao.babting.domain.calendar.service.TalkCalendarService;
 import org.cookieandkakao.babting.domain.meeting.dto.request.ConfirmMeetingGetRequest;
 import org.cookieandkakao.babting.domain.meeting.dto.request.MeetingEventCreateRequest;
 import org.cookieandkakao.babting.domain.meeting.dto.request.MeetingTimeCreateRequest;
+import org.cookieandkakao.babting.domain.meeting.dto.response.TimeAvailableGetResponse;
 import org.cookieandkakao.babting.domain.meeting.entity.Meeting;
+import org.cookieandkakao.babting.domain.meeting.entity.MeetingEvent;
 import org.cookieandkakao.babting.domain.meeting.entity.MemberMeeting;
+import org.cookieandkakao.babting.domain.meeting.repository.MeetingEventRepository;
 import org.cookieandkakao.babting.domain.member.entity.KakaoToken;
 import org.cookieandkakao.babting.domain.member.entity.Member;
 import org.cookieandkakao.babting.domain.member.service.MemberService;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 @Transactional
 @Service
 public class MeetingEventService {
+
     private final MemberService memberService;
     private final TalkCalendarClientService talkCalendarClientService;
+    private final TalkCalendarService talkCalendarService;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final MeetingService meetingService;
     private static final String TIME_ZONE = "Asia/Seoul";
+    private static final List<Integer> DEFAULT_REMINDER_TIMES = List.of(15, 30);
+    private final EventRepository eventRepository;
+    private final MeetingEventRepository meetingEventRepository;
 
     public MeetingEventService(MemberService memberService,
         TalkCalendarClientService talkCalendarClientService,
-        MeetingService meetingService) {
+        TalkCalendarService talkCalendarService,
+        MeetingService meetingService, EventRepository eventRepository,
+        MeetingEventRepository meetingEventRepository) {
         this.memberService = memberService;
         this.talkCalendarClientService = talkCalendarClientService;
+        this.talkCalendarService = talkCalendarService;
         this.meetingService = meetingService;
+        this.eventRepository = eventRepository;
+        this.meetingEventRepository = meetingEventRepository;
     }
 
     // 모임 확정되면 일정 생성
-    public void confirmMeeting(Long memberId, Long meetingId, ConfirmMeetingGetRequest confirmMeetingGetRequest){
+    public void confirmMeeting(Long memberId, Long meetingId,
+        ConfirmMeetingGetRequest confirmMeetingGetRequest) {
         Member member = memberService.findMember(memberId);
         Meeting meeting = meetingService.findMeeting(meetingId);
-        MemberMeeting memberMeeting = meetingService.findMemberMeeting(member, meeting);
-
-        if (!memberMeeting.isHost()){
-            throw new IllegalStateException("권한이 없습니다.");
-        }
-
-        if (meeting.getConfirmDateTime() != null){
-            throw new IllegalStateException("이미 모임 시간이 확정되었습니다.");
-        }
+        validateHostPermission(member, meeting);
+        validateMeetingConfirmation(meeting);
 
         meeting.confirmDateTime(confirmMeetingGetRequest.confirmDateTime());
 
-        String startAt = meeting.getConfirmDateTime()
-            .minusHours(9)
-            .toString();
-        String endAt = meeting.getConfirmDateTime().minusHours(9).plusMinutes(meeting.getDurationTime()).toString();
-        boolean allDay = false;
-
-        MeetingTimeCreateRequest meetingTimeCreateRequest =
-            new MeetingTimeCreateRequest(startAt, endAt, TIME_ZONE, allDay);
-
-        MeetingEventCreateRequest meetingEventCreateRequest
-            = new MeetingEventCreateRequest(
-            meeting.getTitle(), meetingTimeCreateRequest,
-            List.of(15,30)
-        );
+        MeetingTimeCreateRequest meetingTimeCreateRequest = createMeetingTimeRequest(meeting);
+        MeetingEventCreateRequest meetingEventCreateRequest = createMeetingEventRequest(meeting,
+            meetingTimeCreateRequest);
 
         List<Long> memberIds = getMemberIdInMeetingId(meetingId);
 
-        for (Long currentMemberId : memberIds){
+        for (Long currentMemberId : memberIds) {
             addMeetingEvent(currentMemberId, meetingEventCreateRequest);
         }
     }
 
-    // 일정 생성 후 캘린더에 일정 추가
-    public EventCreateResponse addMeetingEvent(Long memberId, MeetingEventCreateRequest meetingEventCreateRequest) {
-        String kakaoAccessToken = getKakaoAccessToken(memberId);
-        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-        String eventJson = convertToJSONString(meetingEventCreateRequest);
-        formData.add("event", eventJson);
-        EventCreateResponse responseBody = talkCalendarClientService.createEvent(kakaoAccessToken, formData);
-        if (responseBody != null) {
-            return responseBody;
+    private void validateHostPermission(Member member, Meeting meeting) {
+        MemberMeeting memberMeeting = meetingService.findMemberMeeting(member, meeting);
+        if (!memberMeeting.isHost()) {
+            throw new IllegalStateException("권한이 없습니다.");
         }
-        throw new EventCreationException("Event 생성 중 오류 발생: 응답에서 event_id가 없습니다.");
+    }
+
+    private void validateMeetingConfirmation(Meeting meeting) {
+        if (meeting.getConfirmDateTime() != null) {
+            throw new IllegalStateException("이미 모임 시간이 확정되었습니다.");
+        }
+    }
+
+    private MeetingTimeCreateRequest createMeetingTimeRequest(Meeting meeting) {
+        ZonedDateTime startDateTime = meeting.getConfirmDateTime().atZone(ZoneId.of(TIME_ZONE));
+        ZonedDateTime endDateTime = startDateTime.plusMinutes(meeting.getDurationTime());
+        boolean allDay = false;
+        return new MeetingTimeCreateRequest(startDateTime.toString(), endDateTime.toString(),
+            TIME_ZONE, allDay);
+    }
+
+    private MeetingEventCreateRequest createMeetingEventRequest(Meeting meeting,
+        MeetingTimeCreateRequest meetingTimeCreateRequest) {
+        return new MeetingEventCreateRequest(meeting.getTitle(), meetingTimeCreateRequest,
+            DEFAULT_REMINDER_TIMES);
+    }
+
+    // 일정 생성 후 캘린더에 일정 추가
+    public EventCreateResponse addMeetingEvent(Long memberId,
+        MeetingEventCreateRequest meetingEventCreateRequest) {
+        EventCreateRequest eventCreateRequest = convertToEventCreateRequest(
+            meetingEventCreateRequest);
+        return talkCalendarService.createEvent(eventCreateRequest, memberId);
+    }
+
+    private EventCreateRequest convertToEventCreateRequest(
+        MeetingEventCreateRequest meetingEventCreateRequest) {
+        return new EventCreateRequest(
+            meetingEventCreateRequest.title(),
+            meetingEventCreateRequest.time().toTimeCreateRequest(), null,
+            meetingEventCreateRequest.reminders(), null);
     }
 
     private String getKakaoAccessToken(Long memberId) {
@@ -114,6 +144,7 @@ public class MeetingEventService {
             .map(memberMeeting -> memberMeeting.getMember().getMemberId())
             .toList();
     }
+
     /** 빈 시간대 조회 로직 설명
      *
      * 1. 모임의 모든 참여자들의 일정 중 Time을 allTimes에 추출
@@ -125,15 +156,17 @@ public class MeetingEventService {
      * 4. 이제 mergedTime에는 겹치지 않는 시간대만 존재
      * 5. mergedTime에 있는 시간들을 순회하면서 i번째 끝 시간 ~ i+1번째 시작 시간으로 시간 생성
      */
-    public List<TimeGetResponse> findAvailableTime(Long meetingId, String from, String to) {
+    public TimeAvailableGetResponse findAvailableTime(Long meetingId) {
         List<Long> joinedMemberIds = getMemberIdInMeetingId(meetingId);
+        Meeting meeting = meetingService.findMeeting(meetingId);
+        String from = meeting.getStartDate().toString();
+        String to = meeting.getEndDate().toString();
 
         // 참여자별 일정에서 필요한 시간 정보만 추출하여 리스트로 수집
         List<TimeGetResponse> allTimes = joinedMemberIds.stream()
             .flatMap(memberId ->
-                talkCalendarClientService
-                    .getEventList(getKakaoAccessToken(memberId), from, to)
-                    .events()
+                talkCalendarService
+                    .getUpdatedEventList(from, to, memberId)
                     .stream()
                     .map(EventGetResponse::time)
             )
@@ -148,15 +181,18 @@ public class MeetingEventService {
         List<TimeGetResponse> mergedTimes = mergeOverlappingTimes(sortedTimes);
 
         // 빈 시간대 계산
-        return calculateAvailableTimes(mergedTimes, from, to);
+        List<TimeGetResponse> availableTime = calculateAvailableTimes(mergedTimes, from, to);
+
+        return new TimeAvailableGetResponse(meeting.getStartDate().toString(), meeting.getEndDate().toString(), availableTime);
     }
 
     // 겹치는 시간 병합
     private List<TimeGetResponse> mergeOverlappingTimes(List<TimeGetResponse> times) {
         List<TimeGetResponse> mergedTimes = new ArrayList<>();
 
-        if (times.isEmpty())
+        if (times.isEmpty()) {
             return mergedTimes;
+        }
 
         TimeGetResponse currentTime = times.getFirst();
 
@@ -187,14 +223,15 @@ public class MeetingEventService {
     private String maxEndTime(String end1, String end2) {
         LocalDateTime e1 = LocalDateTime.parse(end1);
         LocalDateTime e2 = LocalDateTime.parse(end2);
-        if (e1.isAfter(e2)){
+        if (e1.isAfter(e2)) {
             return end1;
         }
         return end2;
     }
 
     // 빈 시간대
-    private List<TimeGetResponse> calculateAvailableTimes(List<TimeGetResponse> mergedTimes, String from, String to) {
+    private List<TimeGetResponse> calculateAvailableTimes(List<TimeGetResponse> mergedTimes,
+        String from, String to) {
         List<TimeGetResponse> availableTimes = new ArrayList<>();
         LocalDateTime searchStart = LocalDateTime.parse(from);
         LocalDateTime searchEnd = LocalDateTime.parse(to);
@@ -240,5 +277,33 @@ public class MeetingEventService {
     }
 
 
+    // 모임별 개인적으로 피하고 싶은 시간 저장하기
+    public void saveMeetingAvoidTime(Long memberId, Long meetingId,
+        List<MeetingTimeCreateRequest> avoidTimeCreateRequests) {
 
+        // 피하고 싶은 시간 없으면 그냥 종료
+        if (avoidTimeCreateRequests.isEmpty() || avoidTimeCreateRequests == null) {
+            return;
+        }
+
+        Member member = memberService.findMember(memberId);
+        Meeting meeting = meetingService.findMeeting(meetingId);
+        MemberMeeting memberMeeting = meetingService.findMemberMeeting(member, meeting);
+
+        for (MeetingTimeCreateRequest avoidTimeCreateRequest : avoidTimeCreateRequests) {
+            createAndSaveMeetingEvent(memberMeeting, avoidTimeCreateRequest);
+        }
+    }
+
+    // 피하고 싶은 시간을 기반으로 MeetingEvent 생성 및 저장
+    private void createAndSaveMeetingEvent(MemberMeeting memberMeeting, MeetingTimeCreateRequest meetingTimeCreateRequest) {
+        // 시간 정보를 Event로 생성 후 저장
+        TimeCreateRequest timeCreateRequest = meetingTimeCreateRequest.toTimeCreateRequest();
+        Event avoidEvent = new Event(timeCreateRequest.toEntity());
+        eventRepository.save(avoidEvent);
+
+        // MeetingEvent로 저장
+        MeetingEvent meetingEvent = new MeetingEvent(memberMeeting, avoidEvent);
+        meetingEventRepository.save(meetingEvent);
+    }
 }

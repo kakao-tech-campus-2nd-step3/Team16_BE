@@ -35,8 +35,14 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'redis.clients:jedis'
+
+    testImplementation group: 'org.mockito', name: 'mockito-inline', version: '4.9.0'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+jar {
+    enabled = false
 }

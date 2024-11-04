@@ -1,5 +1,7 @@
 package org.cookieandkakao.babting.domain.food.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.cookieandkakao.babting.common.annotaion.LoginMemberId;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseBody.SuccessBody;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseGenerator;
@@ -38,7 +40,9 @@ public class FoodPreferenceController {
 
     // 선호/비선호 음식 조회
     @GetMapping("/{type}")
-    public ResponseEntity<?> getFoodPreferences(
+    @Operation(summary = "선호/비선호 음식 조회", description = "내 선호/비선호 음식을 가져옵니다.")
+    @ApiResponse(responseCode = "200", description = "선호/비선호 음식 조회 성공")
+    public ResponseEntity<SuccessBody<List<FoodPreferenceGetResponse>>> getFoodPreferences(
             @PathVariable String type,
             @LoginMemberId Long memberId
     ) {
@@ -46,7 +50,7 @@ public class FoodPreferenceController {
         List<FoodPreferenceGetResponse> preferences = strategy.getAllPreferencesByMember(memberId);
 
         if (preferences.isEmpty()) {
-            return ApiResponseGenerator.fail(HttpStatus.OK, "조회된 음식이 없습니다");
+            return ApiResponseGenerator.success(HttpStatus.OK, "조회된 음식이 없습니다", preferences);
         }
 
         return ApiResponseGenerator.success(HttpStatus.OK, "음식 조회 성공", preferences);
@@ -54,6 +58,8 @@ public class FoodPreferenceController {
 
     // 선호/비선호 음식 추가
     @PostMapping("/{type}")
+    @Operation(summary = "선호/비선호 음식 추가", description = "내 선호/비선호 음식을 추가합니다.")
+    @ApiResponse(responseCode = "200", description = "선호/비선호 음식 추가 성공")
     public ResponseEntity<SuccessBody<FoodPreferenceGetResponse>> addFoodPreference(
             @PathVariable String type,
             @RequestBody FoodPreferenceCreateRequest request,
@@ -67,6 +73,8 @@ public class FoodPreferenceController {
 
     // 선호/비선호 음식 삭제
     @DeleteMapping("/{type}")
+    @Operation(summary = "선호/비선호 음식 삭제", description = "내 선호/비선호 음식을 삭제합니다.")
+    @ApiResponse(responseCode = "200", description = "선호/비선호 음식 삭제 성공")
     public ResponseEntity<SuccessBody<Void>> deleteFoodPreference(
             @PathVariable String type,
             @RequestBody FoodPreferenceCreateRequest request,

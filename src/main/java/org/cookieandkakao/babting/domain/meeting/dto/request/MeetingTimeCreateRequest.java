@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import org.cookieandkakao.babting.common.util.TimeFormatterUtil;
+import org.cookieandkakao.babting.domain.calendar.dto.request.TimeCreateRequest;
 import org.cookieandkakao.babting.domain.calendar.entity.Time;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
@@ -23,5 +24,9 @@ public record MeetingTimeCreateRequest(
         LocalDateTime start = LocalDateTime.parse(startAt, TimeFormatterUtil.FORMATTER);
         LocalDateTime end = LocalDateTime.parse(endAt, TimeFormatterUtil.FORMATTER);
         return new Time(start, end, this.timeZone, this.allDay);
+    }
+
+    public TimeCreateRequest toTimeCreateRequest() {
+        return new TimeCreateRequest(this.startAt, this.endAt, this.timeZone, this.allDay);
     }
 }

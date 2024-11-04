@@ -4,12 +4,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import org.cookieandkakao.babting.common.exception.customexception.EventCreationException;
@@ -26,6 +30,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -44,11 +50,20 @@ class TalkCalendarServiceTest {
     @Mock
     private MemberService memberService;
 
+    @Mock
+    private RedisTemplate<String, String> redisTemplate;
+
+    @Mock
+    private ValueOperations<String, String> valueOperations;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        given(redisTemplate.opsForValue()).willReturn(valueOperations);
+        doNothing().when(valueOperations).set(anyString(), anyString(), any(Duration.class));
+        given(valueOperations.get(any(String.class))).willReturn(null);
     }
 
     @Test
@@ -58,14 +73,13 @@ class TalkCalendarServiceTest {
         String from = "2024-10-01T00:00:00Z";
         String to = "2024-10-31T23:59:59Z";
         EventGetResponse eventGetResponse = new EventGetResponse("testId", "Test Title",
-            "USER", "calendarId", null, false, false, null, null,
+            "USER", null, false, false, null, null,
             "Test Description", null, null, "TestColor", null);
         EventListGetResponse eventListGetResponse = new EventListGetResponse(
             new ArrayList<>(List.of((eventGetResponse))));
         String accessToken = "testAccessToken";
         EventDetailGetResponse eventDetailGetResponseMock = new EventDetailGetResponse(
             eventGetResponse);
-
         // Mocking
         given(memberService.getKakaoToken(memberId)).willReturn(
             new KakaoToken(accessToken, null, null, null));
@@ -93,7 +107,7 @@ class TalkCalendarServiceTest {
         String eventId = "testId";
         String accessToken = "testAccessToken";
         EventGetResponse eventGetResponse = new EventGetResponse("testId", "Test Title",
-            "USER", "calendarId", null, false, false, null, null,
+            "USER", null, false, false, null, null,
             "Test Description", null, null, "TestColor", null);
         EventDetailGetResponse eventDetailGetResponseMock = new EventDetailGetResponse(
             eventGetResponse);
@@ -267,7 +281,7 @@ class TalkCalendarServiceTest {
         String from = "2024-10-01T00:00:00Z";
         String to = "2024-10-31T23:59:59Z";
         EventGetResponse eventGetResponse = new EventGetResponse("testId", "Test Title",
-            "USER", "calendarId", null, false, false, null, null,
+            "USER", null, false, false, null, null,
             "Test Description", null, null, "TestColor", null);
         EventListGetResponse eventListGetResponse = new EventListGetResponse(
             new ArrayList<>(List.of((eventGetResponse))));

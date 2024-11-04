@@ -1,5 +1,8 @@
 package org.cookieandkakao.babting.domain.food.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.cookieandkakao.babting.common.annotaion.LoginMemberId;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseBody;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseGenerator;
@@ -45,6 +48,8 @@ public class MemberMeetingFoodPreferenceController {
     }
 
     @GetMapping("/{meeting_id}/{type}")
+    @Operation(summary = "모임별 선호/비선호 음식 조회", description = "모임별 내 선호/비선호 음식을 가져옵니다.")
+    @ApiResponse(responseCode = "200", description = "모임별 선호/비선호 음식 조회 성공")
     public ResponseEntity<ApiResponseBody.SuccessBody<List<FoodPreferenceGetResponse>>> getFoodPreferences(
             @PathVariable String type,
             @LoginMemberId Long memberId,
@@ -65,6 +70,8 @@ public class MemberMeetingFoodPreferenceController {
     }
 
     @PutMapping("/{meeting_id}/personal")
+    @Operation(summary = "모임별 선호/비선호 음식 수정", description = "모임별 내 선호/비선호 음식을 수정합니다.")
+    @ApiResponse(responseCode = "200", description = "모임별 선호/비선호 음식 수정 성공")
     public ResponseEntity<ApiResponseBody.SuccessBody<PersonalPreferenceUpdateRequest>> updatePreferences(
             @LoginMemberId Long memberId,
             @PathVariable("meeting_id") Long meetingId,
@@ -81,6 +88,8 @@ public class MemberMeetingFoodPreferenceController {
     }
 
     @GetMapping("/{meetingId}/recommend")
+    @Operation(summary = "모임별 추천 음식 조회", description = "모임별 추천 음식을 가져옵니다.")
+    @ApiResponse(responseCode = "200", description = "모임별 추천 음식 조회 성공")
     public ResponseEntity<ApiResponseBody.SuccessBody<List<FoodPreferenceGetResponse>>> getRecommendedFoodsForMeeting(
             @PathVariable Long meetingId
     ) {

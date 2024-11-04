@@ -38,7 +38,7 @@ public class JwtUtil {
     }
 
     public TokenIssueResponse issueToken(Long userId) {
-        String accessToken = generateAccessToken(userId);
+        String accessToken = "Bearer " + generateAccessToken(userId);
         String refreshToken = generateRefreshToken(userId);
 
         return new TokenIssueResponse(accessToken, refreshToken);

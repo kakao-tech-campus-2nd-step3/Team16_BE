@@ -73,7 +73,7 @@ class TalkCalendarClientServiceTest {
         String from = "test From";
         String to = "test To";
         EventGetResponse eventGetResponse = new EventGetResponse("testId", "test title", "USER",
-            null, null, false, false, null, null, "test description", null, null, null, null);
+            null, false, false, null, null, "test description", null, null, null, null);
         EventListGetResponse eventListGetResponse = new EventListGetResponse(
             List.of(eventGetResponse));
         ResponseEntity<EventListGetResponse> responseEntity = new ResponseEntity<>(
@@ -112,7 +112,7 @@ class TalkCalendarClientServiceTest {
         // Given
         String relativeUrl = "test";
         EventGetResponse eventGetResponse = new EventGetResponse("testId", "test title", "USER",
-            null, null, false, false, null, null, "test description", null, null, null, null);
+            null, false, false, null, null, "test description", null, null, null, null);
         EventDetailGetResponse eventDetailGetResponse = new EventDetailGetResponse(
             eventGetResponse);
         ResponseEntity<EventDetailGetResponse> responseEntity = new ResponseEntity<>(

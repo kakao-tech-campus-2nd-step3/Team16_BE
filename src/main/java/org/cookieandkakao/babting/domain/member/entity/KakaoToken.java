@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.time.LocalDateTime;
+import org.cookieandkakao.babting.domain.member.dto.KakaoTokenGetResponse;
 
 @Entity
 public class KakaoToken {
@@ -35,6 +36,11 @@ public class KakaoToken {
         this.expiresAt = expiresAt;
         this.refreshToken = refreshToken;
         this.refreshTokenExpiresAt = refreshTokenExpiresAt;
+    }
+
+    public void updateAccessToken(KakaoTokenGetResponse kakaoTokenGetResponse) {
+        this.accessToken = kakaoTokenGetResponse.accessToken();
+        this.expiresAt = LocalDateTime.now().plusSeconds(kakaoTokenGetResponse.expiresIn());
     }
 
     public String getAccessToken() {

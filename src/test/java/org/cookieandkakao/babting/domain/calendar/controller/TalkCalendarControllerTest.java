@@ -43,7 +43,7 @@ class TalkCalendarControllerTest {
         String from = "test From";
         String to = "test To";
         EventGetResponse eventGetResponse = new EventGetResponse("testId", "Test Title",
-            "USER", null, null, false, false, null, null,
+            "USER", null, false, false, null, null,
             "Test Description", null, null, "TestColor", null);
         List<EventGetResponse> eventGetResponseList = List.of(eventGetResponse);
         EventListGetResponse eventListGetResponse = new EventListGetResponse(eventGetResponseList);
@@ -95,7 +95,7 @@ class TalkCalendarControllerTest {
         // Given
         String eventId = "testId";
         EventGetResponse eventGetResponse = new EventGetResponse("testId", "Test Title",
-            "USER", null, null, false, false, null, null,
+            "USER", null, false, false, null, null,
             "Test Description", null, null, "TestColor", null);
         EventDetailGetResponse eventDetailGetResponse = new EventDetailGetResponse(
             eventGetResponse);

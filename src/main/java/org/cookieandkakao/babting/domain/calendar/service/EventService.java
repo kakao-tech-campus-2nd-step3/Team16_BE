@@ -1,13 +1,10 @@
 package org.cookieandkakao.babting.domain.calendar.service;
 
-import org.cookieandkakao.babting.domain.calendar.dto.request.EventCreateRequest;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventGetResponse;
 import org.cookieandkakao.babting.domain.calendar.entity.Event;
-import org.cookieandkakao.babting.domain.calendar.entity.PersonalCalendar;
 import org.cookieandkakao.babting.domain.calendar.entity.Reminder;
 import org.cookieandkakao.babting.domain.calendar.entity.Time;
 import org.cookieandkakao.babting.domain.calendar.repository.EventRepository;
-import org.cookieandkakao.babting.domain.calendar.repository.PersonalCalendarRepository;
 import org.cookieandkakao.babting.domain.calendar.repository.ReminderRepository;
 import org.cookieandkakao.babting.domain.calendar.repository.TimeRepository;
 import org.cookieandkakao.babting.domain.meeting.entity.Location;
@@ -23,28 +20,17 @@ public class EventService {
     private final TimeRepository timeRepository;
     private final LocationRepository locationRepository;
     private final ReminderRepository reminderRepository;
-    private final PersonalCalendarRepository personalCalendarRepository;
-    private final PersonalCalendarService personalCalendarService;
-
 
     public EventService(EventRepository eventRepository, TimeRepository timeRepository,
-        LocationRepository locationRepository, ReminderRepository reminderRepository,
-        PersonalCalendarRepository personalCalendarRepository,
-        PersonalCalendarService personalCalendarService) {
+        LocationRepository locationRepository, ReminderRepository reminderRepository) {
         this.eventRepository = eventRepository;
         this.timeRepository = timeRepository;
         this.locationRepository = locationRepository;
         this.reminderRepository = reminderRepository;
-        this.personalCalendarRepository = personalCalendarRepository;
-        this.personalCalendarService = personalCalendarService;
     }
 
     @Transactional
     public void saveEvent(EventGetResponse eventGetResponse, Long memberId) {
-        // 개인 캘린더 조회 또는 생성
-        PersonalCalendar personalCalendar = personalCalendarService.findOrCreatePersonalCalendar(
-            memberId);
-
         //Time 엔티티 저장
         Time time = timeRepository.save(eventGetResponse.time().toEntity());
 
@@ -55,7 +41,7 @@ public class EventService {
         }
 
         // Event 엔티티 저장
-        Event event = new Event(personalCalendar, time, location, eventGetResponse.id(),
+        Event event = new Event(time, location, eventGetResponse.id(),
             eventGetResponse.title(),
             eventGetResponse.isRecurEvent(),
             eventGetResponse.rrule(), eventGetResponse.dtStart(),
@@ -72,23 +58,4 @@ public class EventService {
             }
         }
     }
-
-    @Transactional
-    public void saveCreatedEvent(EventCreateRequest eventCreateRequest, String eventId,
-        Long memberId) {
-        // 개인 캘린더 조회 또는 생성
-        PersonalCalendar personalCalendar = personalCalendarService.findOrCreatePersonalCalendar(
-            memberId);
-
-        //Time 엔티티 저장
-        Time time = timeRepository.save(eventCreateRequest.time().toEntity());
-
-        // Event 엔티티 저장
-        Event event = new Event(personalCalendar, time, null, eventId,
-            eventCreateRequest.title(), false, eventCreateRequest.rrule(),
-            null, eventCreateRequest.description(), null, null);
-        eventRepository.save(event);
-
-    }
-
 }

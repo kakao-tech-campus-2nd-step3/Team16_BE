@@ -13,6 +13,7 @@ import org.cookieandkakao.babting.domain.calendar.entity.Event;
 @Entity
 @Table(name = "meeting_event")
 public class MeetingEvent {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long meetingEventId;
@@ -24,4 +25,13 @@ public class MeetingEvent {
     @ManyToOne
     @JoinColumn(name = "event_id")
     private Event event;
+
+    protected MeetingEvent() {
+
+    }
+
+    public MeetingEvent(MemberMeeting memberMeeting, Event event) {
+        this.memberMeeting = memberMeeting;
+        this.event = event;
+    }
 }

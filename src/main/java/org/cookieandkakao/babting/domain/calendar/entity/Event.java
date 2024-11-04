@@ -6,7 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import org.cookieandkakao.babting.domain.meeting.entity.Location;
@@ -18,10 +17,6 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long eventId;
-
-    @ManyToOne
-    @JoinColumn(name = "personal_calendar_id", nullable = false)
-    private PersonalCalendar personalCalendar;
 
     @OneToOne
     @JoinColumn(name = "time_id", nullable = false)
@@ -61,11 +56,10 @@ public class Event {
     protected Event() {
     }
 
-    public Event(PersonalCalendar personalCalendar, Time time, Location location,
+    public Event(Time time, Location location,
         String kakaoEventId, String title, boolean repeatedSchedule,
         String scheduleRepeatCycle, String dtStart, String description, String eventColor,
         String memo) {
-        this.personalCalendar = personalCalendar;
         this.time = time;
         this.location = location;
         this.kakaoEventId = kakaoEventId;
@@ -79,8 +73,8 @@ public class Event {
         this.memo = memo;
     }
 
-    public PersonalCalendar getPersonalCalendar() {
-        return personalCalendar;
+    public Event(Time time) {
+        this.time = time;
     }
 
     public Time getTime() {
