@@ -2,6 +2,7 @@ package org.cookieandkakao.babting.domain.member.service;
 
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED;
 
+import org.cookieandkakao.babting.common.exception.customexception.ApiException;
 import org.cookieandkakao.babting.common.properties.KakaoProviderProperties;
 import org.cookieandkakao.babting.domain.member.dto.KakaoMemberInfoGetResponse;
 import org.cookieandkakao.babting.domain.member.dto.KakaoTokenGetResponse;
@@ -31,10 +32,10 @@ public class KakaoAuthClient {
             .body(body)
             .retrieve()
             .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
-                throw new IllegalArgumentException("카카오 토큰 발급 실패");
+                throw new ApiException("카카오 토큰 발급 실패");
             })
             .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
-                throw new RuntimeException("카카오 인증 서버 에러");
+                throw new ApiException("카카오 인증 서버 에러");
             })
             .toEntity(KakaoTokenGetResponse.class)
             .getBody();
@@ -49,10 +50,10 @@ public class KakaoAuthClient {
             .header("Content-Type", "application/x-www-form-urlencoded")
             .retrieve()
             .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
-                throw new IllegalArgumentException("카카오 사용자 정보 조회 실패");
+                throw new ApiException("카카오 사용자 정보 조회 실패");
             })
             .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
-                throw new RuntimeException("카카오 사용자 정보 서버 에러");
+                throw new ApiException("카카오 사용자 정보 서버 에러");
             })
             .toEntity(KakaoMemberInfoGetResponse.class)
             .getBody();
@@ -66,11 +67,13 @@ public class KakaoAuthClient {
             .header("Authorization", "Bearer " + accessToken)
             .retrieve()
             .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
-                throw new IllegalArgumentException("카카오 연결 끊기 실패");
+                throw new ApiException("카카오 연결 끊기 실패");
             })
             .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
-                throw new RuntimeException("카카오 인증 서버 에러");
-            });
+                throw new ApiException("카카오 인증 서버 에러");
+            })
+            .toBodilessEntity();
+
     }
 
 }

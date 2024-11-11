@@ -19,6 +19,10 @@ public class FoodCategory {
 
     protected FoodCategory() {}
 
+    public FoodCategory(String name) {
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }

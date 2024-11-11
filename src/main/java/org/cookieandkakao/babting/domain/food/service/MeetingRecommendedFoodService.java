@@ -18,18 +18,18 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class MeetingPreferenceService {
+public class MeetingRecommendedFoodService {
     private final MemberMeetingRepository memberMeetingRepository;
     private final MeetingPreferenceFoodRepository meetingPreferenceFoodRepository;
     private final MeetingNonPreferenceFoodRepository meetingNonPreferenceFoodRepository;
     private final NonPreferenceFoodRepository nonPreferenceFoodRepository;
     private final FoodRepositoryService foodRepositoryService;
 
-    public MeetingPreferenceService(MemberMeetingRepository memberMeetingRepository,
-                                    MeetingPreferenceFoodRepository meetingPreferenceFoodRepository,
-                                    MeetingNonPreferenceFoodRepository meetingNonPreferenceFoodRepository,
-                                    NonPreferenceFoodRepository nonPreferenceFoodRepository,
-                                    FoodRepositoryService foodRepositoryService
+    public MeetingRecommendedFoodService(MemberMeetingRepository memberMeetingRepository,
+                                         MeetingPreferenceFoodRepository meetingPreferenceFoodRepository,
+                                         MeetingNonPreferenceFoodRepository meetingNonPreferenceFoodRepository,
+                                         NonPreferenceFoodRepository nonPreferenceFoodRepository,
+                                         FoodRepositoryService foodRepositoryService
     ) {
         this.memberMeetingRepository = memberMeetingRepository;
         this.meetingPreferenceFoodRepository = meetingPreferenceFoodRepository;

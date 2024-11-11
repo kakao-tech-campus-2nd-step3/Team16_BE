@@ -105,4 +105,32 @@ public class Meeting {
     public LocalTime getEndTime() {
         return endTime;
     }
+
+    public void updateBaseLocation(Location baseLocation) {
+        this.baseLocation = baseLocation;
+    }
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updateStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public void updateEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    public void updateDurationTime(Integer durationTime) {
+        this.durationTime = durationTime;
+    }
+
+    public void updateStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void updateEndTime(LocalTime endTime) {
+        this.endTime = endTime;
+    }
 }

@@ -1,7 +1,7 @@
 package org.cookieandkakao.babting.domain.food.service;
 
-import org.cookieandkakao.babting.common.exception.customexception.FoodNotFoundException;
-import org.cookieandkakao.babting.common.exception.customexception.PreferenceConflictException;
+import org.cookieandkakao.babting.domain.food.exception.FoodNotFoundException;
+import org.cookieandkakao.babting.domain.food.exception.PreferenceConflictException;
 import org.cookieandkakao.babting.domain.food.entity.Food;
 import org.cookieandkakao.babting.domain.food.repository.FoodRepository;
 import org.cookieandkakao.babting.domain.food.repository.NonPreferenceFoodRepository;

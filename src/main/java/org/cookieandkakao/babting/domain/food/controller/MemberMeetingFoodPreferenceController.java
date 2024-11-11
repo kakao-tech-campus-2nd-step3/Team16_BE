@@ -1,19 +1,19 @@
 package org.cookieandkakao.babting.domain.food.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.cookieandkakao.babting.common.annotaion.LoginMemberId;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseBody;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseGenerator;
-import org.cookieandkakao.babting.common.exception.customexception.InvalidFoodPreferenceTypeException;
+import org.cookieandkakao.babting.domain.food.exception.InvalidFoodPreferenceTypeException;
 import org.cookieandkakao.babting.domain.food.dto.FoodPreferenceGetResponse;
 import org.cookieandkakao.babting.domain.food.dto.PersonalPreferenceUpdateRequest;
 import org.cookieandkakao.babting.domain.food.service.MeetingFoodPreferenceStrategy;
 import org.cookieandkakao.babting.domain.food.service.MeetingFoodPreferenceUpdater;
 import org.cookieandkakao.babting.domain.food.service.MeetingNonPreferenceFoodService;
 import org.cookieandkakao.babting.domain.food.service.MeetingPreferenceFoodService;
-import org.cookieandkakao.babting.domain.food.service.MeetingPreferenceService;
+import org.cookieandkakao.babting.domain.food.service.MeetingRecommendedFoodService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,21 +26,22 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "모임별 개인 선호/비선호 음식", description = "모임별 개인 선호/비선호 음식 관련 api입니다.")
 @RestController
 @RequestMapping("/api/meeting")
 public class MemberMeetingFoodPreferenceController {
     private final Map<String, MeetingFoodPreferenceStrategy> strategies;
     private final MeetingFoodPreferenceUpdater meetingFoodPreferenceUpdater;
-    private final MeetingPreferenceService meetingPreferenceService;
+    private final MeetingRecommendedFoodService meetingRecommendedFoodService;
 
     public MemberMeetingFoodPreferenceController(
             MeetingPreferenceFoodService meetingPreferenceFoodService,
             MeetingNonPreferenceFoodService meetingNonPreferenceFoodService,
             MeetingFoodPreferenceUpdater meetingFoodPreferenceUpdater,
-            MeetingPreferenceService meetingPreferenceService
+            MeetingRecommendedFoodService meetingRecommendedFoodService
     ) {
         this.meetingFoodPreferenceUpdater = meetingFoodPreferenceUpdater;
-        this.meetingPreferenceService = meetingPreferenceService;
+        this.meetingRecommendedFoodService = meetingRecommendedFoodService;
         strategies = Map.of(
                 "preferences", meetingPreferenceFoodService,
                 "non-preferences", meetingNonPreferenceFoodService
@@ -94,7 +95,7 @@ public class MemberMeetingFoodPreferenceController {
             @PathVariable Long meetingId
     ) {
 
-        List<FoodPreferenceGetResponse> recommendedFoods = meetingPreferenceService.getRecommendedFoodDetailsForMeeting(meetingId);
+        List<FoodPreferenceGetResponse> recommendedFoods = meetingRecommendedFoodService.getRecommendedFoodDetailsForMeeting(meetingId);
 
         return ApiResponseGenerator.success(HttpStatus.OK, "모임 추천 음식 조회 성공", recommendedFoods);
     }

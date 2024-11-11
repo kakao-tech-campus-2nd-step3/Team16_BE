@@ -9,21 +9,19 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import org.cookieandkakao.babting.common.exception.customexception.EventCreationException;
+import org.cookieandkakao.babting.domain.calendar.exception.EventCreationException;
 import org.cookieandkakao.babting.domain.calendar.dto.request.EventCreateRequest;
 import org.cookieandkakao.babting.domain.calendar.dto.request.TimeCreateRequest;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventCreateResponse;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventDetailGetResponse;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventGetResponse;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventListGetResponse;
-import org.cookieandkakao.babting.domain.member.entity.KakaoToken;
 import org.cookieandkakao.babting.domain.member.service.MemberService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -81,8 +79,7 @@ class TalkCalendarServiceTest {
         EventDetailGetResponse eventDetailGetResponseMock = new EventDetailGetResponse(
             eventGetResponse);
         // Mocking
-        given(memberService.getKakaoToken(memberId)).willReturn(
-            new KakaoToken(accessToken, null, null, null));
+        given(memberService.getKakaoAccessToken(memberId)).willReturn(accessToken);
         given(talkCalendarClientService.getEventList(accessToken, from, to)).willReturn(
             eventListGetResponse);
         given(talkCalendarClientService.getEvent(accessToken, eventGetResponse.id())).willReturn(
@@ -92,12 +89,12 @@ class TalkCalendarServiceTest {
         List<EventGetResponse> result = talkCalendarService.getUpdatedEventList(from, to, memberId);
 
         // Then
-        verify(memberService).getKakaoToken(any(Long.class));
+        verify(memberService).getKakaoAccessToken(memberId);
         verify(talkCalendarClientService).getEventList(accessToken, from, to);
         verify(talkCalendarClientService).getEvent(accessToken, eventGetResponse.id());
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals("testId", result.get(0).id());
+        assertEquals("testId", result.getFirst().id());
     }
 
     @Test
@@ -113,8 +110,7 @@ class TalkCalendarServiceTest {
             eventGetResponse);
 
         // Mocking
-        given(memberService.getKakaoToken(memberId)).willReturn(
-            new KakaoToken(accessToken, null, null, null));
+        given(memberService.getKakaoAccessToken(memberId)).willReturn(accessToken);
         given(talkCalendarClientService.getEvent(accessToken, eventId)).willReturn(
             eventDetailGetResponseMock);
 
@@ -122,7 +118,7 @@ class TalkCalendarServiceTest {
         EventDetailGetResponse result = talkCalendarService.getEvent(memberId, eventId);
 
         // Then
-        verify(memberService).getKakaoToken(any(Long.class));
+        verify(memberService).getKakaoAccessToken(any(Long.class));
         verify(talkCalendarClientService).getEvent(accessToken, eventId);
         assertNotNull(result);
         assertEquals(eventId, result.event().id());
@@ -144,8 +140,7 @@ class TalkCalendarServiceTest {
         EventCreateResponse responseBody = new EventCreateResponse(eventId);
 
         // Mocking
-        given(memberService.getKakaoToken(memberId)).willReturn(
-            new KakaoToken(accessToken, null, null, null));
+        given(memberService.getKakaoAccessToken(memberId)).willReturn(accessToken);
         given(talkCalendarClientService.createEvent(accessToken, formData)).willReturn(
             responseBody);
 
@@ -153,7 +148,7 @@ class TalkCalendarServiceTest {
         EventCreateResponse result = talkCalendarService.createEvent(eventCreateRequest, memberId);
 
         // Then
-        verify(memberService).getKakaoToken(any(Long.class));
+        verify(memberService).getKakaoAccessToken(any(Long.class));
         verify(talkCalendarClientService).createEvent(accessToken, formData);
         assertNotNull(result);
         assertEquals(eventId, result.eventId());
@@ -166,7 +161,7 @@ class TalkCalendarServiceTest {
         String eventId = "testId";
 
         // Mocking
-        given(memberService.getKakaoToken(memberId)).willThrow(
+        given(memberService.getKakaoAccessToken(memberId)).willThrow(
             new IllegalArgumentException("존재하지 않는 MemberID입니다."));
 
         // When
@@ -176,7 +171,7 @@ class TalkCalendarServiceTest {
         // Then
         assertEquals(e.getClass(), IllegalArgumentException.class);
         assertEquals(e.getMessage(), "존재하지 않는 MemberID입니다.");
-        verify(memberService).getKakaoToken(memberId);
+        verify(memberService).getKakaoAccessToken(memberId);
     }
 
     @Test
@@ -187,8 +182,7 @@ class TalkCalendarServiceTest {
         String accessToken = "testAccessToken";
 
         // Mocking
-        given(memberService.getKakaoToken(memberId)).willReturn(
-            new KakaoToken(accessToken, null, null, null));
+        given(memberService.getKakaoAccessToken(memberId)).willReturn(accessToken);
         given(talkCalendarClientService.getEvent(accessToken, eventId)).willThrow(
             new IllegalArgumentException("존재하지 않는 EventID입니다."));
 
@@ -199,7 +193,7 @@ class TalkCalendarServiceTest {
         // Then
         assertEquals(e.getClass(), IllegalArgumentException.class);
         assertEquals(e.getMessage(), "존재하지 않는 EventID입니다.");
-        verify(memberService).getKakaoToken(memberId);
+        verify(memberService).getKakaoAccessToken(memberId);
         verify(talkCalendarClientService).getEvent(accessToken, eventId);
     }
 
@@ -211,7 +205,7 @@ class TalkCalendarServiceTest {
         String to = "2024-10-31T23:59:59Z";
 
         // Mocking
-        given(memberService.getKakaoToken(memberId)).willThrow(
+        given(memberService.getKakaoAccessToken(memberId)).willThrow(
             new IllegalArgumentException("존재하지 않는 MemberID입니다."));
 
         // When
@@ -221,7 +215,7 @@ class TalkCalendarServiceTest {
         // Then
         assertEquals(e.getClass(), IllegalArgumentException.class);
         assertEquals(e.getMessage(), "존재하지 않는 MemberID입니다.");
-        verify(memberService).getKakaoToken(memberId);
+        verify(memberService).getKakaoAccessToken(memberId);
     }
 
     @Test
@@ -233,8 +227,7 @@ class TalkCalendarServiceTest {
         String accessToken = "testAccessToken";
 
         // Mocking
-        given(memberService.getKakaoToken(memberId)).willReturn(
-            new KakaoToken(accessToken, null, null, null));
+        given(memberService.getKakaoAccessToken(memberId)).willReturn(accessToken);
         given(talkCalendarClientService.getEventList(accessToken, from, to)).willThrow(
             new IllegalArgumentException("잘못된 From 값 입니다."));
 
@@ -245,7 +238,7 @@ class TalkCalendarServiceTest {
         // Then
         assertEquals(e.getClass(), IllegalArgumentException.class);
         assertEquals(e.getMessage(), "잘못된 From 값 입니다.");
-        verify(memberService).getKakaoToken(any(Long.class));
+        verify(memberService).getKakaoAccessToken(any(Long.class));
         verify(talkCalendarClientService).getEventList(accessToken, from, to);
     }
 
@@ -258,8 +251,7 @@ class TalkCalendarServiceTest {
         String accessToken = "testAccessToken";
 
         // Mocking
-        given(memberService.getKakaoToken(memberId)).willReturn(
-            new KakaoToken(accessToken, null, null, null));
+        given(memberService.getKakaoAccessToken(memberId)).willReturn(accessToken);
         given(talkCalendarClientService.getEventList(accessToken, from, to)).willThrow(
             new IllegalArgumentException("잘못된 To 값 입니다."));
 
@@ -270,7 +262,7 @@ class TalkCalendarServiceTest {
         // Then
         assertEquals(e.getClass(), IllegalArgumentException.class);
         assertEquals(e.getMessage(), "잘못된 To 값 입니다.");
-        verify(memberService).getKakaoToken(any(Long.class));
+        verify(memberService).getKakaoAccessToken(any(Long.class));
         verify(talkCalendarClientService).getEventList(accessToken, from, to);
     }
 
@@ -290,8 +282,7 @@ class TalkCalendarServiceTest {
             eventGetResponse);
 
         // Mocking
-        given(memberService.getKakaoToken(memberId)).willReturn(
-            new KakaoToken(accessToken, null, null, null));
+        given(memberService.getKakaoAccessToken(memberId)).willReturn(accessToken);
         given(talkCalendarClientService.getEventList(accessToken, from, to)).willReturn(
             eventListGetResponse);
         given(talkCalendarClientService.getEvent(accessToken, eventGetResponse.id())).willThrow(
@@ -304,7 +295,7 @@ class TalkCalendarServiceTest {
         // Then
         assertEquals(e.getClass(), IllegalArgumentException.class);
         assertEquals(e.getMessage(), "존재하지 않는 EventID입니다.");
-        verify(memberService).getKakaoToken(any(Long.class));
+        verify(memberService).getKakaoAccessToken(any(Long.class));
         verify(talkCalendarClientService).getEventList(accessToken, from, to);
         verify(talkCalendarClientService).getEvent(accessToken, eventGetResponse.id());
     }
@@ -323,8 +314,7 @@ class TalkCalendarServiceTest {
         EventCreateResponse responseBody = new EventCreateResponse(eventId);
 
         // Mocking
-        given(memberService.getKakaoToken(memberId)).willReturn(
-            new KakaoToken(accessToken, null, null, null));
+        given(memberService.getKakaoAccessToken(memberId)).willReturn(accessToken);
         given(talkCalendarClientService.createEvent(accessToken, formData)).willThrow(
             new EventCreationException("EventCreateRequest 에러"));
 
@@ -335,7 +325,7 @@ class TalkCalendarServiceTest {
         // Then
         assertEquals(e.getClass(), EventCreationException.class);
         assertEquals(e.getMessage(), "EventCreateRequest 에러");
-        verify(memberService).getKakaoToken(memberId);
+        verify(memberService).getKakaoAccessToken(memberId);
         verify(talkCalendarClientService).createEvent(accessToken, formData);
     }
 
@@ -346,7 +336,7 @@ class TalkCalendarServiceTest {
         EventCreateRequest eventCreateRequestMcok = mock(EventCreateRequest.class);
 
         // Mocking
-        given(memberService.getKakaoToken(memberId)).willThrow(
+        given(memberService.getKakaoAccessToken(memberId)).willThrow(
             new IllegalArgumentException("존재하지 않는 MemberID입니다."));
 
         // When
@@ -356,7 +346,7 @@ class TalkCalendarServiceTest {
         // Then
         assertEquals(e.getClass(), IllegalArgumentException.class);
         assertEquals(e.getMessage(), "존재하지 않는 MemberID입니다.");
-        verify(memberService).getKakaoToken(memberId);
+        verify(memberService).getKakaoAccessToken(memberId);
     }
 
 }

@@ -8,15 +8,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.cookieandkakao.babting.common.cache.CacheKeyGenerator;
-import org.cookieandkakao.babting.common.exception.customexception.EventCreationException;
-import org.cookieandkakao.babting.common.exception.customexception.JsonConversionException;
+import org.cookieandkakao.babting.common.exception.customexception.CacheEvictionException;
+import org.cookieandkakao.babting.domain.calendar.exception.EventCreationException;
+import org.cookieandkakao.babting.domain.calendar.exception.JsonConversionException;
 import org.cookieandkakao.babting.domain.calendar.dto.request.EventCreateRequest;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventCreateResponse;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventDetailGetResponse;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventGetResponse;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventListGetResponse;
-import org.cookieandkakao.babting.domain.member.entity.KakaoToken;
 import org.cookieandkakao.babting.domain.member.service.MemberService;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
@@ -29,16 +30,14 @@ public class TalkCalendarService {
 
     private final TalkCalendarClientService talkCalendarClientService;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final EventService eventService;
     private final MemberService memberService;
     private final RedisTemplate<String, String> redisTemplate;
     private static final Duration CACHE_DURATION = Duration.ofMinutes(5);
 
-    public TalkCalendarService(EventService eventService,
+    public TalkCalendarService(
         TalkCalendarClientService talkCalendarClientService,
         MemberService memberService,
         RedisTemplate<String, String> redisTemplate) {
-        this.eventService = eventService;
         this.talkCalendarClientService = talkCalendarClientService;
         this.memberService = memberService;
         this.redisTemplate = redisTemplate;
@@ -51,13 +50,15 @@ public class TalkCalendarService {
             try {
                 // JSON 문자열을 List<EventGetResponse> 로 변환
                 // 리스트이므로 TypeReference 사용
-                return objectMapper.readValue(cachedJson, new TypeReference<List<EventGetResponse>>() {});
+                return objectMapper.readValue(cachedJson,
+                    new TypeReference<List<EventGetResponse>>() {
+                    });
             } catch (JsonProcessingException e) {
-                throw new RuntimeException("캐시된 JSON 변환 오류", e);
+                throw new JsonConversionException("캐시된 JSON 변환 오류");
             }
         }
 
-        String kakaoAccessToken = getKakaoAccessToken(memberId);
+        String kakaoAccessToken = memberService.getKakaoAccessToken(memberId);
         EventListGetResponse eventList = talkCalendarClientService.getEventList(kakaoAccessToken,
             from, to);
         List<EventGetResponse> updatedEvents = new ArrayList<>();
@@ -85,12 +86,13 @@ public class TalkCalendarService {
                 // 단일 객체이므로 .class 사용
                 return objectMapper.readValue(cachedJson, EventDetailGetResponse.class);
             } catch (JsonProcessingException e) {
-                throw new RuntimeException("캐시된 JSON 변환 오류", e);
+                throw new JsonConversionException("캐시된 JSON 변환 오류");
             }
         }
 
-        String kakaoAccessToken = getKakaoAccessToken(memberId);
-        EventDetailGetResponse eventDetailGetResponse = talkCalendarClientService.getEvent(kakaoAccessToken, eventId);
+        String kakaoAccessToken = memberService.getKakaoAccessToken(memberId);
+        EventDetailGetResponse eventDetailGetResponse = talkCalendarClientService.getEvent(
+            kakaoAccessToken, eventId);
 
         cacheData(cacheKey, eventDetailGetResponse);
         return eventDetailGetResponse;
@@ -99,15 +101,16 @@ public class TalkCalendarService {
     // JSON 변환 후 Redis에 저장
     private void cacheData(String cacheKey, Object data) {
         try {
-            redisTemplate.opsForValue().set(cacheKey, objectMapper.writeValueAsString(data), CACHE_DURATION);
+            redisTemplate.opsForValue()
+                .set(cacheKey, objectMapper.writeValueAsString(data), CACHE_DURATION);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("JSON 변환 오류", e);
+            throw new JsonConversionException("JSON 변환 오류");
         }
     }
 
     public EventCreateResponse createEvent(
         EventCreateRequest eventCreateRequest, Long memberId) {
-        String kakaoAccessToken = getKakaoAccessToken(memberId);
+        String kakaoAccessToken = memberService.getKakaoAccessToken(memberId);
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         // event라는 key에 JSON 형태의 데이터를 추가해야 함
         // EventCreateRequestDto를 JSON으로 변환
@@ -130,29 +133,32 @@ public class TalkCalendarService {
         }
     }
 
-    private String getKakaoAccessToken(Long memberId) {
-        KakaoToken kakaoToken = memberService.getKakaoToken(memberId);
-        String kakaoAccessToken = kakaoToken.getAccessToken();
-        return kakaoAccessToken;
-    }
-
     // 키 값에서 memberId가 포함되어 있는 것 삭제
     private void evictMemberCache(Long memberId) {
         String pattern = CacheKeyGenerator.generateEventListPattern(memberId);
         // 패턴과 카운트 설정
         ScanOptions scanOptions = ScanOptions.scanOptions().match(pattern).count(10).build();
         // 스캔 시작
-        Cursor<byte[]> cursor = redisTemplate.executeWithStickyConnection(connection -> connection.scan(scanOptions));
+        try {
+            Cursor<byte[]> cursor = redisTemplate.executeWithStickyConnection(
+                connection -> connection.scan(scanOptions));
 
-        while(cursor != null && cursor.hasNext()) {
-            String key = new String(cursor.next());
-            redisTemplate.delete(key);
-        }
+            List<String> keysToDelete = new ArrayList<>();
+            while (cursor.hasNext()) {
+                keysToDelete.add(new String(cursor.next()));
+            }
 
-        if (cursor != null) {
+            if (!keysToDelete.isEmpty()) {
+                redisTemplate.delete(keysToDelete);
+            }
+
             // 리소스 해제
             // Cursor 사용 후 반드시 닫아주어야 함
             cursor.close();
+        } catch (DataAccessException e) {
+            throw new CacheEvictionException("Redis 데이터 접근 중 문제가 발생했습니다.");
+        } catch (Exception e) {
+            throw new CacheEvictionException("Cursor 리소스를 해제하는 중 문제가 발생했습니다.");
         }
     }
 }

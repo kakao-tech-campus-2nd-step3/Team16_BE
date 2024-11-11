@@ -1,17 +1,16 @@
 package org.cookieandkakao.babting.domain.member.service;
 
+import org.cookieandkakao.babting.domain.member.exception.MemberNotFoundException;
 import org.cookieandkakao.babting.common.properties.KakaoClientProperties;
 import org.cookieandkakao.babting.common.properties.KakaoProviderProperties;
 import org.cookieandkakao.babting.domain.member.dto.KakaoMemberInfoGetResponse;
 import org.cookieandkakao.babting.domain.member.dto.KakaoTokenGetResponse;
 import org.cookieandkakao.babting.domain.member.dto.TokenIssueResponse;
-import org.cookieandkakao.babting.domain.member.entity.KakaoToken;
 import org.cookieandkakao.babting.domain.member.entity.Member;
 import org.cookieandkakao.babting.domain.member.repository.MemberRepository;
 import org.cookieandkakao.babting.domain.member.util.AuthorizationUriBuilder;
 import org.cookieandkakao.babting.domain.member.util.JwtUtil;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -76,7 +75,7 @@ public class AuthService {
 
     public TokenIssueResponse issueToken(Long memberId) {
         Member member = memberRepository.findById(memberId)
-            .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(() -> new MemberNotFoundException("해당 회원이 존재하지 않습니다."));
 
         return jwtUtil.issueToken(member.getMemberId());
     }

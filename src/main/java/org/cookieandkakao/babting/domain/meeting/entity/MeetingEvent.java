@@ -34,4 +34,8 @@ public class MeetingEvent {
         this.memberMeeting = memberMeeting;
         this.event = event;
     }
+
+    public Event getEvent() {
+        return event;
+    }
 }

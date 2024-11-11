@@ -1,6 +1,6 @@
 package org.cookieandkakao.babting.domain.food.service;
 
-import org.cookieandkakao.babting.common.exception.customexception.FoodNotFoundException;
+import org.cookieandkakao.babting.domain.food.exception.FoodNotFoundException;
 import org.cookieandkakao.babting.domain.food.dto.FoodGetResponse;
 import org.cookieandkakao.babting.domain.food.entity.FoodCategory;
 import org.cookieandkakao.babting.domain.food.repository.FoodCategoryRepository;
@@ -16,18 +16,19 @@ public class FoodService {
     private final FoodRepository foodRepository;
     private final FoodCategoryRepository foodCategoryRepository;
 
-    public FoodService(FoodRepository foodRepository, FoodCategoryRepository foodCategoryRepository) {
+    public FoodService(FoodRepository foodRepository,
+        FoodCategoryRepository foodCategoryRepository) {
         this.foodRepository = foodRepository;
         this.foodCategoryRepository = foodCategoryRepository;
     }
 
     public List<FoodGetResponse> getFoodsByCategory(String categoryName) {
         FoodCategory category = foodCategoryRepository.findByName(categoryName)
-                .orElseThrow(() -> new FoodNotFoundException("해당 카테고리가 존재하지 않습니다."));
+            .orElseThrow(() -> new FoodNotFoundException("해당 카테고리가 존재하지 않습니다."));
 
         return foodRepository.findByFoodCategory(category)
-                .stream()
-                .map(food -> new FoodGetResponse(food.getFoodId(), category.getName(), food.getName()))
-                .collect(Collectors.toList());
+            .stream()
+            .map(food -> new FoodGetResponse(food.getFoodId(), category.getName(), food.getName()))
+            .collect(Collectors.toList());
     }
 }

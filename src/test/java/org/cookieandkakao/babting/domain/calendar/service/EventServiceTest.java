@@ -2,6 +2,7 @@ package org.cookieandkakao.babting.domain.calendar.service;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -10,6 +11,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventGetResponse;
 import org.cookieandkakao.babting.domain.calendar.dto.response.TimeGetResponse;
@@ -200,6 +202,51 @@ class EventServiceTest {
         assertEquals("시간 저장 실패", e.getMessage());
         verify(timeRepository).save(any(Time.class));
         verify(eventRepository, times(0)).save(any(Event.class));
+    }
+
+    @Test
+    void saveAvoidTimeEventTest() {
+        // Given
+        LocalDateTime startAt = LocalDateTime.of(2024, 11, 6, 10, 0);
+        LocalDateTime endAt = LocalDateTime.of(2024, 11, 6, 12, 0);
+        Time avoidTime = new Time(startAt, endAt, "Asia/Seoul", false);
+        Event avoidTimeEvent = new Event(avoidTime);
+
+        // Mocking
+        given(eventRepository.save(any(Event.class))).willReturn(avoidTimeEvent);
+
+        // When
+        Event result = eventService.saveAvoidTimeEvent(avoidTime);
+
+        // Then
+        verify(eventRepository).save(any(Event.class));
+        assertNotNull(result);
+        assertEquals(avoidTime, result.getTime());
+        assertEquals(result.getTime().getStartAt(), avoidTimeEvent.getTime().getStartAt());
+        assertEquals(result.getTime().getEndAt(), avoidTimeEvent.getTime().getEndAt());
+        assertEquals(result.getTime().getTimeZone(), avoidTimeEvent.getTime().getTimeZone());
+        assertEquals(result.getTime().isAllDay(), avoidTimeEvent.getTime().isAllDay());
+    }
+
+    @Test
+    void saveAvoidTimeEventTest_EventSaveFailed() {
+        // Given
+        LocalDateTime startAt = LocalDateTime.of(2024, 11, 6, 10, 0);
+        LocalDateTime endAt = LocalDateTime.of(2024, 11, 6, 12, 0);
+        Time avoidTime = new Time(startAt, endAt, "Asia/Seoul", false);
+        Event avoidTimeEvent = new Event(avoidTime);
+
+        // Mocking
+        given(eventRepository.save(any(Event.class))).willThrow(new IllegalArgumentException("일정 저장 실패"));
+
+        // When
+        Exception e = assertThrows(IllegalArgumentException.class,
+            () -> eventService.saveAvoidTimeEvent(avoidTime));
+
+        // Then
+        assertEquals(e.getClass(), IllegalArgumentException.class);
+        assertEquals(e.getMessage(), "일정 저장 실패");
+        verify(eventRepository).save(any(Event.class));
     }
 
 }

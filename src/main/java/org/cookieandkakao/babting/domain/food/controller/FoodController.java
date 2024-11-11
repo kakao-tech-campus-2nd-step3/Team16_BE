@@ -3,6 +3,7 @@ package org.cookieandkakao.babting.domain.food.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseBody.SuccessBody;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseGenerator;
 import org.cookieandkakao.babting.domain.food.dto.FoodGetResponse;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Tag(name = "음식", description = "카테고리별 음식 관련 api입니다.")
 @RestController
 @RequestMapping("/api")
 public class FoodController {

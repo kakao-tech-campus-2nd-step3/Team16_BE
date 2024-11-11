@@ -2,6 +2,7 @@ package org.cookieandkakao.babting.domain.food.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseBody.SuccessBody;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseGenerator;
 import org.cookieandkakao.babting.domain.food.service.FoodCategoryService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Tag(name = "음식 카테고리", description = "음식 카테고리 관련 api입니다.")
 @RestController
 @RequestMapping("/api")
 public class FoodCategoryController {
@@ -24,7 +26,7 @@ public class FoodCategoryController {
     }
 
     @GetMapping("/food-categories")
-    @Operation(summary = "음식 카테고리 조최", description = "음식 카테고리 목록(대분류)을 조회합니다.")
+    @Operation(summary = "음식 카테고리 조회", description = "음식 카테고리 목록(대분류)을 조회합니다.")
     @ApiResponse(responseCode = "200", description = "음식 카테고리 목록 조회 성공")
     public ResponseEntity<SuccessBody<List<String>>> getFoodCategories() {
         List<String> categories = foodCategoryService.getFoodCategories();

@@ -2,6 +2,8 @@ package org.cookieandkakao.babting.domain.member.service;
 
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
+import org.cookieandkakao.babting.domain.member.exception.ExpiredTokenException;
+import org.cookieandkakao.babting.domain.member.exception.MemberNotFoundException;
 import org.cookieandkakao.babting.domain.member.dto.KakaoMemberInfoGetResponse;
 import org.cookieandkakao.babting.domain.member.dto.KakaoTokenGetResponse;
 import org.cookieandkakao.babting.domain.member.dto.MemberProfileGetResponse;
@@ -9,8 +11,6 @@ import org.cookieandkakao.babting.domain.member.entity.KakaoToken;
 import org.cookieandkakao.babting.domain.member.entity.Member;
 import org.cookieandkakao.babting.domain.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.NoSuchElementException;
 
 @Service
 public class MemberService {
@@ -25,13 +25,14 @@ public class MemberService {
 
     public MemberProfileGetResponse getMemberProfile(Long memberId) {
         Member member = findMember(memberId);
-        return new MemberProfileGetResponse(memberId, member.getNickname(), member.getThumbnailImageUrl(),
+        return new MemberProfileGetResponse(memberId, member.getNickname(),
+            member.getThumbnailImageUrl(),
             member.getProfileImageUrl());
     }
 
     public Member findMember(Long memberId) {
         return memberRepository.findById(memberId)
-            .orElseThrow(() -> new NoSuchElementException("해당 사용자가 존재하지 않습니다."));
+            .orElseThrow(() -> new MemberNotFoundException("해당 사용자가 존재하지 않습니다."));
     }
 
     @Transactional
@@ -77,15 +78,13 @@ public class MemberService {
         KakaoToken kakaoToken = member.getKakaoToken();
 
         if (kakaoToken.getRefreshTokenExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("카카오 refresh 토큰 만료");
-        }
-        else if (kakaoToken.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new ExpiredTokenException("카카오 refresh 토큰 만료");
+        } else if (kakaoToken.getExpiresAt().isBefore(LocalDateTime.now())) {
             KakaoTokenGetResponse kakaoTokenGetResponse = authService.refreshKakaoToken(
                 kakaoToken.getRefreshToken());
             if (kakaoTokenGetResponse.refreshToken() == null) {
                 kakaoToken.updateAccessToken(kakaoTokenGetResponse);
-            }
-            else {
+            } else {
                 kakaoToken = kakaoTokenGetResponse.toEntity();
                 member.updateKakaoToken(kakaoToken);
             }

@@ -26,9 +26,18 @@ public record TimeGetResponse(
         return new Time(start, end, this.timeZone, this.allDay);
     }
 
-    private LocalDateTime convertToLocalDateTime(String time) {
+    public LocalDateTime convertToLocalDateTime(String time) {
         ZonedDateTime zonedDateTime = ZonedDateTime.parse(time, TimeFormatterUtil.FORMATTER);
         return zonedDateTime.toLocalDateTime();
+    }
+
+    public static TimeGetResponse from(Time time) {
+        return new TimeGetResponse(
+            time.getStartAt().toString(),
+            time.getEndAt().toString(),
+            time.getTimeZone(),
+            time.isAllDay()
+        );
     }
 
 }

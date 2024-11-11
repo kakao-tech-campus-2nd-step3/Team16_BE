@@ -1,5 +1,6 @@
 package org.cookieandkakao.babting.domain.meeting.dto.request;
 
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -13,9 +14,11 @@ public record MeetingCreateRequest(
     String title,
 
     @NotNull
+    @FutureOrPresent
     LocalDate startDate,
 
     @NotNull
+    @FutureOrPresent
     LocalDate endDate,
 
     @NotNull

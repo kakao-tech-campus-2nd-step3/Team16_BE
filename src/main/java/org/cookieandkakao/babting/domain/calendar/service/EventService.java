@@ -58,4 +58,11 @@ public class EventService {
             }
         }
     }
+
+    @Transactional
+    public Event saveAvoidTimeEvent(Time avoidTime) {
+        Event avoidTimeEvent = new Event(avoidTime);
+        eventRepository.save(avoidTimeEvent);
+        return avoidTimeEvent;
+    }
 }

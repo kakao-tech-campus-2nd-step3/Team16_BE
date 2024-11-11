@@ -7,6 +7,7 @@ import io.jsonwebtoken.Jwts.SIG;
 import java.time.Instant;
 import java.util.Date;
 import javax.crypto.SecretKey;
+import org.cookieandkakao.babting.domain.member.exception.ExpiredTokenException;
 import org.cookieandkakao.babting.domain.member.dto.TokenIssueResponse;
 import org.springframework.stereotype.Component;
 
@@ -52,9 +53,9 @@ public class JwtUtil {
                 .parseSignedClaims(token)
                 .getPayload();
         } catch (ExpiredJwtException e) {
-            throw new IllegalArgumentException("만료된 토큰입니다.");
+            throw new ExpiredTokenException("만료된 토큰입니다.");
         } catch (Exception e) {
-            throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
+            throw new ExpiredTokenException("유효하지 않은 토큰입니다.");
         }
     }
 

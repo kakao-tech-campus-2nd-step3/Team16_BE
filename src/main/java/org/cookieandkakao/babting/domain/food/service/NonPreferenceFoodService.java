@@ -1,6 +1,6 @@
 package org.cookieandkakao.babting.domain.food.service;
 
-import org.cookieandkakao.babting.common.exception.customexception.FoodNotFoundException;
+import org.cookieandkakao.babting.domain.food.exception.FoodNotFoundException;
 import org.cookieandkakao.babting.domain.food.dto.FoodPreferenceCreateRequest;
 import org.cookieandkakao.babting.domain.food.dto.FoodPreferenceGetResponse;
 import org.cookieandkakao.babting.domain.food.entity.Food;

@@ -41,3 +41,4 @@ out/
 
 application-oauth.properties
 application-db.properties
+.env
