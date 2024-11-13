@@ -5,6 +5,7 @@ import org.cookieandkakao.babting.domain.food.service.MeetingFoodPreferenceUpdat
 import org.cookieandkakao.babting.domain.food.service.MeetingNonPreferenceFoodService;
 import org.cookieandkakao.babting.domain.food.service.MeetingPreferenceFoodService;
 import org.cookieandkakao.babting.domain.food.service.MeetingRecommendedFoodService;
+import org.cookieandkakao.babting.domain.meeting.service.MeetingPersonalInfoUpdateService;
 import org.cookieandkakao.babting.domain.member.repository.MemberRepository;
 import org.cookieandkakao.babting.domain.member.util.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,6 +47,9 @@ public class MemberMeetingFoodPreferenceControllerTest {
 
     @MockBean
     private MemberRepository memberRepository;
+
+    @MockBean
+    private MeetingPersonalInfoUpdateService meetingPersonalInfoUpdateService;
 
 
     @BeforeEach
