@@ -37,6 +37,7 @@ dependencies {
     implementation 'redis.clients:jedis'
 
     testImplementation group: 'org.mockito', name: 'mockito-inline', version: '4.9.0'
+    testImplementation 'com.h2database:h2'
 }
 
 tasks.named('test') {

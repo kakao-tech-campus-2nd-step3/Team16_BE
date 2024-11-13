@@ -1,14 +1,8 @@
 package org.cookieandkakao.babting.domain.calendar.service;
 
-import org.cookieandkakao.babting.domain.calendar.dto.response.EventGetResponse;
 import org.cookieandkakao.babting.domain.calendar.entity.Event;
-import org.cookieandkakao.babting.domain.calendar.entity.Reminder;
 import org.cookieandkakao.babting.domain.calendar.entity.Time;
 import org.cookieandkakao.babting.domain.calendar.repository.EventRepository;
-import org.cookieandkakao.babting.domain.calendar.repository.ReminderRepository;
-import org.cookieandkakao.babting.domain.calendar.repository.TimeRepository;
-import org.cookieandkakao.babting.domain.meeting.entity.Location;
-import org.cookieandkakao.babting.domain.meeting.repository.LocationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,46 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class EventService {
 
     private final EventRepository eventRepository;
-    private final TimeRepository timeRepository;
-    private final LocationRepository locationRepository;
-    private final ReminderRepository reminderRepository;
 
-    public EventService(EventRepository eventRepository, TimeRepository timeRepository,
-        LocationRepository locationRepository, ReminderRepository reminderRepository) {
+    public EventService(EventRepository eventRepository) {
         this.eventRepository = eventRepository;
-        this.timeRepository = timeRepository;
-        this.locationRepository = locationRepository;
-        this.reminderRepository = reminderRepository;
-    }
-
-    @Transactional
-    public void saveEvent(EventGetResponse eventGetResponse, Long memberId) {
-        //Time 엔티티 저장
-        Time time = timeRepository.save(eventGetResponse.time().toEntity());
-
-        //Location 엔티티 저장
-        Location location = null;
-        if (eventGetResponse.location() != null) {
-            location = locationRepository.save(eventGetResponse.location().toEntity());
-        }
-
-        // Event 엔티티 저장
-        Event event = new Event(time, location, eventGetResponse.id(),
-            eventGetResponse.title(),
-            eventGetResponse.isRecurEvent(),
-            eventGetResponse.rrule(), eventGetResponse.dtStart(),
-            eventGetResponse.description(),
-            eventGetResponse.color(), eventGetResponse.memo());
-        eventRepository.save(event);
-
-        // Reminder 저장 (있을 경우)
-        for (Integer reminderTime : eventGetResponse.reminders()) {
-            if (reminderTime != null) {
-                reminderRepository.save(
-                    new Reminder(event, reminderTime)
-                );
-            }
-        }
     }
 
     @Transactional

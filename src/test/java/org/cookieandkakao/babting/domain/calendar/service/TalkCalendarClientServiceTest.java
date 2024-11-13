@@ -18,6 +18,7 @@ import org.cookieandkakao.babting.domain.calendar.dto.response.EventCreateRespon
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventDetailGetResponse;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventGetResponse;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventListGetResponse;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -66,284 +67,302 @@ class TalkCalendarClientServiceTest {
     private static final String EVENT_ID = "testId";
 
 
-    @Test
-    void getEventListTest() {
-        // Given
-        String relativeUrl = "test";
-        String from = "test From";
-        String to = "test To";
-        EventGetResponse eventGetResponse = new EventGetResponse("testId", "test title", "USER",
-            null, false, false, null, null, "test description", null, null, null, null);
-        EventListGetResponse eventListGetResponse = new EventListGetResponse(
-            List.of(eventGetResponse));
-        ResponseEntity<EventListGetResponse> responseEntity = new ResponseEntity<>(
-            eventListGetResponse,
-            HttpStatus.OK);
+    @Nested
+    class 일정_목록_조회_단위_테스트 {
 
-        // Mocking
-        given(kakaoProviderProperties.calendarEventListUri()).willReturn(relativeUrl);
-        given(restClient.get()).willReturn(requestHeadersUriSpec);
-        given(requestHeadersUriSpec.uri(any(Function.class))).will(invocationOnMock -> {
-            Function<UriBuilder, URI> uriFunction = invocationOnMock.getArgument(0);
-            URI uri = uriFunction.apply(UriComponentsBuilder.fromPath(relativeUrl));
-            return requestHeadersUriSpec;
-        });
-        given(requestHeadersUriSpec.header(anyString(), anyString())).willReturn(
-            requestBodyUriSpec);
-        given(requestBodyUriSpec.retrieve()).willReturn(responseSpec);
-        given(responseSpec.toEntity(EventListGetResponse.class)).willReturn(responseEntity);
+        @Test
+        void 성공() {
+            // Given
+            String relativeUrl = "test";
+            String from = "test From";
+            String to = "test To";
+            EventGetResponse eventGetResponse = new EventGetResponse("testId", "test title", "USER",
+                null, false, false, null, null, "test description", null, null, null, null);
+            EventListGetResponse eventListGetResponse = new EventListGetResponse(
+                List.of(eventGetResponse));
+            ResponseEntity<EventListGetResponse> responseEntity = new ResponseEntity<>(
+                eventListGetResponse,
+                HttpStatus.OK);
 
-        // When
-        EventListGetResponse result = talkCalendarClientService.getEventList(ACCESS_TOKEN, from,
-            to);
+            // Mocking
+            given(kakaoProviderProperties.calendarEventListUri()).willReturn(relativeUrl);
+            given(restClient.get()).willReturn(requestHeadersUriSpec);
+            given(requestHeadersUriSpec.uri(any(Function.class))).will(invocationOnMock -> {
+                Function<UriBuilder, URI> uriFunction = invocationOnMock.getArgument(0);
+                URI uri = uriFunction.apply(UriComponentsBuilder.fromPath(relativeUrl));
+                return requestHeadersUriSpec;
+            });
+            given(requestHeadersUriSpec.header(anyString(), anyString())).willReturn(
+                requestBodyUriSpec);
+            given(requestBodyUriSpec.retrieve()).willReturn(responseSpec);
+            given(responseSpec.toEntity(EventListGetResponse.class)).willReturn(responseEntity);
 
-        // Then
-        assertNotNull(result);
-        assertEquals(result, eventListGetResponse);
-        verify(restClient).get();
-        verify(requestHeadersUriSpec).uri(any(Function.class));
-        verify(requestHeadersUriSpec).header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN);
-        verify(requestBodyUriSpec).retrieve();
-        verify(responseSpec).toEntity(EventListGetResponse.class);
+            // When
+            EventListGetResponse result = talkCalendarClientService.getEventList(ACCESS_TOKEN, from,
+                to);
+
+            // Then
+            assertNotNull(result);
+            assertEquals(result, eventListGetResponse);
+            verify(restClient).get();
+            verify(requestHeadersUriSpec).uri(any(Function.class));
+            verify(requestHeadersUriSpec).header(HttpHeaders.AUTHORIZATION,
+                "Bearer " + ACCESS_TOKEN);
+            verify(requestBodyUriSpec).retrieve();
+            verify(responseSpec).toEntity(EventListGetResponse.class);
+        }
+
+        @Test
+        void ApiException예외() {
+            // Given
+            String relativeUrl = "test";
+            String from = "test From";
+            String to = "test To";
+
+            // Mocking
+            given(kakaoProviderProperties.calendarEventListUri()).willReturn(relativeUrl);
+            given(restClient.get()).willReturn(requestHeadersUriSpec);
+            given(requestHeadersUriSpec.uri(any(Function.class))).will(invocationOnMock -> {
+                Function<UriBuilder, URI> uriFunction = invocationOnMock.getArgument(0);
+                URI uri = uriFunction.apply(UriComponentsBuilder.fromPath(relativeUrl));
+                return requestHeadersUriSpec;
+            });
+            given(requestHeadersUriSpec.header(anyString(), anyString())).willReturn(
+                requestBodyUriSpec);
+            given(requestBodyUriSpec.retrieve()).willReturn(responseSpec);
+            given(responseSpec.toEntity(EventListGetResponse.class)).willThrow(
+                new RestClientException("API 에러"));
+
+            // When
+            Exception e = assertThrows(
+                ApiException.class,
+                () -> talkCalendarClientService.getEventList(ACCESS_TOKEN, from, to));
+
+            // Then
+            assertNotNull(e);
+            assertEquals(e.getClass(), ApiException.class);
+            assertEquals(e.getMessage(), "일정 목록 조회 중 에러 발생 : API 에러");
+            verify(kakaoProviderProperties).calendarEventListUri();
+            verify(restClient).get();
+            verify(requestHeadersUriSpec).uri(any(Function.class));
+            verify(requestHeadersUriSpec).header(HttpHeaders.AUTHORIZATION,
+                "Bearer " + ACCESS_TOKEN);
+            verify(requestBodyUriSpec).retrieve();
+            verify(responseSpec).toEntity(EventListGetResponse.class);
+        }
+
+        @Test
+        void 알수없는_예외_발생시_예외_처리() {
+            // Given
+            String from = "2024-01-01";
+            String to = "2024-01-10";
+
+            // Mocking
+            given(restClient.get()).willThrow(new RuntimeException("API 에러"));
+
+            // When
+            Exception e = assertThrows(RuntimeException.class,
+                () -> talkCalendarClientService.getEventList(ACCESS_TOKEN, from, to));
+
+            // Then
+            assertNotNull(e);
+            assertEquals(e.getClass(), RuntimeException.class);
+            assertEquals(e.getMessage(), "API 에러");
+            verify(restClient).get();
+        }
     }
 
-    @Test
-    void getEventTest() {
-        // Given
-        String relativeUrl = "test";
-        EventGetResponse eventGetResponse = new EventGetResponse("testId", "test title", "USER",
-            null, false, false, null, null, "test description", null, null, null, null);
-        EventDetailGetResponse eventDetailGetResponse = new EventDetailGetResponse(
-            eventGetResponse);
-        ResponseEntity<EventDetailGetResponse> responseEntity = new ResponseEntity<>(
-            eventDetailGetResponse,
-            HttpStatus.OK);
+    @Nested
+    class 일정_상세_조회_단위_테스트 {
 
-        // Mocking
-        given(kakaoProviderProperties.calendarEventDetailUri()).willReturn(relativeUrl);
-        given(restClient.get()).willReturn(requestHeadersUriSpec);
-        given(requestHeadersUriSpec.uri(any(Function.class))).will(invocationOnMock -> {
-            Function<UriBuilder, URI> uriFunction = invocationOnMock.getArgument(0);
-            URI uri = uriFunction.apply(UriComponentsBuilder.fromPath(relativeUrl));
-            return requestHeadersUriSpec;
-        });
-        given(requestHeadersUriSpec.header(anyString(), anyString())).willReturn(
-            requestBodyUriSpec);
-        given(requestBodyUriSpec.retrieve()).willReturn(responseSpec);
-        given(responseSpec.toEntity(EventDetailGetResponse.class)).willReturn(responseEntity);
+        @Test
+        void 성공() {
+            // Given
+            String relativeUrl = "test";
+            EventGetResponse eventGetResponse = new EventGetResponse("testId", "test title", "USER",
+                null, false, false, null, null, "test description", null, null, null, null);
+            EventDetailGetResponse eventDetailGetResponse = new EventDetailGetResponse(
+                eventGetResponse);
+            ResponseEntity<EventDetailGetResponse> responseEntity = new ResponseEntity<>(
+                eventDetailGetResponse,
+                HttpStatus.OK);
 
-        // When
-        EventDetailGetResponse result = talkCalendarClientService.getEvent(ACCESS_TOKEN, EVENT_ID);
+            // Mocking
+            given(kakaoProviderProperties.calendarEventDetailUri()).willReturn(relativeUrl);
+            given(restClient.get()).willReturn(requestHeadersUriSpec);
+            given(requestHeadersUriSpec.uri(any(Function.class))).will(invocationOnMock -> {
+                Function<UriBuilder, URI> uriFunction = invocationOnMock.getArgument(0);
+                URI uri = uriFunction.apply(UriComponentsBuilder.fromPath(relativeUrl));
+                return requestHeadersUriSpec;
+            });
+            given(requestHeadersUriSpec.header(anyString(), anyString())).willReturn(
+                requestBodyUriSpec);
+            given(requestBodyUriSpec.retrieve()).willReturn(responseSpec);
+            given(responseSpec.toEntity(EventDetailGetResponse.class)).willReturn(responseEntity);
 
-        // Then
-        assertNotNull(result);
-        assertEquals(result, eventDetailGetResponse);
-        assertEquals(result.event().id(), "testId");
-        verify(restClient).get();
-        verify(requestHeadersUriSpec).uri(any(Function.class));
-        verify(requestHeadersUriSpec).header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN);
-        verify(requestBodyUriSpec).retrieve();
-        verify(responseSpec).toEntity(EventDetailGetResponse.class);
+            // When
+            EventDetailGetResponse result = talkCalendarClientService.getEvent(ACCESS_TOKEN,
+                EVENT_ID);
+
+            // Then
+            assertNotNull(result);
+            assertEquals(result, eventDetailGetResponse);
+            assertEquals(result.event().id(), "testId");
+            verify(restClient).get();
+            verify(requestHeadersUriSpec).uri(any(Function.class));
+            verify(requestHeadersUriSpec).header(HttpHeaders.AUTHORIZATION,
+                "Bearer " + ACCESS_TOKEN);
+            verify(requestBodyUriSpec).retrieve();
+            verify(responseSpec).toEntity(EventDetailGetResponse.class);
+        }
+
+        @Test
+        void ApiException예외() {
+            // Given
+            String relativeUrl = "test";
+
+            // Mocking
+            given(kakaoProviderProperties.calendarEventDetailUri()).willReturn(relativeUrl);
+            given(restClient.get()).willReturn(requestHeadersUriSpec);
+            given(requestHeadersUriSpec.uri(any(Function.class))).will(invocationOnMock -> {
+                Function<UriBuilder, URI> uriFunction = invocationOnMock.getArgument(0);
+                URI uri = uriFunction.apply(UriComponentsBuilder.fromPath(relativeUrl));
+                return requestHeadersUriSpec;
+            });
+            given(requestHeadersUriSpec.header(anyString(), anyString())).willReturn(
+                requestBodyUriSpec);
+            given(requestBodyUriSpec.retrieve()).willReturn(responseSpec);
+            given(responseSpec.toEntity(EventDetailGetResponse.class)).willThrow(
+                new RestClientException("API 에러"));
+
+            // When
+            Exception e = assertThrows(
+                ApiException.class, () -> talkCalendarClientService.getEvent(ACCESS_TOKEN, EVENT_ID)
+            );
+
+            // Then
+            assertNotNull(e);
+            assertEquals(e.getClass(), ApiException.class);
+            assertEquals(e.getMessage(), "일정 상세 조회 중 오류 발생 : API 에러");
+            verify(kakaoProviderProperties).calendarEventDetailUri();
+            verify(restClient).get();
+            verify(requestHeadersUriSpec).uri(any(Function.class));
+            verify(requestHeadersUriSpec).header(anyString(), anyString());
+            verify(requestBodyUriSpec).retrieve();
+            verify(responseSpec).toEntity(EventDetailGetResponse.class);
+        }
+
+        @Test
+        void 알수없는_예외_발생시_예외_처리() {
+            // Mocking
+            given(restClient.get()).willThrow(new RuntimeException("API 에러"));
+
+            // When
+            Exception e = assertThrows(RuntimeException.class,
+                () -> talkCalendarClientService.getEvent(ACCESS_TOKEN, EVENT_ID));
+
+            // Then
+            assertNotNull(e);
+            assertEquals(e.getClass(), RuntimeException.class);
+            assertEquals(e.getMessage(), "API 에러");
+            verify(restClient).get();
+        }
     }
 
-    @Test
-    void createEventTest() {
-        // Given
-        String relativeUrl = "test";
-        EventCreateResponse eventCreateResponse = new EventCreateResponse("testId");
-        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-        ResponseEntity<EventCreateResponse> responseEntity = new ResponseEntity<>(
-            eventCreateResponse,
-            HttpStatus.CREATED);
+    @Nested
+    class 일정_생성_단위_테스트 {
 
-        // Mocking
-        given(kakaoProviderProperties.calendarCreateEventUri()).willReturn(relativeUrl);
-        given(restClient.post()).willReturn(requestBodyUriSpec);
-        given(requestBodyUriSpec.uri(anyString())).willReturn(requestBodySpec);
-        given(requestBodySpec.header(anyString(), anyString())).willReturn(requestBodySpec);
-        given(requestBodySpec.header(anyString(), anyString())).willReturn(requestBodySpec);
-        given(requestBodySpec.body(any(MultiValueMap.class))).willReturn(requestBodySpec);
-        given(requestBodySpec.retrieve()).willReturn(responseSpec);
-        given(responseSpec.toEntity(EventCreateResponse.class)).willReturn(responseEntity);
+        @Test
+        void 성공() {
+            // Given
+            String relativeUrl = "test";
+            EventCreateResponse eventCreateResponse = new EventCreateResponse("testId");
+            MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+            ResponseEntity<EventCreateResponse> responseEntity = new ResponseEntity<>(
+                eventCreateResponse,
+                HttpStatus.CREATED);
 
-        // When
-        EventCreateResponse result = talkCalendarClientService.createEvent(ACCESS_TOKEN, formData);
+            // Mocking
+            given(kakaoProviderProperties.calendarCreateEventUri()).willReturn(relativeUrl);
+            given(restClient.post()).willReturn(requestBodyUriSpec);
+            given(requestBodyUriSpec.uri(anyString())).willReturn(requestBodySpec);
+            given(requestBodySpec.header(anyString(), anyString())).willReturn(requestBodySpec);
+            given(requestBodySpec.header(anyString(), anyString())).willReturn(requestBodySpec);
+            given(requestBodySpec.body(any(MultiValueMap.class))).willReturn(requestBodySpec);
+            given(requestBodySpec.retrieve()).willReturn(responseSpec);
+            given(responseSpec.toEntity(EventCreateResponse.class)).willReturn(responseEntity);
 
-        // Then
-        assertNotNull(result);
-        assertEquals(result, eventCreateResponse);
-        assertEquals(result.eventId(), "testId");
-        verify(restClient).post();
-        verify(requestBodyUriSpec).uri(relativeUrl);
-        verify(requestBodySpec).header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN);
-        verify(requestBodySpec).header(HttpHeaders.CONTENT_TYPE,
-            "application/x-www-form-urlencoded");
-        verify(requestBodySpec).body(formData);
-        verify(requestBodySpec).retrieve();
-        verify(responseSpec).toEntity(EventCreateResponse.class);
-    }
+            // When
+            EventCreateResponse result = talkCalendarClientService.createEvent(ACCESS_TOKEN,
+                formData);
 
-    @Test
-    void getEventListTest_RestClientException() {
-        // Given
-        String relativeUrl = "test";
-        String from = "test From";
-        String to = "test To";
+            // Then
+            assertNotNull(result);
+            assertEquals(result, eventCreateResponse);
+            assertEquals(result.eventId(), "testId");
+            verify(restClient).post();
+            verify(requestBodyUriSpec).uri(relativeUrl);
+            verify(requestBodySpec).header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN);
+            verify(requestBodySpec).header(HttpHeaders.CONTENT_TYPE,
+                "application/x-www-form-urlencoded");
+            verify(requestBodySpec).body(formData);
+            verify(requestBodySpec).retrieve();
+            verify(responseSpec).toEntity(EventCreateResponse.class);
+        }
 
-        // Mocking
-        given(kakaoProviderProperties.calendarEventListUri()).willReturn(relativeUrl);
-        given(restClient.get()).willReturn(requestHeadersUriSpec);
-        given(requestHeadersUriSpec.uri(any(Function.class))).will(invocationOnMock -> {
-            Function<UriBuilder, URI> uriFunction = invocationOnMock.getArgument(0);
-            URI uri = uriFunction.apply(UriComponentsBuilder.fromPath(relativeUrl));
-            return requestHeadersUriSpec;
-        });
-        given(requestHeadersUriSpec.header(anyString(), anyString())).willReturn(
-            requestBodyUriSpec);
-        given(requestBodyUriSpec.retrieve()).willReturn(responseSpec);
-        given(responseSpec.toEntity(EventListGetResponse.class)).willThrow(
-            new RestClientException("API 에러"));
+        @Test
+        void ApiException예외() {
+            // Given
+            String relativeUrl = "test";
+            MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
 
-        // When
-        Exception e = assertThrows(
-            ApiException.class,
-            () -> talkCalendarClientService.getEventList(ACCESS_TOKEN, from, to));
+            // Mocking
+            given(kakaoProviderProperties.calendarCreateEventUri()).willReturn(relativeUrl);
+            given(restClient.post()).willReturn(requestBodyUriSpec);
+            given(requestBodyUriSpec.uri(anyString())).willReturn(requestBodySpec);
+            given(requestBodySpec.header(anyString(), anyString())).willReturn(requestBodySpec);
+            given(requestBodySpec.header(anyString(), anyString())).willReturn(requestBodySpec);
+            given(requestBodySpec.body(any(MultiValueMap.class))).willReturn(requestBodySpec);
+            given(requestBodySpec.retrieve()).willReturn(responseSpec);
+            given(responseSpec.toEntity(EventCreateResponse.class)).willThrow(
+                new RestClientException("API 에러"));
 
-        // Then
-        assertNotNull(e);
-        assertEquals(e.getClass(), ApiException.class);
-        assertEquals(e.getMessage(), "일정 목록 조회 중 에러 발생 : API 에러");
-        verify(kakaoProviderProperties).calendarEventListUri();
-        verify(restClient).get();
-        verify(requestHeadersUriSpec).uri(any(Function.class));
-        verify(requestHeadersUriSpec).header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN);
-        verify(requestBodyUriSpec).retrieve();
-        verify(responseSpec).toEntity(EventListGetResponse.class);
-    }
+            // When
+            Exception e = assertThrows(
+                ApiException.class,
+                () -> talkCalendarClientService.createEvent(ACCESS_TOKEN, formData)
+            );
 
-    @Test
-    void getEventTest_RestClientException() {
-        // Given
-        String relativeUrl = "test";
+            // Then
+            assertNotNull(e);
+            assertEquals(e.getClass(), ApiException.class);
+            assertEquals(e.getMessage(), "일정 생성 중 오류 발생 : API 에러");
+            verify(kakaoProviderProperties).calendarCreateEventUri();
+            verify(restClient).post();
+            verify(requestBodyUriSpec).uri(anyString());
+            verify(requestBodySpec, times(2)).header(anyString(), anyString());
+            verify(requestBodySpec).body(any(MultiValueMap.class));
+            verify(requestBodySpec).retrieve();
+            verify(responseSpec).toEntity(EventCreateResponse.class);
+        }
 
-        // Mocking
-        given(kakaoProviderProperties.calendarEventDetailUri()).willReturn(relativeUrl);
-        given(restClient.get()).willReturn(requestHeadersUriSpec);
-        given(requestHeadersUriSpec.uri(any(Function.class))).will(invocationOnMock -> {
-            Function<UriBuilder, URI> uriFunction = invocationOnMock.getArgument(0);
-            URI uri = uriFunction.apply(UriComponentsBuilder.fromPath(relativeUrl));
-            return requestHeadersUriSpec;
-        });
-        given(requestHeadersUriSpec.header(anyString(), anyString())).willReturn(
-            requestBodyUriSpec);
-        given(requestBodyUriSpec.retrieve()).willReturn(responseSpec);
-        given(responseSpec.toEntity(EventDetailGetResponse.class)).willThrow(
-            new RestClientException("API 에러"));
+        @Test
+        void 알수없는_예외_발생시_예외_처리() {
+            // Given
+            MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
 
-        // When
-        Exception e = assertThrows(
-            ApiException.class, () -> talkCalendarClientService.getEvent(ACCESS_TOKEN, EVENT_ID)
-        );
+            // Mocking
+            given(restClient.post()).willThrow(new RuntimeException("API 에러"));
 
-        // Then
-        assertNotNull(e);
-        assertEquals(e.getClass(), ApiException.class);
-        assertEquals(e.getMessage(), "일정 상세 조회 중 오류 발생 : API 에러");
-        verify(kakaoProviderProperties).calendarEventDetailUri();
-        verify(restClient).get();
-        verify(requestHeadersUriSpec).uri(any(Function.class));
-        verify(requestHeadersUriSpec).header(anyString(), anyString());
-        verify(requestBodyUriSpec).retrieve();
-        verify(responseSpec).toEntity(EventDetailGetResponse.class);
-    }
+            // When
+            Exception e = assertThrows(RuntimeException.class,
+                () -> talkCalendarClientService.createEvent(ACCESS_TOKEN, formData));
 
-    @Test
-    void createEventTest_RestClientException() {
-        // Given
-        String relativeUrl = "test";
-        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-
-        // Mocking
-        given(kakaoProviderProperties.calendarCreateEventUri()).willReturn(relativeUrl);
-        given(restClient.post()).willReturn(requestBodyUriSpec);
-        given(requestBodyUriSpec.uri(anyString())).willReturn(requestBodySpec);
-        given(requestBodySpec.header(anyString(), anyString())).willReturn(requestBodySpec);
-        given(requestBodySpec.header(anyString(), anyString())).willReturn(requestBodySpec);
-        given(requestBodySpec.body(any(MultiValueMap.class))).willReturn(requestBodySpec);
-        given(requestBodySpec.retrieve()).willReturn(responseSpec);
-        given(responseSpec.toEntity(EventCreateResponse.class)).willThrow(
-            new RestClientException("API 에러"));
-
-        // When
-        Exception e = assertThrows(
-            ApiException.class, () -> talkCalendarClientService.createEvent(ACCESS_TOKEN, formData)
-        );
-
-        // Then
-        assertNotNull(e);
-        assertEquals(e.getClass(), ApiException.class);
-        assertEquals(e.getMessage(), "일정 생성 중 오류 발생 : API 에러");
-        verify(kakaoProviderProperties).calendarCreateEventUri();
-        verify(restClient).post();
-        verify(requestBodyUriSpec).uri(anyString());
-        verify(requestBodySpec, times(2)).header(anyString(), anyString());
-        verify(requestBodySpec).body(any(MultiValueMap.class));
-        verify(requestBodySpec).retrieve();
-        verify(responseSpec).toEntity(EventCreateResponse.class);
-    }
-
-    @Test
-    void getEventListTest_알수없는_예외_발생시_예외처리() {
-        // Given
-        String from = "2024-01-01";
-        String to = "2024-01-10";
-
-        // Mocking
-        given(restClient.get()).willThrow(new RuntimeException("API 에러"));
-
-        // When
-        Exception e = assertThrows(RuntimeException.class,
-            () -> talkCalendarClientService.getEventList(ACCESS_TOKEN, from, to));
-
-        // Then
-        assertNotNull(e);
-        assertEquals(e.getClass(), RuntimeException.class);
-        assertEquals(e.getMessage(), "API 에러");
-        verify(restClient).get();
-    }
-
-    @Test
-    void getEventTest_알수없는_예외_발생시_예외처리() {
-        // Mocking
-        given(restClient.get()).willThrow(new RuntimeException("API 에러"));
-
-        // When
-        Exception e = assertThrows(RuntimeException.class,
-            () -> talkCalendarClientService.getEvent(ACCESS_TOKEN, EVENT_ID));
-
-        // Then
-        assertNotNull(e);
-        assertEquals(e.getClass(), RuntimeException.class);
-        assertEquals(e.getMessage(), "API 에러");
-        verify(restClient).get();
-    }
-
-    @Test
-    void createEventTest_알수없는_예외_발생시_예외처리() {
-        // Given
-        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-
-        // Mocking
-        given(restClient.post()).willThrow(new RuntimeException("API 에러"));
-
-        // When
-        Exception e = assertThrows(RuntimeException.class,
-            () -> talkCalendarClientService.createEvent(ACCESS_TOKEN, formData));
-
-        // Then
-        assertNotNull(e);
-        assertEquals(e.getClass(), RuntimeException.class);
-        assertEquals(e.getMessage(), "API 에러");
-        verify(restClient).post();
+            // Then
+            assertNotNull(e);
+            assertEquals(e.getClass(), RuntimeException.class);
+            assertEquals(e.getMessage(), "API 에러");
+            verify(restClient).post();
+        }
     }
 }

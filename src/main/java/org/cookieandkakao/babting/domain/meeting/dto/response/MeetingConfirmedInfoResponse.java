@@ -5,10 +5,11 @@ import org.cookieandkakao.babting.domain.meeting.entity.Meeting;
 
 public record MeetingConfirmedInfoResponse(
     String confirmedDateTime,
-    FoodGetResponse confirmedFood
+    FoodGetResponse confirmedFood,
+    LocationGetResponse baseLocation
 ) {
-    public static MeetingConfirmedInfoResponse of(Meeting meeting) {
+    public static MeetingConfirmedInfoResponse from(Meeting meeting) {
         return new MeetingConfirmedInfoResponse(meeting.getConfirmDateTime().toString(),
-            FoodGetResponse.from(meeting.getConfirmedFood()));
+            FoodGetResponse.from(meeting.getConfirmedFood()), LocationGetResponse.from(meeting.getBaseLocation()));
     }
 }

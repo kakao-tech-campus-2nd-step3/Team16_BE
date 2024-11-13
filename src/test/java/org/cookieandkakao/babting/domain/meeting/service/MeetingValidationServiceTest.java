@@ -10,8 +10,12 @@ import static org.mockito.Mockito.verify;
 import java.time.LocalDateTime;
 import org.cookieandkakao.babting.domain.meeting.entity.Meeting;
 import org.cookieandkakao.babting.domain.meeting.entity.MemberMeeting;
+import org.cookieandkakao.babting.domain.meeting.exception.meeting.MeetingAlreadyConfirmedException;
+import org.cookieandkakao.babting.domain.meeting.exception.meeting.MeetingHostUnauthorizedException;
+import org.cookieandkakao.babting.domain.meeting.exception.membermeeting.MemberMeetingNotFoundException;
 import org.cookieandkakao.babting.domain.member.entity.Member;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -30,75 +34,108 @@ class MeetingValidationServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    void validateHostPermissionTest() {
-        // Given
-        Long kakaoMemberId = 1L;
-        Member member = new Member(kakaoMemberId);
-        Meeting meeting = new Meeting(null, "Test Meeting", LocalDateTime.now().toLocalDate(),
-            LocalDateTime.now().toLocalDate(), 2, LocalDateTime.now().toLocalTime(),
-            LocalDateTime.now().toLocalTime());
-        MemberMeeting nonHostMemberMeeting = new MemberMeeting(member, meeting, true);
+    @Nested
+    class 호스트_권한_검증_테스트 {
 
-        // Mocking
-        given(meetingService.findMemberMeeting(member, meeting)).willReturn(nonHostMemberMeeting);
+        @Test
+        void 성공() {
+            // Given
+            Long kakaoMemberId = 1L;
+            Member member = new Member(kakaoMemberId);
+            Meeting meeting = new Meeting(null, "Test Meeting", LocalDateTime.now().toLocalDate(),
+                LocalDateTime.now().toLocalDate(), 2, LocalDateTime.now().toLocalTime(),
+                LocalDateTime.now().toLocalTime());
+            MemberMeeting nonHostMemberMeeting = new MemberMeeting(member, meeting, true);
 
-        // When & Then
-        assertDoesNotThrow(() -> meetingValidationService.validateHostPermission(member, meeting));
+            // Mocking
+            given(meetingService.findMemberMeeting(member, meeting)).willReturn(
+                nonHostMemberMeeting);
 
+            // When & Then
+            assertDoesNotThrow(
+                () -> meetingValidationService.validateHostPermission(member, meeting));
+        }
+
+        @Test
+        void 실패_호스트가_아닌_경우() {
+            // Given
+            Long kakaoMemberId = 1L;
+            Member member = new Member(kakaoMemberId);
+            Meeting meeting = new Meeting(null, "Test Meeting", LocalDateTime.now().toLocalDate(),
+                LocalDateTime.now().toLocalDate(), 2, LocalDateTime.now().toLocalTime(),
+                LocalDateTime.now().toLocalTime());
+            MemberMeeting nonHostMemberMeeting = new MemberMeeting(member, meeting, false);
+
+            // Mocking
+            given(meetingService.findMemberMeeting(member, meeting)).willReturn(
+                nonHostMemberMeeting);
+
+            // When
+            Exception e = assertThrows(MeetingHostUnauthorizedException.class,
+                () -> meetingValidationService.validateHostPermission(member, meeting));
+
+            // Then
+            assertEquals(e.getClass(), MeetingHostUnauthorizedException.class);
+            assertEquals(e.getMessage(), "권한이 없습니다.");
+            verify(meetingService).findMemberMeeting(member, meeting);
+        }
+
+        @Test
+        void 실패_해당_모임에_멤버가_없는_경우() {
+            // Given
+            Long kakaoMemberId = 1L;
+            Member member = new Member(kakaoMemberId);
+            Meeting meeting = new Meeting(null, "Test Meeting", LocalDateTime.now().toLocalDate(),
+                LocalDateTime.now().toLocalDate(), 2, LocalDateTime.now().toLocalTime(),
+                LocalDateTime.now().toLocalTime());
+
+            // Mocking
+            given(meetingService.findMemberMeeting(member, meeting))
+                .willThrow(new MemberMeetingNotFoundException("해당 모임에 회원이 존재하지 않습니다."));
+
+            // When
+            Exception e = assertThrows(MemberMeetingNotFoundException.class,
+                () -> meetingValidationService.validateHostPermission(member, meeting));
+
+            // Then
+            assertEquals(e.getClass(), MemberMeetingNotFoundException.class);
+            assertEquals(e.getMessage(), "해당 모임에 회원이 존재하지 않습니다.");
+            verify(meetingService).findMemberMeeting(member, meeting);
+        }
     }
 
-    @Test
-    void validateHostPermissionTest_NotHost() {
-        // Given
-        Long kakaoMemberId = 1L;
-        Member member = new Member(kakaoMemberId);
-        Meeting meeting = new Meeting(null, "Test Meeting", LocalDateTime.now().toLocalDate(),
-            LocalDateTime.now().toLocalDate(), 2, LocalDateTime.now().toLocalTime(),
-            LocalDateTime.now().toLocalTime());
-        MemberMeeting nonHostMemberMeeting = new MemberMeeting(member, meeting, false);
+    @Nested
+    class 모임_확정_시간_검증_테스트 {
 
-        // Mocking
-        given(meetingService.findMemberMeeting(member, meeting)).willReturn(nonHostMemberMeeting);
+        @Test
+        void 성공_모임에_확정_시간_없는_경우() {
+            // Given
+            Meeting meeting = mock(Meeting.class);
 
-        // When
-        Exception e = assertThrows(IllegalStateException.class,
-            () -> meetingValidationService.validateHostPermission(member, meeting));
+            // Mocking
+            given(meeting.getConfirmDateTime()).willReturn(null);
 
-        // Then
-        assertEquals(e.getClass(), IllegalStateException.class);
-        assertEquals(e.getMessage(), "권한이 없습니다.");
-        verify(meetingService).findMemberMeeting(member, meeting);
-    }
+            // When & Then
+            assertDoesNotThrow(() -> meetingValidationService.validateMeetingConfirmation(meeting));
+        }
 
-    @Test
-    void validateMeetingConfirmationTest() {
-        // Given
-        Meeting meeting = mock(Meeting.class);
+        @Test
+        void 실패_모임에_확정_시간_있는_경우() {
+            // Given
+            LocalDateTime testTime = LocalDateTime.of(2024, 11, 6, 12, 30, 35);
+            Meeting meeting = mock(Meeting.class);
 
-        // Mocking
-        given(meeting.getConfirmDateTime()).willReturn(null);
+            // Mocking
+            given(meeting.getConfirmDateTime()).willReturn(testTime);
 
-        // When & Then
-        assertDoesNotThrow(() -> meetingValidationService.validateMeetingConfirmation(meeting));
+            // When
+            Exception e = assertThrows(MeetingAlreadyConfirmedException.class,
+                () -> meetingValidationService.validateMeetingConfirmation(meeting));
 
-    }
-
-    @Test
-    void validateMeetingConfirmationTest_ExistingConfirmDateTime() {
-        LocalDateTime testTime = LocalDateTime.of(2024,11,6,12,30,35);
-        Meeting meeting = mock(Meeting.class);
-
-        // Mocking
-        given(meeting.getConfirmDateTime()).willReturn(testTime);
-
-        // When
-        Exception e = assertThrows(IllegalStateException.class,
-            () -> meetingValidationService.validateMeetingConfirmation(meeting));
-
-        // Then
-        assertEquals(e.getClass(), IllegalStateException.class);
-        assertEquals(e.getMessage(), "이미 모임 시간이 확정되었습니다.");
-        verify(meeting).getConfirmDateTime();
+            // Then
+            assertEquals(e.getClass(), MeetingAlreadyConfirmedException.class);
+            assertEquals(e.getMessage(), "이미 모임 시간이 확정되었습니다.");
+            verify(meeting).getConfirmDateTime();
+        }
     }
 }
