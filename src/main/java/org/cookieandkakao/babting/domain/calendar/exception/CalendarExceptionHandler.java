@@ -19,4 +19,21 @@ public class CalendarExceptionHandler {
     public ResponseEntity<FailureBody> handleJsonConversionException(JsonConversionException ex) {
         return ApiResponseGenerator.fail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
+
+    @ExceptionHandler(InvalidTimeRangeException.class)
+    public ResponseEntity<FailureBody> handleInvalidTimeRangeException(
+        InvalidTimeRangeException ex) {
+        return ApiResponseGenerator.fail(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(TimeNullException.class)
+    public ResponseEntity<FailureBody> handleTimeNullException(TimeNullException ex) {
+        return ApiResponseGenerator.fail(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(EventDetailNotFoundException.class)
+    public ResponseEntity<FailureBody> handleEventDetailNotFoundException(
+        EventDetailNotFoundException ex) {
+        return ApiResponseGenerator.fail(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
 }

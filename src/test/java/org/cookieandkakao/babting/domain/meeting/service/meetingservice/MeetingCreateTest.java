@@ -1,23 +1,21 @@
 package org.cookieandkakao.babting.domain.meeting.service.meetingservice;
 
 
-import org.cookieandkakao.babting.domain.meeting.service.MeetingService;
+import static org.mockito.Mockito.*;
+
+import org.cookieandkakao.babting.domain.meeting.entity.Meeting;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class MeetingCreateTest {
 
-    @Autowired
-    private MeetingService meetingService;
+class MeetingCreateTest extends MeetingServiceTest{
 
-    //모임 생성
     @Test
     void 모임_생성_성공() {
         //given
+        when(meetingRepository.save(any(Meeting.class))).thenReturn(meetingCreateRequest.toEntity());
         //when
+        meetingService.createMeeting(1L, meetingCreateRequest);
         //then
+        verify(meetingRepository).save(any(Meeting.class));
     }
-
 }

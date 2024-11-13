@@ -49,8 +49,6 @@ public class MeetingEventService {
         this.meetingTimeCalculationService = meetingTimeCalculationService;
     }
 
-
-    // 모임 확정
     public void confirmMeeting(Long memberId, Long meetingId,
         ConfirmMeetingGetRequest confirmMeetingGetRequest) {
         Member member = memberService.findMember(memberId);
@@ -93,7 +91,6 @@ public class MeetingEventService {
         return meetingTimeCalculationService.findAvailableTime(meetingId);
     }
 
-    // 모임별 개인 일정 조회
     public MeetingPersonalEventGetResponse findMeetingPersonalEvent(Long meetingId, Long memberId) {
         List<MeetingEvent> meetingEvents = findAllMeetingEvent(meetingId, memberId);
         List<TimeGetResponse> meetingPersonalEventTimes = meetingEvents.stream()
@@ -101,7 +98,7 @@ public class MeetingEventService {
         return new MeetingPersonalEventGetResponse(meetingPersonalEventTimes);
     }
 
-    public List<MeetingEvent> findAllMeetingEvent(Long meetingId, Long memberId) {
+    private List<MeetingEvent> findAllMeetingEvent(Long meetingId, Long memberId) {
         Meeting meeting = meetingService.findMeeting(meetingId);
         Member member = memberService.findMember(memberId);
         MemberMeeting memberMeeting = meetingService.findMemberMeeting(member, meeting);

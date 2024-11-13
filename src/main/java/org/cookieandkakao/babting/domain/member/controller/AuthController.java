@@ -62,7 +62,8 @@ public class AuthController {
             kakaoTokenDto = authService.requestKakaoToken(authorizeCode);
             kakaoMemberInfoDto = authService.requestKakaoMemberInfo(kakaoTokenDto);
         } catch (Exception e) {
-            return "redirect:https://www.babting.com/fail";
+
+            return "redirect:https://www.babting.com/failure";
         }
 
         Long memberId = memberService.saveMemberInfoAndKakaoToken(kakaoMemberInfoDto,
@@ -72,6 +73,7 @@ public class AuthController {
         response.addCookie(createRefreshTokenCookie(tokenDto));
 
         return "redirect:https://www.babting.com/success";
+
     }
 
     @ResponseBody

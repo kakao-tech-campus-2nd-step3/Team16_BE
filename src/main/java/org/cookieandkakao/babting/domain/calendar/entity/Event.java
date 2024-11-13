@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import org.cookieandkakao.babting.domain.calendar.exception.TimeNullException;
 import org.cookieandkakao.babting.domain.meeting.entity.Location;
 
 @Entity
@@ -60,6 +61,7 @@ public class Event {
         String kakaoEventId, String title, boolean repeatedSchedule,
         String scheduleRepeatCycle, String dtStart, String description, String eventColor,
         String memo) {
+        validateTime(time);
         this.time = time;
         this.location = location;
         this.kakaoEventId = kakaoEventId;
@@ -74,6 +76,7 @@ public class Event {
     }
 
     public Event(Time time) {
+        validateTime(time);
         this.time = time;
     }
 
@@ -101,4 +104,10 @@ public class Event {
         return type;
     }
 
+
+    private void validateTime(Time time) {
+        if (time == null) {
+            throw new TimeNullException("시간은 null이면 안됩니다.");
+        }
+    }
 }

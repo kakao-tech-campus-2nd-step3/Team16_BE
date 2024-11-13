@@ -9,7 +9,6 @@ import java.util.List;
 import org.cookieandkakao.babting.common.annotaion.LoginMemberId;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseBody.SuccessBody;
 import org.cookieandkakao.babting.common.apiresponse.ApiResponseGenerator;
-import org.cookieandkakao.babting.domain.food.service.MeetingFoodPreferenceUpdater;
 import org.cookieandkakao.babting.domain.meeting.dto.request.ConfirmMeetingGetRequest;
 import org.cookieandkakao.babting.domain.meeting.dto.request.MeetingCreateRequest;
 import org.cookieandkakao.babting.domain.meeting.dto.request.MeetingJoinCreateRequest;
@@ -20,8 +19,8 @@ import org.cookieandkakao.babting.domain.meeting.dto.response.MeetingHostCheckRe
 import org.cookieandkakao.babting.domain.meeting.dto.response.MeetingInfoGetResponse;
 import org.cookieandkakao.babting.domain.meeting.dto.response.MeetingPersonalEventGetResponse;
 import org.cookieandkakao.babting.domain.meeting.dto.response.TimeAvailableGetResponse;
-import org.cookieandkakao.babting.domain.meeting.service.MeetingEventCreateService;
 import org.cookieandkakao.babting.domain.meeting.service.MeetingEventService;
+import org.cookieandkakao.babting.domain.meeting.service.MeetingJoinService;
 import org.cookieandkakao.babting.domain.meeting.service.MeetingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,17 +40,13 @@ public class MeetingController {
 
     private final MeetingService meetingService;
     private final MeetingEventService meetingEventService;
-    private final MeetingFoodPreferenceUpdater meetingFoodPreferenceUpdater;
-    private final MeetingEventCreateService meetingEventCreateService;
+    private final MeetingJoinService meetingJoinService;
 
     public MeetingController(MeetingService meetingService,
-        MeetingEventService meetingEventService,
-        MeetingFoodPreferenceUpdater meetingFoodPreferenceUpdater,
-        MeetingEventCreateService meetingEventCreateService) {
+        MeetingEventService meetingEventService, MeetingJoinService meetingJoinService) {
         this.meetingService = meetingService;
         this.meetingEventService = meetingEventService;
-        this.meetingFoodPreferenceUpdater = meetingFoodPreferenceUpdater;
-        this.meetingEventCreateService = meetingEventCreateService;
+        this.meetingJoinService = meetingJoinService;
     }
 
     // 모임 생성(주최자)
@@ -60,7 +55,7 @@ public class MeetingController {
     @ApiResponse(responseCode = "201", description = "모임 생성 성공")
     public ResponseEntity<SuccessBody<Void>> createMeeting(
         @LoginMemberId Long memberId,
-        @RequestBody @Valid MeetingCreateRequest meetingCreateRequest){
+        @RequestBody @Valid MeetingCreateRequest meetingCreateRequest) {
         meetingService.createMeeting(memberId, meetingCreateRequest);
         return ApiResponseGenerator.success(HttpStatus.CREATED, "모임 생성 성공");
     }
@@ -72,7 +67,7 @@ public class MeetingController {
     public ResponseEntity<SuccessBody<Void>> updateMeeting(
         @LoginMemberId Long memberId,
         @PathVariable("meetingId") Long meetingId,
-        @RequestBody @Valid MeetingUpdateRequest meetingUpdateRequest){
+        @RequestBody @Valid MeetingUpdateRequest meetingUpdateRequest) {
         meetingService.updateMeeting(memberId, meetingId, meetingUpdateRequest);
         return ApiResponseGenerator.success(HttpStatus.OK, "모임 수정 성공");
     }
@@ -85,12 +80,8 @@ public class MeetingController {
         @PathVariable("meetingId") Long meetingId,
         @LoginMemberId Long memberId,
         @RequestBody @Valid MeetingJoinCreateRequest meetingJoinCreateRequest
-    ){
-        meetingService.joinMeeting(memberId, meetingId);
-        meetingEventCreateService.saveMeetingAvoidTime(memberId, meetingId,
-            meetingJoinCreateRequest.times());
-        meetingFoodPreferenceUpdater.updatePreferences(meetingId, memberId,
-            meetingJoinCreateRequest.preferences(), meetingJoinCreateRequest.nonPreferences());
+    ) {
+        meetingJoinService.joinMeeting(memberId, meetingId, meetingJoinCreateRequest);
         return ApiResponseGenerator.success(HttpStatus.OK, "모임 참가 성공");
     }
 
@@ -114,7 +105,7 @@ public class MeetingController {
     public ResponseEntity<SuccessBody<Void>> exitMeeting(
         @PathVariable("meetingId") Long meetingId,
         @LoginMemberId Long memberId
-    ){
+    ) {
         meetingService.exitMeeting(memberId, meetingId);
         return ApiResponseGenerator.success(HttpStatus.ACCEPTED, "모임 탈퇴 성공");
     }
@@ -125,7 +116,7 @@ public class MeetingController {
     @ApiResponse(responseCode = "200", description = "참여 모임 목록 조회 성공")
     public ResponseEntity<SuccessBody<List<MeetingGetResponse>>> getAllMeeting(
         @LoginMemberId Long memberId
-    ){
+    ) {
         List<MeetingGetResponse> meetings = meetingService.getAllMeetings(memberId);
         return ApiResponseGenerator.success(HttpStatus.OK, "참여 모임 목록 조회 성공", meetings);
     }
@@ -136,7 +127,7 @@ public class MeetingController {
     @ApiResponse(responseCode = "200", description = "모임 정보 조회 성공")
     public ResponseEntity<SuccessBody<MeetingInfoGetResponse>> getMeetingInfo(
         @PathVariable("meetingId") Long meetingId
-    ){
+    ) {
         MeetingInfoGetResponse meetingInfo = meetingService.getMeetingInfo(meetingId);
         return ApiResponseGenerator.success(HttpStatus.OK, "모임 정보 조회 성공", meetingInfo);
     }
@@ -148,23 +139,25 @@ public class MeetingController {
     public ResponseEntity<SuccessBody<MeetingHostCheckResponse>> getIsHost(
         @LoginMemberId Long memberId,
         @PathVariable("meetingId") Long meetingId
-    ){
+    ) {
         MeetingHostCheckResponse isHost = meetingService.checkHost(memberId,
             meetingId);
         return ApiResponseGenerator.success(HttpStatus.OK, "주최자 여부 확인 성공", isHost);
     }
+
     // 모임 확정 날짜, 확정 음식 확인
     @GetMapping("/{meetingId}/confirmed-info")
     @Operation(summary = "모임 확정 날짜, 확정 음식 조회", description = "모임 확정 날짜와 확정 음식을 확인합니다.")
     @ApiResponse(responseCode = "200", description = "모임 확정 날짜, 확정 음식 조회 성공")
     public ResponseEntity<SuccessBody<MeetingConfirmedInfoResponse>> getConfirmedInfo(
         @PathVariable("meetingId") Long meetingId
-    ){
+    ) {
         MeetingConfirmedInfoResponse meetingConfirmedInfoResponse = meetingService.getMeetingConfirmedInfo(
             meetingId);
         return ApiResponseGenerator.success(HttpStatus.OK, "모임 확정 날짜, 확정 음식 조회 성공",
             meetingConfirmedInfoResponse);
     }
+
     // 모임 공통 빈 시간 조회
     @GetMapping("/{meetingId}/calendar")
     @Operation(summary = "모임 공통 빈 시간 조회", description = "모임에 참여한 멤버들의 공통 시간표를 조회합니다. (모두가 비어있는 시간)")
@@ -186,7 +179,9 @@ public class MeetingController {
         @Parameter(description = "모임별 개인 일정 조회를 위한 모임 ID", required = true) @PathVariable("meetingId") Long meetingId,
         @LoginMemberId Long memberId
     ) {
-        MeetingPersonalEventGetResponse meetingPersonalEventGetResponse = meetingEventService.findMeetingPersonalEvent(meetingId, memberId);
-        return ApiResponseGenerator.success(HttpStatus.OK, "모임별 개인 일정 조회 성공", meetingPersonalEventGetResponse);
+        MeetingPersonalEventGetResponse meetingPersonalEventGetResponse = meetingEventService.findMeetingPersonalEvent(
+            meetingId, memberId);
+        return ApiResponseGenerator.success(HttpStatus.OK, "모임별 개인 일정 조회 성공",
+            meetingPersonalEventGetResponse);
     }
 }
