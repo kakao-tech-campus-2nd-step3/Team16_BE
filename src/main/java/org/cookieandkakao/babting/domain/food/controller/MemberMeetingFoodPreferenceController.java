@@ -10,7 +10,6 @@ import org.cookieandkakao.babting.domain.food.exception.InvalidFoodPreferenceTyp
 import org.cookieandkakao.babting.domain.food.dto.FoodPreferenceGetResponse;
 import org.cookieandkakao.babting.domain.food.dto.PersonalPreferenceUpdateRequest;
 import org.cookieandkakao.babting.domain.food.service.MeetingFoodPreferenceStrategy;
-import org.cookieandkakao.babting.domain.food.service.MeetingFoodPreferenceUpdater;
 import org.cookieandkakao.babting.domain.food.service.MeetingNonPreferenceFoodService;
 import org.cookieandkakao.babting.domain.food.service.MeetingPreferenceFoodService;
 import org.cookieandkakao.babting.domain.food.service.MeetingRecommendedFoodService;
@@ -32,24 +31,21 @@ import java.util.Map;
 @RequestMapping("/api/meeting")
 public class MemberMeetingFoodPreferenceController {
     private final Map<String, MeetingFoodPreferenceStrategy> strategies;
-    private final MeetingFoodPreferenceUpdater meetingFoodPreferenceUpdater;
     private final MeetingRecommendedFoodService meetingRecommendedFoodService;
     private final MeetingPersonalInfoUpdateService meetingPersonalInfoUpdateService;
 
     public MemberMeetingFoodPreferenceController(
             MeetingPreferenceFoodService meetingPreferenceFoodService,
             MeetingNonPreferenceFoodService meetingNonPreferenceFoodService,
-            MeetingFoodPreferenceUpdater meetingFoodPreferenceUpdater,
             MeetingRecommendedFoodService meetingRecommendedFoodService,
             MeetingPersonalInfoUpdateService meetingPersonalInfoUpdateService
     ) {
-        this.meetingFoodPreferenceUpdater = meetingFoodPreferenceUpdater;
+        this.meetingPersonalInfoUpdateService = meetingPersonalInfoUpdateService;
         this.meetingRecommendedFoodService = meetingRecommendedFoodService;
         strategies = Map.of(
                 "preferences", meetingPreferenceFoodService,
                 "non-preferences", meetingNonPreferenceFoodService
         );
-        this.meetingPersonalInfoUpdateService = meetingPersonalInfoUpdateService;
     }
 
     @GetMapping("/{meeting_id}/{type}")
