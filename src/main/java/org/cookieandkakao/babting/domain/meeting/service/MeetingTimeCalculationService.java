@@ -1,14 +1,13 @@
 package org.cookieandkakao.babting.domain.meeting.service;
 
 import jakarta.transaction.Transactional;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 import org.cookieandkakao.babting.domain.calendar.dto.response.EventGetResponse;
 import org.cookieandkakao.babting.domain.calendar.dto.response.TimeGetResponse;
-import org.cookieandkakao.babting.domain.calendar.entity.Time;
 import org.cookieandkakao.babting.domain.calendar.service.TalkCalendarService;
 import org.cookieandkakao.babting.domain.meeting.dto.response.TimeAvailableGetResponse;
 import org.cookieandkakao.babting.domain.meeting.dto.response.TimeSlot;
@@ -21,11 +20,13 @@ import org.springframework.stereotype.Service;
 public class MeetingTimeCalculationService {
     private final MeetingService meetingService;
     private final TalkCalendarService talkCalendarService;
+    private final MeetingEventService meetingEventService;
 
     public MeetingTimeCalculationService(MeetingService meetingService,
-        TalkCalendarService talkCalendarService) {
+        TalkCalendarService talkCalendarService, MeetingEventService meetingEventService) {
         this.meetingService = meetingService;
         this.talkCalendarService = talkCalendarService;
+        this.meetingEventService = meetingEventService;
     }
 
     /** 빈 시간대 조회 로직 설명
@@ -45,17 +46,23 @@ public class MeetingTimeCalculationService {
         LocalDateTime from = meeting.getStartDate().atTime(meeting.getStartTime());
         LocalDateTime to = meeting.getEndDate().atTime(meeting.getEndTime());
 
-        // 참여자별 일정에서 필요한 시간 정보만 추출하여 리스트로 수집
+        // 참여자별 일정과 참여자의 모임별 일정에서 필요한 시간 정보만 추출하여 리스트로 수집
         List<TimeGetResponse> allTimes = joinedMemberIds.stream()
-            .flatMap(memberId ->
-                talkCalendarService
+            .flatMap(memberId -> {
+                List<TimeGetResponse> calendarTimes = talkCalendarService
                     .getUpdatedEventList(from.toString(), to.toString(), memberId)
                     .stream()
                     .map(EventGetResponse::time)
-            )
-            .toList();
+                    .toList();
 
-        // Todo 모임만의 일정도 추가
+                List<TimeGetResponse> personalMeetingTimes = meetingEventService
+                    .findMeetingPersonalEvent(meetingId, memberId)
+                    .meetingPersonalTimes();
+
+                // 각 참여자의 일정(캘린더 일정 + 개인 모임별 일정)을 합친 스트림 반환
+                return Stream.concat(calendarTimes.stream(), personalMeetingTimes.stream());
+            })
+            .toList();
 
         // 시간대 정렬 (시작 시간을 기준으로 오름차순 정렬)
         List<TimeGetResponse> sortedTimes = allTimes.stream()
