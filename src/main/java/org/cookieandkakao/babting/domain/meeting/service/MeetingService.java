@@ -80,10 +80,12 @@ public class MeetingService {
         Member member = memberService.findMember(memberId);
         Meeting meeting = findMeeting(meetingId);
 
-        boolean isJoinMeeting = memberMeetingRepository.existsByMemberAndMeeting(member, meeting);
-        if (isJoinMeeting){
-            throw new MeetingAlreadyJoinException("이미 모임에 참가한 상태입니다.");
-        }
+        memberMeetingRepository.findByMemberAndMeeting(member, meeting)
+            .ifPresent(checkMemberMeeting -> {
+                if (!checkMemberMeeting.isHost()) {
+                    throw new MeetingAlreadyJoinException("이미 모임에 참가한 상태입니다.");
+                }
+            });
 
         MemberMeeting memberMeeting = memberMeetingRepository.save(new MemberMeeting(member, meeting, false));
         meetingEventCreateService.saveMeetingAvoidTime(memberMeeting, meetingJoinCreateRequest.times());
@@ -166,3 +168,5 @@ public class MeetingService {
                 .collect(Collectors.toList());
     }
 }
+
+
