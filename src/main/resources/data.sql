@@ -1,5 +1,3 @@
-ALTER TABLE food ADD UNIQUE INDEX unique_food_category_name (food_category_id, name);
-
 INSERT INTO food_category (food_category_id, name)
 VALUES (1, '한식'),
        (2, '중식'),
