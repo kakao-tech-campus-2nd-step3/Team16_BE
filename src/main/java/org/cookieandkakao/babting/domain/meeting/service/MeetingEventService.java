@@ -71,7 +71,7 @@ public class MeetingEventService {
     private MeetingTimeCreateRequest createMeetingTimeRequest(Meeting meeting) {
         ZonedDateTime startDateTime = meeting.getConfirmDateTime()
             .atZone(ZoneId.of(TimeZone.SEOUL.getArea()));
-        ZonedDateTime endDateTime = startDateTime.plusMinutes(meeting.getDurationTime());
+        ZonedDateTime endDateTime = startDateTime.plusHours(meeting.getDurationTime());
         boolean allDay = false;
         return new MeetingTimeCreateRequest(startDateTime.toString(), endDateTime.toString(),
             TimeZone.SEOUL.getArea(), allDay);
