@@ -1,5 +1,6 @@
 package org.cookieandkakao.babting.domain.meeting.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import org.cookieandkakao.babting.domain.meeting.entity.Meeting;
@@ -11,8 +12,10 @@ public record MeetingInfoGetResponse(
 
     LocalDate endDate,
 
+    @JsonFormat(pattern = "HH:mm:ss")
     LocalTime startTime,
 
+    @JsonFormat(pattern = "HH:mm:ss")
     LocalTime endTime
 ) {
     public static MeetingInfoGetResponse from(Meeting meeting) {
