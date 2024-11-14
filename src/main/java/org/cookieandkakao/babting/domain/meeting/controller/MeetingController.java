@@ -23,6 +23,7 @@ import org.cookieandkakao.babting.domain.meeting.service.MeetingEventService;
 import org.cookieandkakao.babting.domain.meeting.service.MeetingJoinService;
 import org.cookieandkakao.babting.domain.meeting.service.MeetingService;
 import org.cookieandkakao.babting.domain.meeting.service.MeetingTimeCalculationService;
+import org.cookieandkakao.babting.domain.member.dto.MemberProfileGetResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -187,5 +188,16 @@ public class MeetingController {
             meetingId, memberId);
         return ApiResponseGenerator.success(HttpStatus.OK, "모임별 개인 일정 조회 성공",
             meetingPersonalEventGetResponse);
+    }
+
+    // 모임 참여자 프로필 목록 조회
+    @GetMapping("/{meetingId}/participants")
+    @Operation(summary = "모임 참여자 목록 조회", description = "특정 모임의 참여자 목록을 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "모임 참여자 프로필 조회 성공")
+    public ResponseEntity<SuccessBody<List<MemberProfileGetResponse>>> getMeetingParticipants(
+            @PathVariable("meetingId") Long meetingId
+    ) {
+        List<MemberProfileGetResponse> participants = meetingService.getMeetingParticipants(meetingId);
+        return ApiResponseGenerator.success(HttpStatus.OK, "모임 참여자 목록 조회 성공", participants);
     }
 }
