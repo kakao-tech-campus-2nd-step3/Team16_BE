@@ -5,6 +5,7 @@ import org.cookieandkakao.babting.domain.food.dto.FoodGetResponse;
 import org.cookieandkakao.babting.domain.meeting.entity.Meeting;
 
 public record MeetingGetResponse(
+    Long meetingId,
     LocationGetResponse baseLocation,
 
     String title,
@@ -14,7 +15,8 @@ public record MeetingGetResponse(
     FoodGetResponse confirmedFood
 ) {
     public static MeetingGetResponse from(Meeting meeting) {
-        return new MeetingGetResponse(LocationGetResponse.from(meeting.getBaseLocation()),
+        return new MeetingGetResponse(meeting.getMeetingId(),
+            LocationGetResponse.from(meeting.getBaseLocation()),
             meeting.getTitle(),
             meeting.getConfirmDateTime(),
             FoodGetResponse.from(meeting.getConfirmedFood()));
