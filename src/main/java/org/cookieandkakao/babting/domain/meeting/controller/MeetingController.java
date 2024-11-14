@@ -22,6 +22,7 @@ import org.cookieandkakao.babting.domain.meeting.dto.response.TimeAvailableGetRe
 import org.cookieandkakao.babting.domain.meeting.service.MeetingEventService;
 import org.cookieandkakao.babting.domain.meeting.service.MeetingJoinService;
 import org.cookieandkakao.babting.domain.meeting.service.MeetingService;
+import org.cookieandkakao.babting.domain.meeting.service.MeetingTimeCalculationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -41,12 +42,15 @@ public class MeetingController {
     private final MeetingService meetingService;
     private final MeetingEventService meetingEventService;
     private final MeetingJoinService meetingJoinService;
+    private final MeetingTimeCalculationService meetingTimeCalculationService;
 
-    public MeetingController(MeetingService meetingService,
-        MeetingEventService meetingEventService, MeetingJoinService meetingJoinService) {
+    public MeetingController(MeetingService meetingService, MeetingEventService meetingEventService,
+        MeetingJoinService meetingJoinService,
+        MeetingTimeCalculationService meetingTimeCalculationService) {
         this.meetingService = meetingService;
         this.meetingEventService = meetingEventService;
         this.meetingJoinService = meetingJoinService;
+        this.meetingTimeCalculationService = meetingTimeCalculationService;
     }
 
     // 모임 생성(주최자)
@@ -165,7 +169,7 @@ public class MeetingController {
     public ResponseEntity<SuccessBody<TimeAvailableGetResponse>> getAvailableTime(
         @PathVariable("meetingId") Long meetingId
     ) {
-        TimeAvailableGetResponse timeAvailableGetResponse = meetingEventService.findAvailableTime(
+        TimeAvailableGetResponse timeAvailableGetResponse = meetingTimeCalculationService.findAvailableTime(
             meetingId);
         return ApiResponseGenerator.success(HttpStatus.OK, "모임 공통 시간표 조회 성공",
             timeAvailableGetResponse);
