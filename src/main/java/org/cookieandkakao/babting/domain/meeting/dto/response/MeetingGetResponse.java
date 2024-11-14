@@ -15,6 +15,13 @@ public record MeetingGetResponse(
     FoodGetResponse confirmedFood
 ) {
     public static MeetingGetResponse from(Meeting meeting) {
+        if (meeting.getConfirmedFood() == null){
+            return new MeetingGetResponse(meeting.getMeetingId(),
+                LocationGetResponse.from(meeting.getBaseLocation()),
+                meeting.getTitle(),
+                meeting.getConfirmDateTime(),
+                FoodGetResponse.from(null));
+        }
         return new MeetingGetResponse(meeting.getMeetingId(),
             LocationGetResponse.from(meeting.getBaseLocation()),
             meeting.getTitle(),
