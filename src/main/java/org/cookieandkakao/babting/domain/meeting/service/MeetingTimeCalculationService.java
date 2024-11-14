@@ -2,6 +2,7 @@ package org.cookieandkakao.babting.domain.meeting.service;
 
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -66,7 +67,7 @@ public class MeetingTimeCalculationService {
 
         // 시간대 정렬 (시작 시간을 기준으로 오름차순 정렬)
         List<TimeGetResponse> sortedTimes = allTimes.stream()
-            .sorted(Comparator.comparing(time -> LocalDateTime.parse(time.startAt())))
+            .sorted(Comparator.comparing(time -> ZonedDateTime.parse(time.startAt())))
             .toList();
 
         // 겹치는 시간 병합
