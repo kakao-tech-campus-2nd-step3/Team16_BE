@@ -20,7 +20,7 @@ public record MeetingGetResponse(
                 LocationGetResponse.from(meeting.getBaseLocation()),
                 meeting.getTitle(),
                 meeting.getConfirmDateTime(),
-                FoodGetResponse.from(null));
+                null);
         }
         return new MeetingGetResponse(meeting.getMeetingId(),
             LocationGetResponse.from(meeting.getBaseLocation()),
