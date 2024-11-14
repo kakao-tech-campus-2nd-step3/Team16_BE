@@ -57,11 +57,11 @@ public class MeetingController {
     @PostMapping
     @Operation(summary = "모임 생성", description = "새 모임을 생성합니다")
     @ApiResponse(responseCode = "201", description = "모임 생성 성공")
-    public ResponseEntity<SuccessBody<Void>> createMeeting(
+    public ResponseEntity<SuccessBody<Long>> createMeeting(
         @LoginMemberId Long memberId,
         @RequestBody @Valid MeetingCreateRequest meetingCreateRequest) {
-        meetingService.createMeeting(memberId, meetingCreateRequest);
-        return ApiResponseGenerator.success(HttpStatus.CREATED, "모임 생성 성공");
+        Long meetingId = meetingService.createMeeting(memberId, meetingCreateRequest);
+        return ApiResponseGenerator.success(HttpStatus.CREATED,"모임 생성 성공", meetingId);
     }
 
     // 모임 정보 수정

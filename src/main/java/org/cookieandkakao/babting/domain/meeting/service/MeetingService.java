@@ -45,13 +45,13 @@ public class MeetingService {
         this.meetingEventCreateService = meetingEventCreateService;
     }
 
-    public void createMeeting(Long memberId, MeetingCreateRequest meetingCreateRequest){
+    public Long createMeeting(Long memberId, MeetingCreateRequest meetingCreateRequest){
         Member member = memberService.findMember(memberId);
         Meeting meeting = meetingCreateRequest.toEntity();
         Location baseLocation = meetingCreateRequest.baseLocation().toEntity();
         locationRepository.save(baseLocation);
-        meetingRepository.save(meeting);
         memberMeetingRepository.save(new MemberMeeting(member, meeting, true));
+        return meetingRepository.save(meeting).getMeetingId();
     }
 
     public void updateMeeting(Long memberId, Long meetingId, MeetingUpdateRequest meetingUpdateRequest) {

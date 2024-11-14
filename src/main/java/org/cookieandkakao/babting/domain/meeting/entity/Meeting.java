@@ -71,6 +71,10 @@ public class Meeting {
         this.confirmedFood = food;
     }
 
+    public Long getMeetingId() {
+        return meetingId;
+    }
+
     public LocalDateTime getConfirmDateTime() {
         return confirmedDateTime;
     }
