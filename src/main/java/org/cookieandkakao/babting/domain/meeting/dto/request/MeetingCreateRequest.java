@@ -1,5 +1,6 @@
 package org.cookieandkakao.babting.domain.meeting.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -25,9 +26,11 @@ public record MeetingCreateRequest(
     Integer durationTime,
 
     @NotNull
+    @JsonFormat(pattern = "HH:mm:ss")
     LocalTime startTime,
 
     @NotNull
+    @JsonFormat(pattern = "HH:mm:ss")
     LocalTime endTime
 ) {
     public Meeting toEntity(){
