@@ -20,6 +20,7 @@ import org.cookieandkakao.babting.domain.meeting.exception.membermeeting.MemberM
 import org.cookieandkakao.babting.domain.meeting.repository.LocationRepository;
 import org.cookieandkakao.babting.domain.meeting.repository.MeetingRepository;
 import org.cookieandkakao.babting.domain.meeting.repository.MemberMeetingRepository;
+import org.cookieandkakao.babting.domain.member.dto.MemberProfileGetResponse;
 import org.cookieandkakao.babting.domain.member.entity.Member;
 import org.cookieandkakao.babting.domain.member.service.MemberService;
 import org.springframework.stereotype.Service;
@@ -151,5 +152,17 @@ public class MeetingService {
         return memberMeetings.stream()
             .map(memberMeeting -> memberMeeting.getMember().getMemberId())
             .toList();
+    }
+
+    public List<MemberProfileGetResponse> getMeetingParticipants(Long meetingId) {
+        List<MemberMeeting> memberMeetings = memberMeetingRepository.findMemberMeetingsByMeetingId(meetingId);
+        return memberMeetings.stream()
+                .map(mm -> new MemberProfileGetResponse(
+                        mm.getMember().getMemberId(),
+                        mm.getMember().getNickname(),
+                        mm.getMember().getThumbnailImageUrl(),
+                        mm.getMember().getProfileImageUrl()
+                ))
+                .collect(Collectors.toList());
     }
 }
