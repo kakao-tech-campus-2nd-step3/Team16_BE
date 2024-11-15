@@ -31,12 +31,12 @@ public record TimeCreateRequest(
     private boolean isValidTimeRange() {
         LocalDateTime start = LocalDateTime.parse(startAt, TimeFormatterUtil.FORMATTER);
         LocalDateTime end = LocalDateTime.parse(endAt, TimeFormatterUtil.FORMATTER);
-        return !start.isAfter(end);
+        return start.isBefore(end);
     }
 
 
     public Time toEntity() {
-        if (isValidTimeRange()) {
+        if (!isValidTimeRange()) {
             throw new InvalidTimeRangeException("시작 시간이 종료 시간보다 늦을 수 없습니다.");
         }
         LocalDateTime start = LocalDateTime.parse(startAt, TimeFormatterUtil.FORMATTER);
