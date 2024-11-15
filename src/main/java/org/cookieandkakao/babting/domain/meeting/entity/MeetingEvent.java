@@ -18,7 +18,7 @@ public class MeetingEvent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long meetingEventId;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "member_meeting_id")
     private MemberMeeting memberMeeting;
 
