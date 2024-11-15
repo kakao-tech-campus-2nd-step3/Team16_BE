@@ -128,7 +128,7 @@ public class MeetingTimeCalculationService {
 
         // 첫 번째 시간대 이전의 빈 시간 확인
         // => 검색 시작일 ~ mergedTime 첫번째 일정의 시작시간까지 빈 시간
-        if (from.isBefore(mergedTimes.getFirst().startAt())) {
+        if (!mergedTimes.isEmpty() && from.isBefore(mergedTimes.getFirst().startAt())) {
             availableTimes.add(new TimeSlot(
                 from,
                 mergedTimes.getFirst().startAt(),
@@ -154,7 +154,7 @@ public class MeetingTimeCalculationService {
         }
 
         // 마지막 시간대 이후의 빈 시간 확인
-        if (to.isAfter(mergedTimes.getLast().endAt())) {
+        if (!mergedTimes.isEmpty() && to.isAfter(mergedTimes.getLast().endAt())) {
             availableTimes.add(new TimeSlot(
                 mergedTimes.getLast().endAt(),
                 to,

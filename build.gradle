@@ -8,6 +8,10 @@ plugins {
 group = 'org.cookieandkakao'
 version = '0.0.1-SNAPSHOT'
 
+jacoco {
+    toolVersion = "0.8.12"
+
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
@@ -43,6 +47,7 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    finalizedBy 'jacocoTestReport'
 
     reports {
         junitXml.required.set(true)
@@ -50,13 +55,7 @@ tasks.named('test') {
     }
 }
 
-jacoco {
-    toolVersion = "0.8.8"
-}
-
-tasks.named('jacocoTestReport') {
-    dependsOn test
-
+tasks.jacocoTestReport {
     reports {
         xml.required.set(true)
         html.required.set(true)
