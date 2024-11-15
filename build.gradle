@@ -44,6 +44,15 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+tasks.named('test') {
+    useJUnitPlatform()
+
+    reports {
+        junitXml.enabled = true
+        html.enabled = true
+    }
+}
+
 jar {
     enabled = false
 }
