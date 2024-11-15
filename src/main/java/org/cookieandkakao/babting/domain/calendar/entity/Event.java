@@ -1,5 +1,6 @@
 package org.cookieandkakao.babting.domain.calendar.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,7 +20,7 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long eventId;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "time_id", nullable = false)
     private Time time;
 
