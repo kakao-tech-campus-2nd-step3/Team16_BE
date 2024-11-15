@@ -51,7 +51,8 @@ public class MeetingTimeCalculationService {
         List<TimeGetResponse> allTimes = joinedMemberIds.stream()
             .flatMap(memberId -> {
                 List<TimeGetResponse> calendarTimes = talkCalendarService
-                    .getUpdatedEventList(from.toString(), to.toString(), memberId)
+                    .getUpdatedEventList(from.toString().concat(":00Z"), to.toString().concat(":00Z"),
+                        memberId)
                     .stream()
                     .map(EventGetResponse::time)
                     .toList();
@@ -88,7 +89,6 @@ public class MeetingTimeCalculationService {
         }
 
         TimeSlot currentTime = TimeSlot.toTimeSlot(times.getFirst());
-
 
         for (int i = 1; i < times.size(); i++) {
             TimeSlot next = TimeSlot.toTimeSlot(times.get(i));

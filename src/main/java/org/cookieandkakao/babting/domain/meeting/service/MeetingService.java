@@ -2,6 +2,7 @@ package org.cookieandkakao.babting.domain.meeting.service;
 
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.cookieandkakao.babting.domain.meeting.dto.request.MeetingCreateRequest;
 import org.cookieandkakao.babting.domain.meeting.dto.request.MeetingJoinCreateRequest;
@@ -75,21 +76,24 @@ public class MeetingService {
         meeting.updateEndTime(meetingUpdateRequest.endTime());
     }
 
-    // 모임 참가(초대받은사람)
-    public void joinMeeting(Long memberId, Long meetingId, MeetingJoinCreateRequest meetingJoinCreateRequest){
+    // 모임 참가(초대받은 사람)
+    public void joinMeeting(Long memberId, Long meetingId, MeetingJoinCreateRequest meetingJoinCreateRequest) {
         Member member = memberService.findMember(memberId);
         Meeting meeting = findMeeting(meetingId);
 
-        boolean isJoinMeeting = memberMeetingRepository.existsByMemberAndMeeting(member, meeting);
-        if (isJoinMeeting){
-            throw new MeetingAlreadyJoinException("이미 모임에 참가한 상태입니다.");
+        Optional<MemberMeeting> existingMemberMeeting = memberMeetingRepository.findByMemberAndMeeting(member, meeting);
+
+        if (existingMemberMeeting.isPresent()) {
+            MemberMeeting checkMemberMeeting = existingMemberMeeting.get();
+            if (!checkMemberMeeting.isHost()) {
+                throw new MeetingAlreadyJoinException("이미 모임에 참가한 상태입니다.");
+            }
+        } else {
+            MemberMeeting memberMeeting = memberMeetingRepository.save(new MemberMeeting(member, meeting, false));
+            meetingEventCreateService.saveMeetingAvoidTime(memberMeeting, meetingJoinCreateRequest.times());
         }
-
-        MemberMeeting memberMeeting = memberMeetingRepository.save(new MemberMeeting(member, meeting, false));
-        meetingEventCreateService.saveMeetingAvoidTime(memberMeeting, meetingJoinCreateRequest.times());
-
-
     }
+
 
     public void exitMeeting(Long memberId, Long meetingId){
         Member member = memberService.findMember(memberId);
@@ -166,3 +170,5 @@ public class MeetingService {
                 .collect(Collectors.toList());
     }
 }
+
+

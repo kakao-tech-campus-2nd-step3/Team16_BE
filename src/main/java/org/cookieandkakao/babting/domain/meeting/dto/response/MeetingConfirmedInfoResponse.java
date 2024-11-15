@@ -9,7 +9,20 @@ public record MeetingConfirmedInfoResponse(
     LocationGetResponse baseLocation
 ) {
     public static MeetingConfirmedInfoResponse from(Meeting meeting) {
-        return new MeetingConfirmedInfoResponse(meeting.getConfirmDateTime().toString(),
-            FoodGetResponse.from(meeting.getConfirmedFood()), LocationGetResponse.from(meeting.getBaseLocation()));
+        String confirmDateTime = null;
+        if (meeting.getConfirmDateTime() != null) {
+            confirmDateTime = meeting.getConfirmDateTime().toString();
+        }
+
+        FoodGetResponse foodGetResponse = null;
+        if (meeting.getConfirmedFood() != null) {
+            foodGetResponse = FoodGetResponse.from(meeting.getConfirmedFood());
+        }
+
+        return new MeetingConfirmedInfoResponse(
+            confirmDateTime,
+            foodGetResponse,
+            LocationGetResponse.from(meeting.getBaseLocation())
+        );
     }
 }

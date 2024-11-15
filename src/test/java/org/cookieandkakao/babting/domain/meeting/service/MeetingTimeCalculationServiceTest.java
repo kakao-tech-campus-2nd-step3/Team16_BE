@@ -63,18 +63,18 @@ class MeetingTimeCalculationServiceTest {
         List<Long> joinedMemberIds = List.of(memberId1, memberId2);
 
         List<TimeGetResponse> member1Times = List.of(
-            new TimeGetResponse("2024-10-24T12:00:00+09:00", "2024-10-24T14:00:00+09:00", TimeZone.SEOUL.getArea(), false)
+            new TimeGetResponse("2024-10-24T12:00:00Z", "2024-10-24T14:00:00Z", TimeZone.SEOUL.getArea(), false)
         );
 
         List<TimeGetResponse> member2Times = List.of(
-            new TimeGetResponse("2024-10-24T13:00:00+09:00", "2024-10-24T15:00:00+09:00", TimeZone.SEOUL.getArea(), false)
+            new TimeGetResponse("2024-10-24T13:00:00Z", "2024-10-24T15:00:00Z", TimeZone.SEOUL.getArea(), false)
         );
 
         List<TimeGetResponse> personalMeetingTimes1 = List.of(
-            new TimeGetResponse("2024-10-24T15:30:00+09:00", "2024-10-24T16:30:00+09:00", TimeZone.SEOUL.getArea(), false)
+            new TimeGetResponse("2024-10-24T15:30:00Z", "2024-10-24T16:30:00Z", TimeZone.SEOUL.getArea(), false)
         );
         List<TimeGetResponse> personalMeetingTimes2 = List.of(
-            new TimeGetResponse("2024-10-24T16:00:00+09:00", "2024-10-24T17:00:00+09:00", TimeZone.SEOUL.getArea(), false)
+            new TimeGetResponse("2024-10-24T16:00:00Z", "2024-10-24T17:00:00Z", TimeZone.SEOUL.getArea(), false)
         );
 
         when(meetingService.getMemberIdInMeetingId(meetingId)).thenReturn(joinedMemberIds);
