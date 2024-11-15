@@ -57,7 +57,7 @@ public class Time {
     }
 
     private void validateTimeRange(LocalDateTime startAt, LocalDateTime endAt) {
-        if (startAt.isAfter(endAt)) {
+        if (!startAt.isAfter(endAt)) {
             throw new InvalidTimeRangeException("시작 시간이 종료 시간보다 늦을 수 없습니다.");
         }
     }
