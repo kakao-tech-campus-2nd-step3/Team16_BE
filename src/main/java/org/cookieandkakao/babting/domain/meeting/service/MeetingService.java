@@ -88,6 +88,7 @@ public class MeetingService {
             if (!checkMemberMeeting.isHost()) {
                 throw new MeetingAlreadyJoinException("이미 모임에 참가한 상태입니다.");
             }
+            meetingEventCreateService.saveMeetingAvoidTime(checkMemberMeeting, meetingJoinCreateRequest.times());
         } else {
             MemberMeeting memberMeeting = memberMeetingRepository.save(new MemberMeeting(member, meeting, false));
             meetingEventCreateService.saveMeetingAvoidTime(memberMeeting, meetingJoinCreateRequest.times());
