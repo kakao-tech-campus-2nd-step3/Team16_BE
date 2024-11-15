@@ -10,8 +10,7 @@ import org.junit.jupiter.api.Test;
 class MemberTest {
 
     @Test
-    @DisplayName("회원 프로필을 수정할 수 있다")
-    void updateProfile() {
+    void 회원_프로필을_수정할_수_있다() {
         // given
         Member member = new Member(1L);
         KakaoMemberProfileGetResponse profileDto = new KakaoMemberProfileGetResponse(
@@ -27,8 +26,7 @@ class MemberTest {
     }
 
     @Test
-    @DisplayName("회원의 카카오 토큰을 수정할 수 있다")
-    void updateKakaoToken() {
+    void 회원의_카카오_토큰을_수정할_수_있다() {
         // given
         Member member = new Member(1L);
         KakaoToken kakaoToken = new KakaoToken("accessToken", LocalDateTime.now(), "refreshToken",

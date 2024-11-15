@@ -9,8 +9,7 @@ import org.junit.jupiter.api.Test;
 class KakaoTokenTest {
 
     @Test
-    @DisplayName("카카오 접근 토큰을 수정할 수 있다")
-    void updateAccessToken() {
+    void 카카오_접근_토큰을_수정할_수_있다() {
         // given
         KakaoToken kakaoToken = new KakaoToken("accessToken", LocalDateTime.now(), "refreshToken",
             LocalDateTime.now());

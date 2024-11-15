@@ -1,6 +1,5 @@
 package org.cookieandkakao.babting.domain.member.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
@@ -54,8 +53,7 @@ class KakaoAuthClientTest {
     }
 
     @Test
-    @DisplayName("카카오 토큰을 발급받을 수 있다.")
-    void callTokenApi() throws JsonProcessingException {
+    void 카카오_토큰을_발급받을_수_있다() throws JsonProcessingException {
         // given
         given(providerProperties.tokenUri()).willReturn(TOKEN_URI);
 
@@ -76,8 +74,7 @@ class KakaoAuthClientTest {
     }
 
     @Test
-    @DisplayName("카카오 토큰 발급 실패시 ApiException 을 발생시킨다.")
-    void callTokenApiFailed() {
+    void 카카오_토큰_발급_실패시_ApiException_을_발생시킨다() {
         // given
         given(providerProperties.tokenUri()).willReturn(TOKEN_URI);
 
@@ -93,8 +90,7 @@ class KakaoAuthClientTest {
     }
 
     @Test
-    @DisplayName("카카오 회원 정보를 가져올 수 있다.")
-    void callMemberInfoApi() throws JsonProcessingException {
+    void 카카오_회원_정보를_가져올_수_있다() throws JsonProcessingException {
         // given
         given(providerProperties.userInfoUri()).willReturn(USER_INFO_URI);
 
@@ -117,8 +113,7 @@ class KakaoAuthClientTest {
     }
 
     @Test
-    @DisplayName("카카오 회원 정보 조회 실패시 ApiException 을 발생시킨다.")
-    void callMemberInfoApiFail() {
+    void 카카오_회원_정보_조회_실패시_ApiException_을_발생시킨다() {
         // given
         given(providerProperties.userInfoUri()).willReturn(USER_INFO_URI);
 
@@ -133,8 +128,7 @@ class KakaoAuthClientTest {
     }
 
     @Test
-    @DisplayName("카카오 회원 연결을 끊을 수 있다.")
-    void callUnlinkApi() throws JsonProcessingException {
+    void 카카오_회원_연결을_끊을_수_있다() {
         // given
         given(providerProperties.unlinkUri()).willReturn(UNLINK_URI);
 
@@ -149,8 +143,7 @@ class KakaoAuthClientTest {
     }
 
     @Test
-    @DisplayName("카카오 회원 연결 끊기 실패시 ApiException 을 발생시킨다.")
-    void callUnlinkApiFail() {
+    void 카카오_회원_연결_끊기_실패시_ApiException_을_발생시킨다() {
         // given
         given(providerProperties.unlinkUri()).willReturn(UNLINK_URI);
 
