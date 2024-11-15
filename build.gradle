@@ -2,15 +2,10 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.4'
     id 'io.spring.dependency-management' version '1.1.6'
-    id 'jacoco'
 }
 
 group = 'org.cookieandkakao'
 version = '0.0.1-SNAPSHOT'
-
-jacoco {
-    toolVersion = "0.8.12"
-}
 
 java {
     toolchain {
@@ -47,17 +42,9 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
-    finalizedBy 'jacocoTestReport'
 
     reports {
         junitXml.required.set(true)
-        html.required.set(true)
-    }
-}
-
-tasks.jacocoTestReport {
-    reports {
-        xml.required.set(true)
         html.required.set(true)
     }
 }
