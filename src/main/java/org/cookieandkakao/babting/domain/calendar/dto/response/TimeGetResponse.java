@@ -33,8 +33,8 @@ public record TimeGetResponse(
 
     public static TimeGetResponse from(Time time) {
         return new TimeGetResponse(
-            time.getStartAt().toString(),
-            time.getEndAt().toString(),
+            time.getStartAt().toString().concat(":00Z"),
+            time.getEndAt().toString().concat(":00Z"),
             time.getTimeZone(),
             time.isAllDay()
         );
