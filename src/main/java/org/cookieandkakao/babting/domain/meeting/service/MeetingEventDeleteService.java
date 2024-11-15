@@ -5,6 +5,7 @@ import org.cookieandkakao.babting.domain.meeting.entity.MeetingEvent;
 import org.cookieandkakao.babting.domain.meeting.entity.MemberMeeting;
 import org.cookieandkakao.babting.domain.meeting.repository.MeetingEventRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -16,7 +17,7 @@ public class MeetingEventDeleteService {
         this.meetingEventRepository = meetingEventRepository;
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void deleteMeetingEvent(MemberMeeting memberMeeting)  {
         List<MeetingEvent> existingEvents = meetingEventRepository.findByMemberMeeting(memberMeeting);
         meetingEventRepository.deleteAll(existingEvents);
