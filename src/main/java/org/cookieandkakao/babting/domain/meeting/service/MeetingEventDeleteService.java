@@ -1,5 +1,6 @@
 package org.cookieandkakao.babting.domain.meeting.service;
 
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import org.cookieandkakao.babting.domain.meeting.entity.MeetingEvent;
 import org.cookieandkakao.babting.domain.meeting.entity.MemberMeeting;
@@ -12,13 +13,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class MeetingEventDeleteService {
 
     private final MeetingEventRepository meetingEventRepository;
-    public MeetingEventDeleteService(MeetingEventRepository meetingEventRepository) {
+    private final EntityManager entityManager;
+
+    public MeetingEventDeleteService(MeetingEventRepository meetingEventRepository,
+        EntityManager entityManager) {
         this.meetingEventRepository = meetingEventRepository;
+        this.entityManager = entityManager;
     }
 
     @Transactional
     public void deleteMeetingEvent(MemberMeeting memberMeeting)  {
         List<MeetingEvent> existingEvents = meetingEventRepository.findByMemberMeeting(memberMeeting);
         meetingEventRepository.deleteAll(existingEvents);
+        entityManager.flush();
     }
 }
