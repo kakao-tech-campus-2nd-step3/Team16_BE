@@ -17,6 +17,7 @@ import org.cookieandkakao.babting.domain.calendar.dto.response.EventCreateRespon
 import org.cookieandkakao.babting.domain.calendar.entity.Event;
 import org.cookieandkakao.babting.domain.calendar.entity.Time;
 import org.cookieandkakao.babting.domain.calendar.exception.EventCreationException;
+import org.cookieandkakao.babting.domain.calendar.repository.TimeRepository;
 import org.cookieandkakao.babting.domain.calendar.service.EventService;
 import org.cookieandkakao.babting.domain.calendar.service.TalkCalendarService;
 import org.cookieandkakao.babting.domain.meeting.dto.request.MeetingEventCreateRequest;
@@ -43,6 +44,8 @@ class MeetingEventCreateServiceTest {
     private MeetingService meetingService;
     @Mock
     private MeetingEventRepository meetingEventRepository;
+    @Mock
+    private TimeRepository timeRepository;
 
     @InjectMocks
     private MeetingEventCreateService meetingEventCreateService;
@@ -144,6 +147,7 @@ class MeetingEventCreateServiceTest {
             // Mocking
             given(avoidTimeCreateRequest.toTimeCreateRequest()).willReturn(timeCreateRequest);
             given(timeCreateRequest.toEntity()).willReturn(time);
+            given(timeRepository.save(time)).willReturn(time);
             given(eventService.saveAvoidTimeEvent(time)).willReturn(avoidEvent);
 
             // When
@@ -168,6 +172,7 @@ class MeetingEventCreateServiceTest {
             // Mocking
             given(avoidTimeCreateRequest.toTimeCreateRequest()).willReturn(timeCreateRequest);
             given(timeCreateRequest.toEntity()).willReturn(time);
+            given(timeRepository.save(time)).willReturn(time);
             given(eventService.saveAvoidTimeEvent(time)).willThrow(
                 new IllegalArgumentException("MeetingEvent 생성 중 오류 발생"));
 
