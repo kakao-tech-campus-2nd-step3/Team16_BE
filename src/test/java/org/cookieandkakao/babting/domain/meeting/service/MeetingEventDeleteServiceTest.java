@@ -6,6 +6,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import org.cookieandkakao.babting.domain.meeting.entity.MeetingEvent;
 import org.cookieandkakao.babting.domain.meeting.entity.MemberMeeting;
@@ -22,6 +23,8 @@ class MeetingEventDeleteServiceTest {
 
     @Mock
     private MeetingEventRepository meetingEventRepository;
+    @Mock
+    private EntityManager entityManger;
 
     @InjectMocks
     private MeetingEventDeleteService meetingEventDeleteService;
