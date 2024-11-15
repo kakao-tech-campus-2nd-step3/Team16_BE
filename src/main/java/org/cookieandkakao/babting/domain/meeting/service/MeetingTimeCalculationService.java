@@ -51,7 +51,7 @@ public class MeetingTimeCalculationService {
         List<TimeGetResponse> allTimes = joinedMemberIds.stream()
             .flatMap(memberId -> {
                 List<TimeGetResponse> calendarTimes = talkCalendarService
-                    .getUpdatedEventList(from.toString().concat(":00Z"), to.toString().concat("00Z"),
+                    .getUpdatedEventList(from.toString().concat(":00Z"), to.toString().concat(":00Z"),
                         memberId)
                     .stream()
                     .map(EventGetResponse::time)
